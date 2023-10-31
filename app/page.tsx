@@ -31,7 +31,12 @@ export default function Home() {
 
     fetchData();
   }, []);
-
+  // useEffect(() => {
+  //   console.log(word);
+  // }, [word]);
+  // useEffect(() => {
+  //   console.log(char);
+  // }, [char]);
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -41,32 +46,55 @@ export default function Home() {
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!loading) {
-      if (event.target.value !== typedWord && event.target.value !== "") {
-        // only refresh state if changes exist
+    if (
+      loading ||
+      event.target.value === typedWord ||
+      (event.target.value.length === 1 && event.target.value.slice(-1) === " ")
+    ) {
+      // ignore if api data is loading || there is no changes || space in first char
+      return null;
+    }
+
+    if (event.target.value.slice(-1) === " ") {
+      // reset states if user enter a space / when user input space
+      setTypedWord("");
+      setWord(document.split(" ")[wordIndexInDocument + 1]);
+      setWordIndexInDocument(wordIndexInDocument + 1);
+      setChar(document.split(" ")[wordIndexInDocument + 1].split("")[0]);
+      setCharIndexInWord(0);
+    } else if (event.target.value.length < typedWord.length) {
+      // when user delete the char
+      try {
+        const removedDeletedChar = wrongCharacters.filter((char) => {
+          return char !== `${wordIndexInDocument}_${charIndexInWord - 1}`;
+        });
+        setWrongCharacters(removedDeletedChar);
         setTypedWord(event.target.value);
-        if (event.target.value.slice(-1) === " ") {
-          // reset states if user enter a space
-          setTypedWord("");
-          setWord(document.split(" ")[wordIndexInDocument + 1]);
-          setWordIndexInDocument(wordIndexInDocument + 1);
-          setChar("");
-          setCharIndexInWord(0);
-        } else {
-          if (charIndexInWord < word.length) {
-            // pastikan sisa huruf belum habis di kata itu
-            if (event.target.value.slice(-1) !== char) {
-              // check char similarity
-              console.log("not-the-same-char");
-            }
-            // set for next char
-            setChar(word.split("")[charIndexInWord + 1]);
-            setCharIndexInWord(charIndexInWord + 1);
-          }
+        setChar(word.split("")[charIndexInWord - 1]);
+        setCharIndexInWord(charIndexInWord - 1);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      if (charIndexInWord < word.length) {
+        // pastikan sisa huruf belum habis di kata itu
+        setTypedWord(event.target.value);
+        if (event.target.value.slice(-1) !== char) {
+          // check char similarity
+          console.log("not-the-same-char");
+          const wrongCharactersState = [...wrongCharacters];
+          wrongCharactersState.push(
+            `${wordIndexInDocument}_${charIndexInWord}`
+          );
+          setWrongCharacters(wrongCharactersState);
         }
+        // set for next char
+        setChar(word.split("")[charIndexInWord + 1]);
+        setCharIndexInWord(charIndexInWord + 1);
       }
     }
   };
+
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2">
       <div
@@ -77,7 +105,20 @@ export default function Home() {
           return (
             <span key={`${word}_${wordIndex}`}>
               {word.split("").map((char: String, charIndex: Number) => {
-                return <span key={`${word}_${char}_${charIndex}`}>{char}</span>;
+                if (wrongCharacters.includes(`${wordIndex}_${charIndex}`)) {
+                  return (
+                    <span
+                      key={`${word}_${char}_${charIndex}`}
+                      className="bg-red-500"
+                    >
+                      {char}
+                    </span>
+                  );
+                } else {
+                  return (
+                    <span key={`${word}_${char}_${charIndex}`}>{char}</span>
+                  );
+                }
               })}{" "}
             </span>
           );
