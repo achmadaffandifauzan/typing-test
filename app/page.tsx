@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetchTypingTestData } from "./apiService";
 
 export default function Home() {
   const [document, setDocument] = useState<string>("");
+  const [documentKey, setDocumentKey] = useState<number>(0);
   const [word, setWord] = useState<string>("");
   const [wordIndexInDocument, setWordIndexInDocument] = useState<number>(0);
   const [char, setChar] = useState<string>("");
@@ -12,25 +13,36 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [typedWord, setTypedWord] = useState<string>("");
   const [wrongCharacters, setWrongCharacters] = useState<Array<String>>([]);
+  const hasFetchedData = useRef(false);
 
+  const fetchData = async () => {
+    console.log("requesting");
+    setLoading(true);
+    try {
+      const data = await fetchTypingTestData();
+      console.log(data);
+      setDocument(data.content);
+    } catch (err) {
+      setError("Error fetching data.");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchTypingTestData();
-        console.log(data);
-        setDocument(data.quote);
-        // initial set for first word and first char in state
-        setWord(data.quote.split(" ")[0]);
-        setChar(data.quote.split(" ")[0].slice(0, 1));
-      } catch (err) {
-        setError("Error fetching data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    if (!hasFetchedData.current) {
+      fetchData();
+      hasFetchedData.current = true;
+    }
   }, []);
+  useEffect(() => {
+    setDocumentKey(documentKey + 1);
+    // initial set for first word and first char in state
+    setWord(document.split(" ")[0]);
+    setWordIndexInDocument(0);
+    setChar(document.split(" ")[0].slice(0, 1));
+    setCharIndexInWord(0);
+    setTypedWord("");
+  }, [document]);
   // useEffect(() => {
   //   console.log(word);
   // }, [word]);
@@ -54,8 +66,15 @@ export default function Home() {
       // ignore if api data is loading || there is no changes || space in first char
       return null;
     }
-
-    if (event.target.value.slice(-1) === " ") {
+    console.log(wordIndexInDocument);
+    console.log(charIndexInWord);
+    if (
+      wordIndexInDocument === document.split(" ").length - 1 &&
+      event.target.value.slice(-1) === " "
+    ) {
+      console.log("FETCH AGAINNN");
+      return fetchData();
+    } else if (event.target.value.slice(-1) === " ") {
       // reset states if user enter a space / when user input space
       setTypedWord("");
       setWord(document.split(" ")[wordIndexInDocument + 1]);
@@ -66,7 +85,10 @@ export default function Home() {
       // when user delete the char
       try {
         const removedDeletedChar = wrongCharacters.filter((char) => {
-          return char !== `${wordIndexInDocument}_${charIndexInWord - 1}`;
+          return (
+            char !==
+            `${documentKey}_${wordIndexInDocument}_${charIndexInWord - 1}`
+          );
         });
         setWrongCharacters(removedDeletedChar);
         setTypedWord(event.target.value);
@@ -84,7 +106,7 @@ export default function Home() {
           console.log("not-the-same-char");
           const wrongCharactersState = [...wrongCharacters];
           wrongCharactersState.push(
-            `${wordIndexInDocument}_${charIndexInWord}`
+            `${documentKey}_${wordIndexInDocument}_${charIndexInWord}`
           );
           setWrongCharacters(wrongCharactersState);
         }
@@ -103,12 +125,16 @@ export default function Home() {
       >
         {document.split(" ").map((word: String, wordIndex: Number) => {
           return (
-            <span key={`${word}_${wordIndex}`}>
+            <span key={`${documentKey}_${word}_${wordIndex}`}>
               {word.split("").map((char: String, charIndex: Number) => {
-                if (wrongCharacters.includes(`${wordIndex}_${charIndex}`)) {
+                if (
+                  wrongCharacters.includes(
+                    `${documentKey}_${wordIndex}_${charIndex}`
+                  )
+                ) {
                   return (
                     <span
-                      key={`${word}_${char}_${charIndex}`}
+                      key={`${documentKey}_${word}_${char}_${charIndex}`}
                       className="bg-red-500"
                     >
                       {char}
@@ -116,7 +142,9 @@ export default function Home() {
                   );
                 } else {
                   return (
-                    <span key={`${word}_${char}_${charIndex}`}>{char}</span>
+                    <span key={`${documentKey}_${word}_${char}_${charIndex}`}>
+                      {char}
+                    </span>
                   );
                 }
               })}{" "}
