@@ -35,10 +35,12 @@ export default function Home() {
     ],
     currentDocumentIndex: 0,
   });
+  const [typedWord, setTypedWord] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [typedWord, setTypedWord] = useState<string>("");
+
   const hasInitiallyFetchedData = useRef(false);
+  const hasReFetchedData = useRef(false);
 
   // make the variables to simplify the process
   const currentWordObject =
@@ -58,53 +60,40 @@ export default function Home() {
     try {
       const data = await fetchTypingTestData();
       console.log(data);
-      // adding to existing documents
-      if (documents.quotes.length > 1) {
-        const new_docs = {
-          ...documents,
-          quotes: [
-            ...documents.quotes,
-            {
-              text: data.content,
-              words: data.content.split(" ").map((word: string) => {
-                return {
-                  text: word,
-                  chars: word.split(""),
-                  currentCharIndex: 0,
-                  wrongCharacters: [],
-                };
-              }),
-              currentWordIndex: 0,
-            },
-          ],
-        };
-        console.log(new_docs);
-        setDocuments(new_docs);
-      } else {
-        // replacing the first empty documents state
-        const new_docs = {
-          quotes: [
-            {
-              text: data.content,
-              words: data.content.split(" ").map((word: string) => {
-                return {
-                  text: word,
-                  chars: word.split(""),
-                  currentCharIndex: 0,
-                  wrongCharacters: [],
-                };
-              }),
-              currentWordIndex: 0,
-            },
-          ],
-          currentDocumentIndex: 0,
-        };
-        setDocuments(new_docs);
+
+      if (documents.quotes[0].words.length < 2) {
+        // delete the init state data (empty)
+        const updatedDocuments = { ...documents };
+        updatedDocuments.quotes.shift();
+        setDocuments(updatedDocuments);
       }
+      // adding to existing documents
+      console.log("I add to existing doc");
+      const new_docs = {
+        ...documents,
+        quotes: [
+          ...documents.quotes,
+          {
+            text: data.content,
+            words: data.content.split(" ").map((word: string) => {
+              return {
+                text: word,
+                chars: word.split(""),
+                currentCharIndex: 0,
+                wrongCharacters: [],
+              };
+            }),
+            currentWordIndex: 0,
+          },
+        ],
+      };
+      console.log(new_docs);
+      setDocuments(new_docs);
     } catch (err) {
       setError("Error fetching data.");
     } finally {
       setLoading(false);
+      hasReFetchedData.current = false;
     }
   };
 
@@ -123,30 +112,25 @@ export default function Home() {
   }, []);
   const fetchMoreDocument = () => {
     fetchData();
+    hasReFetchedData.current = true;
   };
-  // useEffect(() => {
-  //   setTimeout(() => {
-
-  //   }, 1000);
-  // }, []);
-  useEffect(() => {
-    if (documents.quotes.length > 1) {
-      console.log(documents);
-    }
-  }, [documents]);
-  // useEffect(() => {
-  //   console.log(word);
-  // }, [word]);
-  // useEffect(() => {
-  //   console.log(char);
-  // }, [char]);
   if (loading) {
     return <p>Loading...</p>;
   }
-
   if (error) {
     return <p>{error}</p>;
   }
+
+  const rotateQuotes = () => {
+    try {
+      const updatedDocuments = { ...documents };
+      updatedDocuments.currentDocumentIndex += 1;
+      setDocuments(updatedDocuments);
+      setTypedWord("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
@@ -157,15 +141,30 @@ export default function Home() {
       // ignore if api data is loading || there is no changes || space in first char
       return null;
     }
-    // if (
-    //   documents.quotes[currentDocumentIndex] ===
-    //     documents[currentDocumentKey].split(" ").length - 1 &&
-    //   event.target.value.slice(-1) === " "
-    // ) {
-    //   console.log("FETCH AGAINNN");
-    //   return fetchData();
-    // }else
-    if (event.target.value.slice(-1) === " ") {
+    if (
+      event.target.value.slice(-1) === " " &&
+      documents.quotes[currentQuoteIndex].words.length -
+        documents.quotes[currentQuoteIndex].currentWordIndex <
+        5 &&
+      documents.quotes.length - (currentQuoteIndex + 1) === 0
+    ) {
+      // if on last 5 word of a quote, need to fetch again for the next quote to be shown (also not refetching again and again if 1 next quotes is already fetched)
+      console.log("AAA");
+      // use useRef to avoid fetching multiple time at same time
+      // in this case, hasReFetchedData should be false first, then true-ing it after calling fetchData(), then false-ing again after data received
+      if (!hasReFetchedData.current) {
+        fetchMoreDocument();
+      }
+    }
+
+    if (
+      event.target.value.slice(-1) === " " &&
+      documents.quotes[currentQuoteIndex].currentWordIndex ===
+        documents.quotes[currentQuoteIndex].words.length - 1
+    ) {
+      // if on last word & user press space
+      rotateQuotes();
+    } else if (event.target.value.slice(-1) === " ") {
       // reset states if user enter a space / when user input space
       const updatedDocuments = { ...documents };
 
@@ -197,7 +196,7 @@ export default function Home() {
     } else {
       // console.log(currentWordObject);
 
-      if (currentCharIndex < currentWordObject.text.length) {
+      if (currentCharIndex < currentWordObject.chars.length) {
         // pastikan sisa huruf belum habis di kata itu
         setTypedWord(event.target.value);
         if (
