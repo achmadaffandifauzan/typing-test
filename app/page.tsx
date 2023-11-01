@@ -3,22 +3,20 @@ import { useEffect, useState, useRef } from "react";
 import { fetchTypingTestData } from "./apiService";
 interface DocumentsSchema {
   quotes: Quotes[];
-  currentDocument: string;
   currentDocumentIndex: number;
 }
 interface Quotes {
   text: string;
   words: Words[];
-  currentWord: string;
   currentWordIndex: number;
 }
 interface Words {
   text: string;
   chars: string[];
-  currentChar: string;
   currentCharIndex: number;
   wrongCharacters: string[];
 }
+
 export default function Home() {
   const [documents, setDocuments] = useState<DocumentsSchema>({
     quotes: [
@@ -28,22 +26,32 @@ export default function Home() {
           {
             text: "",
             chars: [""],
-            currentChar: "",
             currentCharIndex: 0,
             wrongCharacters: [],
           },
         ],
-        currentWord: "",
         currentWordIndex: 0,
       },
     ],
-    currentDocument: "",
     currentDocumentIndex: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [typedWord, setTypedWord] = useState<string>("");
   const hasInitiallyFetchedData = useRef(false);
+
+  // make the variables to simplify the process
+  const currentWordObject =
+    documents.quotes[documents.currentDocumentIndex].words[
+      documents.quotes[documents.currentDocumentIndex].currentWordIndex
+    ];
+  const currentQuoteIndex = documents.currentDocumentIndex;
+  const currentCharIndex =
+    documents.quotes[documents.currentDocumentIndex].words[
+      documents.quotes[documents.currentDocumentIndex].currentWordIndex
+    ].currentCharIndex;
+  const currentWordIndex =
+    documents.quotes[documents.currentDocumentIndex].currentWordIndex;
 
   const fetchData = async () => {
     console.log("requesting");
@@ -62,12 +70,10 @@ export default function Home() {
                 return {
                   text: word,
                   chars: word.split(""),
-                  currentChar: word.split("")[0],
                   currentCharIndex: 0,
                   wrongCharacters: [],
                 };
               }),
-              currentWord: data.content.split(" ")[0],
               currentWordIndex: 0,
             },
           ],
@@ -84,16 +90,13 @@ export default function Home() {
                 return {
                   text: word,
                   chars: word.split(""),
-                  currentChar: word.split("")[0],
                   currentCharIndex: 0,
                   wrongCharacters: [],
                 };
               }),
-              currentWord: data.content.split(" ")[0],
               currentWordIndex: 0,
             },
           ],
-          currentDocument: "",
           currentDocumentIndex: 0,
         };
         setDocuments(new_docs);
@@ -145,73 +148,78 @@ export default function Home() {
     return <p>{error}</p>;
   }
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (
-  //     loading ||
-  //     event.target.value === typedWord ||
-  //     (event.target.value.length === 1 && event.target.value.slice(-1) === " ")
-  //   ) {
-  //     // ignore if api data is loading || there is no changes || space in first char
-  //     return null;
-  //   }
-  //   // if (
-  //   //   documents.quotes[currentDocumentIndex] ===
-  //   //     documents[currentDocumentKey].split(" ").length - 1 &&
-  //   //   event.target.value.slice(-1) === " "
-  //   // ) {
-  //   //   console.log("FETCH AGAINNN");
-  //   //   return fetchData();
-  //   // }else
-  //     if (event.target.value.slice(-1) === " ") {
-  //     // reset states if user enter a space / when user input space
-  //     setTypedWord("");
-  //     setWord(
-  //       documents[currentDocumentKey].split(" ")[wordIndexInDocument + 1]
-  //     );
-  //     setWordIndexInDocument(wordIndexInDocument + 1);
-  //     setChar(
-  //       documents[currentDocumentKey]
-  //         .split(" ")
-  //         [wordIndexInDocument + 1].split("")[0]
-  //     );
-  //     setCharIndexInWord(0);
-  //   } else if (event.target.value.length < typedWord.length) {
-  //     // when user delete the char
-  //     try {
-  //       const removedDeletedChar = wrongCharacters.filter((char) => {
-  //         return (
-  //           char !==
-  //           `${currentDocumentKey}_${wordIndexInDocument}_${
-  //             charIndexInWord - 1
-  //           }`
-  //         );
-  //       });
-  //       setWrongCharacters(removedDeletedChar);
-  //       setTypedWord(event.target.value);
-  //       setChar(word.split("")[charIndexInWord - 1]);
-  //       setCharIndexInWord(charIndexInWord - 1);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   } else {
-  //     if (charIndexInWord < word.length) {
-  //       // pastikan sisa huruf belum habis di kata itu
-  //       setTypedWord(event.target.value);
-  //       if (event.target.value.slice(-1) !== char) {
-  //         // check char similarity
-  //         console.log("not-the-same-char");
-  //         const wrongCharactersState = [...wrongCharacters];
-  //         wrongCharactersState.push(
-  //           `${currentDocumentKey}_${wordIndexInDocument}_${charIndexInWord}`
-  //         );
-  //         setWrongCharacters(wrongCharactersState);
-  //       }
-  //       // set for next char
-  //       setChar(word.split("")[charIndexInWord + 1]);
-  //       setCharIndexInWord(charIndexInWord + 1);
-  //     }
-  //   }
-  // };
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (
+      loading ||
+      event.target.value === typedWord ||
+      (event.target.value.length === 1 && event.target.value.slice(-1) === " ")
+    ) {
+      // ignore if api data is loading || there is no changes || space in first char
+      return null;
+    }
+    // if (
+    //   documents.quotes[currentDocumentIndex] ===
+    //     documents[currentDocumentKey].split(" ").length - 1 &&
+    //   event.target.value.slice(-1) === " "
+    // ) {
+    //   console.log("FETCH AGAINNN");
+    //   return fetchData();
+    // }else
+    if (event.target.value.slice(-1) === " ") {
+      // reset states if user enter a space / when user input space
+      const updatedDocuments = { ...documents };
+
+      updatedDocuments.quotes[currentQuoteIndex].currentWordIndex += 1;
+      setDocuments(updatedDocuments);
+      setTypedWord("");
+    } else if (event.target.value.length < typedWord.length) {
+      // when user delete the char
+      const removedAWrongChar = currentWordObject.wrongCharacters.filter(
+        (char) => {
+          return (
+            char !==
+            `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex - 1}`
+          );
+        }
+      );
+      // updating documents state
+      const updatedDocuments = { ...documents };
+      // update wrong chart list
+      updatedDocuments.quotes[currentQuoteIndex].words[
+        currentWordIndex
+      ].wrongCharacters = removedAWrongChar;
+      // update current char index
+      updatedDocuments.quotes[currentQuoteIndex].words[
+        currentWordIndex
+      ].currentCharIndex -= 1;
+      setDocuments(updatedDocuments);
+      setTypedWord(event.target.value);
+    } else {
+      // console.log(currentWordObject);
+
+      if (currentCharIndex < currentWordObject.text.length) {
+        // pastikan sisa huruf belum habis di kata itu
+        setTypedWord(event.target.value);
+        if (
+          event.target.value.slice(-1) !==
+          currentWordObject.chars[currentWordObject.currentCharIndex]
+        ) {
+          // check char similarity
+          console.log("not-the-same-char");
+          currentWordObject.wrongCharacters.push(
+            `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
+          );
+          // wrong char array -> docIndex_wordIndex_charIndex
+        }
+        // update for next chart index
+        const updatedDocuments = { ...documents };
+        updatedDocuments.quotes[currentQuoteIndex].words[
+          currentWordIndex
+        ].currentCharIndex += 1;
+        setDocuments(updatedDocuments);
+      }
+    }
+  };
 
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2">
@@ -219,50 +227,45 @@ export default function Home() {
         id="word"
         className="border-2 rounded-xl border-gray-300 p-4 w-8/12 h-96"
       >
-        {documents.quotes[documents.currentDocumentIndex].words.map(
-          (word, wordIndex) => {
-            return (
-              <span
-                key={`${
-                  documents.quotes[documents.currentDocumentIndex]
-                }_${word}_${wordIndex}`}
-              >
-                {word.chars.map((char: String, charIndex: Number) => {
-                  if (
-                    word.wrongCharacters.includes(
-                      `${documents.currentDocumentIndex}_${wordIndex}_${charIndex}`
-                    )
-                  ) {
-                    return (
-                      <span
-                        key={`${documents.currentDocumentIndex}_${word}_${char}_${charIndex}`}
-                        className="bg-red-500"
-                      >
-                        {char}
-                      </span>
-                    );
-                  } else {
-                    return (
-                      <span
-                        key={`${documents.currentDocumentIndex}_${word}_${char}_${charIndex}`}
-                      >
-                        {char}
-                      </span>
-                    );
-                  }
-                })}{" "}
-              </span>
-            );
-          }
-        )}
+        {documents.quotes[currentQuoteIndex].words.map((word, wordIndex) => {
+          return (
+            <span
+              key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
+            >
+              {word.chars.map((char: String, charIndex: Number) => {
+                if (
+                  word.wrongCharacters.includes(
+                    `${currentQuoteIndex}_${wordIndex}_${charIndex}`
+                  )
+                ) {
+                  return (
+                    <span
+                      key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                      className="bg-red-500"
+                    >
+                      {char}
+                    </span>
+                  );
+                } else {
+                  return (
+                    <span
+                      key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                    >
+                      {char}
+                    </span>
+                  );
+                }
+              })}{" "}
+            </span>
+          );
+        })}
         <div></div>
         {typedWord}
       </div>
       <input
         type="text"
         className="border-2 rounded xl py-2 px-3 border-gray-300"
-        // onChange={handleChange}
-        readOnly
+        onChange={handleChange}
         value={typedWord}
       />
     </div>
