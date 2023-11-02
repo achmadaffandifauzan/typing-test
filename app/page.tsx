@@ -16,6 +16,7 @@ interface Words {
   currentCharIndex: number;
   wrongCharacters: string[];
 }
+var fetchingHowManyTimesAlready = 0;
 
 export default function Home() {
   const [documents, setDocuments] = useState<DocumentsSchema>({
@@ -40,7 +41,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const hasInitiallyFetchedData = useRef(false);
-  const hasReFetchedData = useRef(false);
 
   // make the variables to simplify the process
   const currentWordObject =
@@ -57,6 +57,7 @@ export default function Home() {
 
   const fetchData = async () => {
     console.log("requesting");
+    fetchingHowManyTimesAlready += 1;
     try {
       const data = await fetchTypingTestData();
       console.log(data);
@@ -93,7 +94,6 @@ export default function Home() {
       setError("Error fetching data.");
     } finally {
       setLoading(false);
-      hasReFetchedData.current = false;
     }
   };
 
@@ -111,8 +111,15 @@ export default function Home() {
     }
   }, []);
   const fetchMoreDocument = () => {
-    fetchData();
-    hasReFetchedData.current = true;
+    console.log(fetchingHowManyTimesAlready);
+    if (
+      fetchingHowManyTimesAlready === documents.quotes.length &&
+      documents.quotes.length - currentQuoteIndex <= 1
+    ) {
+      // so if no fetched data coming queue, system ready to re-fetch
+      // also, next quotes have to be existed max at 1
+      fetchData();
+    }
   };
   if (loading) {
     return <p>Loading...</p>;
@@ -144,17 +151,12 @@ export default function Home() {
     if (
       event.target.value.slice(-1) === " " &&
       documents.quotes[currentQuoteIndex].words.length -
-        documents.quotes[currentQuoteIndex].currentWordIndex <
-        5 &&
-      documents.quotes.length - (currentQuoteIndex + 1) === 0
+        (documents.quotes[currentQuoteIndex].currentWordIndex + 1) <=
+        5
     ) {
-      // if on last 5 word of a quote, need to fetch again for the next quote to be shown (also not refetching again and again if 1 next quotes is already fetched)
+      // if on last 5 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
       console.log("AAA");
-      // use useRef to avoid fetching multiple time at same time
-      // in this case, hasReFetchedData should be false first, then true-ing it after calling fetchData(), then false-ing again after data received
-      if (!hasReFetchedData.current) {
-        fetchMoreDocument();
-      }
+      fetchMoreDocument();
     }
 
     if (
@@ -293,9 +295,10 @@ export default function Home() {
       </div>
       <input
         type="text"
-        className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-auto focus:outline-none focus:ring focus:ring-indigo-300 focus:w-auto  w-32 "
+        className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-auto focus:outline-none focus:ring focus:ring-indigo-300 focus:w-auto  w-32 no-underline"
         onChange={handleChange}
         value={typedWord}
+        spellCheck="false"
       />
     </div>
   );
