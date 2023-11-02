@@ -152,13 +152,37 @@ export default function Home() {
       event.target.value.slice(-1) === " " &&
       documents.quotes[currentQuoteIndex].words.length -
         (documents.quotes[currentQuoteIndex].currentWordIndex + 1) <=
-        5
+        6
     ) {
-      // if on last 5 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
+      // if on last 6 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
       console.log("AAA");
       fetchMoreDocument();
     }
+    if (
+      event.target.value.slice(-1) === " " &&
+      documents.quotes[currentQuoteIndex].words[currentWordIndex].chars.length -
+        currentCharIndex !==
+        0
+    ) {
+      // if user hit space but there's still remaining char
+      const updatedDocuments = { ...documents };
+      let newWrongChars = [];
 
+      for (
+        let i = currentCharIndex;
+        i <
+        updatedDocuments.quotes[currentQuoteIndex].words[currentWordIndex].chars
+          .length;
+        i++
+      ) {
+        newWrongChars.push(`${currentQuoteIndex}_${currentWordIndex}_${i}`);
+      }
+      // assign updated wrongChar Array
+      updatedDocuments.quotes[currentQuoteIndex].words[
+        currentWordIndex
+      ].wrongCharacters.push(...newWrongChars);
+      // update indexing happening in conditional below this one
+    }
     if (
       event.target.value.slice(-1) === " " &&
       documents.quotes[currentQuoteIndex].currentWordIndex ===
@@ -223,8 +247,14 @@ export default function Home() {
   };
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2 transition-all">
-      <div id="quotes" className="rounded-xl  bg-indigo-50 w-8/12 h-96 ">
-        <div id="currentQuotes" className="bg-indigo-100 p-4 rounded-xl">
+      <div
+        id="quotes"
+        className="rounded-xl  bg-indigo-50 w-8/12 h-96 overflow-clip text-ellipsis pb-4"
+      >
+        <div
+          id="currentQuotes"
+          className="bg-indigo-100 p-4 rounded-xl text-justify"
+        >
           {documents.quotes[currentQuoteIndex].words.map((word, wordIndex) => {
             const children = (
               <>
@@ -279,7 +309,7 @@ export default function Home() {
             }
           })}
         </div>
-        <div id="nextQotes" className="p-4  h-24">
+        <div id="nextQotes" className="p-4 text-justify ">
           {documents.quotes.map((quoteObj, index) => {
             if (index > currentQuoteIndex) {
               return (
