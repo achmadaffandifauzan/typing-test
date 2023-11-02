@@ -60,7 +60,7 @@ export default function Home() {
     fetchingHowManyTimesAlready += 1;
     try {
       const data = await fetchTypingTestData();
-      console.log(data);
+      // console.log(data);
 
       if (documents.quotes[0].words.length < 2) {
         // delete the init state data (empty)
@@ -69,7 +69,6 @@ export default function Home() {
         setDocuments(updatedDocuments);
       }
       // adding to existing documents
-      console.log("I add to existing doc");
       const content = data.content.replace(/\n+/g, " ");
       const new_docs = {
         ...documents,
@@ -112,7 +111,6 @@ export default function Home() {
     }
   }, []);
   const fetchMoreDocument = () => {
-    console.log(fetchingHowManyTimesAlready);
     if (
       fetchingHowManyTimesAlready === documents.quotes.length &&
       documents.quotes.length - currentQuoteIndex <= 1
@@ -144,9 +142,15 @@ export default function Home() {
     if (
       loading ||
       event.target.value === typedWord ||
-      (event.target.value.length === 1 && event.target.value.slice(-1) === " ")
+      (event.target.value.length === 1 &&
+        event.target.value.slice(-1) === " ") ||
+      (documents.quotes[currentQuoteIndex].words.length -
+        (currentWordIndex + 1) ===
+        0 &&
+        event.target.value.slice(-1) === " " &&
+        documents.quotes.length - (currentQuoteIndex + 1) === 0)
     ) {
-      // ignore if api data is loading || there is no changes || space in first char
+      // ignore if api data is loading || there is no changes || space in first char || press space at the end of wordlist while there is no next quotes
       return null;
     }
     if (
@@ -156,7 +160,6 @@ export default function Home() {
         6
     ) {
       // if on last 6 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
-      console.log("AAA");
       fetchMoreDocument();
     }
     if (
@@ -231,7 +234,6 @@ export default function Home() {
           currentWordObject.chars[currentWordObject.currentCharIndex]
         ) {
           // check char similarity
-          console.log("not-the-same-char");
           currentWordObject.wrongCharacters.push(
             `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
           );
@@ -287,25 +289,29 @@ export default function Home() {
             );
             if (wordIndex === currentWordIndex) {
               return (
-                <>
+                <span
+                  key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
+                >
                   <span
-                    key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
+                    key={`${currentQuoteIndex}_${word}_${wordIndex}`}
                     className="text-2xl p-1 bg-indigo-300 rounded-md tracking-wider"
                   >
                     {children}
                   </span>{" "}
-                </>
+                </span>
               );
             } else {
               return (
-                <>
+                <span
+                  key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
+                >
                   <span
-                    key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
+                    key={`${currentQuoteIndex}_${word}_${wordIndex}`}
                     className="text-2xl p-1 tracking-wider"
                   >
                     {children}
                   </span>{" "}
-                </>
+                </span>
               );
             }
           })}
@@ -315,8 +321,15 @@ export default function Home() {
             if (index > currentQuoteIndex) {
               return (
                 <div key={`nextQuote_${index}`} className="text-2xl">
-                  {quoteObj.words.map((wordObj) => {
-                    return <span className="px-1">{wordObj.text} </span>;
+                  {quoteObj.words.map((wordObj, index2) => {
+                    return (
+                      <span
+                        className="px-1"
+                        key={`nextQuote_${index}_${index2}`}
+                      >
+                        {wordObj.text}{" "}
+                      </span>
+                    );
                   })}
                 </div>
               );
