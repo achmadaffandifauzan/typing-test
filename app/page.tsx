@@ -220,12 +220,9 @@ export default function Home() {
     }
   };
   return (
-    <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2">
-      <div
-        id="quotes"
-        className="border-2 rounded-xl border-gray-300 p-4 w-8/12 h-96 "
-      >
-        <div id="currentQuotes">
+    <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2 transition-all">
+      <div id="quotes" className="rounded-xl  bg-indigo-50 w-8/12 h-96 ">
+        <div id="currentQuotes" className="bg-indigo-100 p-4 rounded-xl">
           {documents.quotes[currentQuoteIndex].words.map((word, wordIndex) => {
             const children = (
               <>
@@ -260,7 +257,7 @@ export default function Home() {
                 <>
                   <span
                     key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
-                    className="text-2xl px-1 bg-slate-300 rounded-md tracking-wider"
+                    className="text-2xl p-1 bg-indigo-300 rounded-md tracking-wider"
                   >
                     {children}
                   </span>{" "}
@@ -271,7 +268,7 @@ export default function Home() {
                 <>
                   <span
                     key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
-                    className="text-2xl px-1 tracking-wider"
+                    className="text-2xl p-1 tracking-wider"
                   >
                     {children}
                   </span>{" "}
@@ -280,7 +277,7 @@ export default function Home() {
             }
           })}
         </div>
-        <div id="nextQotes">
+        <div id="nextQotes" className="p-4  h-24">
           {documents.quotes.map((quoteObj, index) => {
             if (index > currentQuoteIndex) {
               return (
@@ -296,7 +293,7 @@ export default function Home() {
       </div>
       <input
         type="text"
-        className="border-2 rounded xl py-2 px-3 border-gray-300"
+        className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-auto focus:outline-none focus:ring focus:ring-indigo-300 focus:w-auto  w-32 "
         onChange={handleChange}
         value={typedWord}
       />
