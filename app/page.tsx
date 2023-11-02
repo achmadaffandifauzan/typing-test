@@ -219,47 +219,80 @@ export default function Home() {
       }
     }
   };
-
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2">
       <div
-        id="word"
-        className="border-2 rounded-xl border-gray-300 p-4 w-8/12 h-96"
+        id="quotes"
+        className="border-2 rounded-xl border-gray-300 p-4 w-8/12 h-96 "
       >
-        {documents.quotes[currentQuoteIndex].words.map((word, wordIndex) => {
-          return (
-            <span
-              key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
-            >
-              {word.chars.map((char: String, charIndex: Number) => {
-                if (
-                  word.wrongCharacters.includes(
-                    `${currentQuoteIndex}_${wordIndex}_${charIndex}`
-                  )
-                ) {
-                  return (
-                    <span
-                      key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                      className="bg-red-500"
-                    >
-                      {char}
-                    </span>
-                  );
-                } else {
-                  return (
-                    <span
-                      key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                    >
-                      {char}
-                    </span>
-                  );
-                }
-              })}{" "}
-            </span>
-          );
-        })}
-        <div></div>
-        {typedWord}
+        <div id="currentQuotes">
+          {documents.quotes[currentQuoteIndex].words.map((word, wordIndex) => {
+            const children = (
+              <>
+                {word.chars.map((char: String, charIndex: Number) => {
+                  if (
+                    word.wrongCharacters.includes(
+                      `${currentQuoteIndex}_${wordIndex}_${charIndex}`
+                    )
+                  ) {
+                    return (
+                      <span
+                        key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                        className="text-red-600 font-semibold"
+                      >
+                        {char}
+                      </span>
+                    );
+                  } else {
+                    return (
+                      <span
+                        key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                      >
+                        {char}
+                      </span>
+                    );
+                  }
+                })}
+              </>
+            );
+            if (wordIndex === currentWordIndex) {
+              return (
+                <>
+                  <span
+                    key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
+                    className="text-2xl px-1 bg-slate-300 rounded-md tracking-wider"
+                  >
+                    {children}
+                  </span>{" "}
+                </>
+              );
+            } else {
+              return (
+                <>
+                  <span
+                    key={`${documents.quotes[currentQuoteIndex]}_${word}_${wordIndex}`}
+                    className="text-2xl px-1 tracking-wider"
+                  >
+                    {children}
+                  </span>{" "}
+                </>
+              );
+            }
+          })}
+        </div>
+        <div id="nextQotes">
+          {documents.quotes.map((quoteObj, index) => {
+            if (index > currentQuoteIndex) {
+              return (
+                <div key={`nextQuote_${index}`} className="text-2xl">
+                  {quoteObj.words.map((wordObj) => {
+                    return <span className="px-1">{wordObj.text} </span>;
+                  })}
+                </div>
+              );
+            }
+          })}
+        </div>
       </div>
       <input
         type="text"
