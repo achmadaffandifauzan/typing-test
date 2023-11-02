@@ -70,13 +70,14 @@ export default function Home() {
       }
       // adding to existing documents
       console.log("I add to existing doc");
+      const content = data.content.replace(/\n+/g, " ");
       const new_docs = {
         ...documents,
         quotes: [
           ...documents.quotes,
           {
-            text: data.content,
-            words: data.content.split(" ").map((word: string) => {
+            text: content,
+            words: content.split(" ").map((word: string) => {
               return {
                 text: word,
                 chars: word.split(""),
