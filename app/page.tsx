@@ -2,7 +2,9 @@
 import { useEffect, useState, useRef } from "react";
 import { fetchTypingTestData } from "./apiService";
 import MyTimer from "./countdown";
+import ResultScore from "./result";
 
+export type { DocumentsSchema };
 interface DocumentsSchema {
   quotes: Quotes[];
   currentDocumentIndex: number;
@@ -20,7 +22,7 @@ interface Words {
 }
 var fetchingHowManyTimesAlready = 0;
 
-export default function Home() {
+const Home = () => {
   const [documents, setDocuments] = useState<DocumentsSchema>({
     quotes: [
       {
@@ -43,6 +45,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [triggerStart, setTriggerStart] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [disableInput, setDisableInput] = useState(false);
 
   const hasInitiallyFetchedData = useRef(false);
 
@@ -123,6 +127,34 @@ export default function Home() {
       // also, next quotes have to be existed max at 1
       fetchData();
     }
+  };
+  const resetStates = () => {
+    setDocuments({
+      quotes: [
+        {
+          text: "",
+          words: [
+            {
+              text: "",
+              chars: [""],
+              currentCharIndex: 0,
+              wrongCharacters: [],
+            },
+          ],
+          currentWordIndex: 0,
+        },
+      ],
+      currentDocumentIndex: 0,
+    });
+    setTypedWord("");
+    setLoading(true);
+    setError(null);
+    setIsTimerRunning(false);
+    setTriggerStart(false);
+    setIsFinished(false);
+    setDisableInput(false);
+
+    fetchMoreDocument();
   };
   if (loading) {
     return <p>Loading...</p>;
@@ -258,10 +290,19 @@ export default function Home() {
   };
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2 transition-all">
+      <ResultScore
+        isFinished={isFinished}
+        setIsFinished={setIsFinished}
+        documents={documents}
+      />
       <MyTimer
         setIsTimerRunning={setIsTimerRunning}
         triggerStart={triggerStart}
         setTriggerStart={setTriggerStart}
+        isFinished={isFinished}
+        setIsfinished={setIsFinished}
+        setDisableInput={setDisableInput}
+        resetStates={resetStates}
       />
       <div
         id="quotes"
@@ -283,7 +324,7 @@ export default function Home() {
                     return (
                       <span
                         key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                        className="text-red-600 font-semibold"
+                        className="text-red-600"
                       >
                         {char}
                       </span>
@@ -350,13 +391,30 @@ export default function Home() {
           })}
         </div>
       </div>
-      <input
-        type="text"
-        className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-auto focus:outline-none focus:ring focus:ring-indigo-300 focus:w-auto  w-32 no-underline"
-        onChange={handleChange}
-        value={typedWord}
-        spellCheck="false"
-      />
+      {(() => {
+        if (disableInput) {
+          return (
+            <input
+              type="text"
+              className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-auto focus:outline-none focus:ring focus:ring-indigo-300 focus:w-auto  w-32 no-underline"
+              value={typedWord}
+              spellCheck="false"
+            />
+          );
+        } else {
+          return (
+            <input
+              type="text"
+              className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-auto focus:outline-none focus:ring focus:ring-indigo-300 focus:w-auto  w-32 no-underline"
+              onChange={handleChange}
+              value={typedWord}
+              spellCheck="false"
+            />
+          );
+        }
+      })()}
     </div>
   );
-}
+};
+
+export default Home;

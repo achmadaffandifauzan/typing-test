@@ -2,14 +2,22 @@
 import { useEffect, useState, useRef } from "react";
 import { useTimer } from "react-timer-hook";
 interface MyTimerProps {
-  setIsTimerRunning: Function;
-  triggerStart: Boolean;
-  setTriggerStart: Function;
+  setIsTimerRunning: React.Dispatch<React.SetStateAction<boolean>>;
+  triggerStart: boolean;
+  setTriggerStart: React.Dispatch<React.SetStateAction<boolean>>;
+  isFinished: boolean;
+  setIsfinished: React.Dispatch<React.SetStateAction<boolean>>;
+  setDisableInput: React.Dispatch<React.SetStateAction<boolean>>;
+  resetStates: Function;
 }
 export default function MyTimer({
   setIsTimerRunning,
   triggerStart,
   setTriggerStart,
+  isFinished,
+  setIsfinished,
+  setDisableInput,
+  resetStates,
 }: MyTimerProps) {
   const time = new Date();
   time.setSeconds(time.getSeconds() + 60); // 60 seconds timer
@@ -19,6 +27,9 @@ export default function MyTimer({
     onExpire: () => {
       setIsTimerRunning(false);
       console.warn("onExpire called");
+      setIsfinished(true);
+      setDisableInput(true);
+      resetStates();
     },
   });
   useEffect(() => {
@@ -34,13 +45,13 @@ export default function MyTimer({
       {(() => {
         if (isRunning) {
           return (
-            <div className="font-semibold text-2xl text-green-700">
+            <div className="font-semibold text-2xl text-green-600">
               {totalSeconds}
             </div>
           );
         } else {
           return (
-            <div className="font-semibold text-2xl text-red-700">
+            <div className="font-semibold text-2xl text-red-600">
               {totalSeconds}
             </div>
           );
@@ -55,9 +66,7 @@ export default function MyTimer({
                 onClick={() => {
                   const time = new Date();
                   time.setSeconds(time.getSeconds() + 60);
-                  restart(time);
-                  setIsTimerRunning(false);
-                  pause();
+                  resetStates();
                 }}
               >
                 Reset
@@ -72,6 +81,7 @@ export default function MyTimer({
                   time.setSeconds(time.getSeconds() + 60);
                   restart(time);
                   setIsTimerRunning(true);
+                  setDisableInput(false);
                 }}
               >
                 Start
