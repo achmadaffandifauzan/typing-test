@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { fetchTypingTestData } from "./apiService";
+import MyTimer from "./countdown";
+
 interface DocumentsSchema {
   quotes: Quotes[];
   currentDocumentIndex: number;
@@ -39,6 +41,8 @@ export default function Home() {
   const [typedWord, setTypedWord] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [triggerStart, setTriggerStart] = useState(false);
 
   const hasInitiallyFetchedData = useRef(false);
 
@@ -139,6 +143,10 @@ export default function Home() {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isTimerRunning) {
+      console.log("AA");
+      setTriggerStart(true);
+    }
     if (
       loading ||
       event.target.value === typedWord ||
@@ -250,6 +258,11 @@ export default function Home() {
   };
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2 transition-all">
+      <MyTimer
+        setIsTimerRunning={setIsTimerRunning}
+        triggerStart={triggerStart}
+        setTriggerStart={setTriggerStart}
+      />
       <div
         id="quotes"
         className="rounded-xl  bg-indigo-50 w-8/12 h-96 overflow-clip text-ellipsis pb-4"
