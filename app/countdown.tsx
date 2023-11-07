@@ -5,35 +5,30 @@ interface MyTimerProps {
   setIsTimerRunning: React.Dispatch<React.SetStateAction<boolean>>;
   triggerStart: boolean;
   setTriggerStart: React.Dispatch<React.SetStateAction<boolean>>;
-  isFinished: boolean;
-  setIsfinished: React.Dispatch<React.SetStateAction<boolean>>;
-  setDisableInput: React.Dispatch<React.SetStateAction<boolean>>;
   resetStates: Function;
+  setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function MyTimer({
   setIsTimerRunning,
   triggerStart,
   setTriggerStart,
-  isFinished,
-  setIsfinished,
-  setDisableInput,
   resetStates,
+  setIsFinished,
 }: MyTimerProps) {
   const time = new Date();
-  time.setSeconds(time.getSeconds() + 60); // 60 seconds timer
+  time.setSeconds(time.getSeconds() + 5); // 60 seconds timer
   const { totalSeconds, isRunning, pause, resume, restart } = useTimer({
     expiryTimestamp: time,
     autoStart: false,
     onExpire: () => {
-      setIsTimerRunning(false);
       console.warn("onExpire called");
-      setIsfinished(true);
-      setDisableInput(true);
       resetStates();
+      setIsFinished(true);
     },
   });
   useEffect(() => {
     if (triggerStart) {
+      setIsFinished(false);
       restart(time);
       setIsTimerRunning(true);
       setTriggerStart(false);
@@ -64,8 +59,8 @@ export default function MyTimer({
               <button
                 className="transition-all rounded-xl py-2 px-4 text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 mx-2 w-32"
                 onClick={() => {
-                  const time = new Date();
-                  time.setSeconds(time.getSeconds() + 60);
+                  // const time = new Date();
+                  // time.setSeconds(time.getSeconds() + 60);
                   resetStates();
                 }}
               >
@@ -79,9 +74,9 @@ export default function MyTimer({
                 onClick={() => {
                   const time = new Date();
                   time.setSeconds(time.getSeconds() + 60);
+                  setIsFinished(false);
                   restart(time);
                   setIsTimerRunning(true);
-                  setDisableInput(false);
                 }}
               >
                 Start
