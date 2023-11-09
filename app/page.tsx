@@ -47,7 +47,7 @@ const Home = () => {
   const [typedWord, setTypedWord] = useState<string>("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [triggerStart, setTriggerStart] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
+  const [isFinished, setIsFinished] = useState(true);
   const [previousScore, setPreviousScore] = useState<PreviousScore>({
     WPM: 0,
     accuracy: 0,
@@ -182,6 +182,7 @@ const Home = () => {
     setError(null);
     setIsTimerRunning(false);
     setTriggerStart(false);
+    setIsFinished(true);
 
     fetchMoreDocument("restart");
     console.log("ZZZZZZ");
@@ -205,7 +206,7 @@ const Home = () => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isTimerRunning) {
+    if (!isTimerRunning && isFinished) {
       console.log("AA");
       setTriggerStart(true);
     }

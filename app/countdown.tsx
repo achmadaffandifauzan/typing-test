@@ -54,13 +54,11 @@ export default function MyTimer({
       })()}
       <div className="my-3">
         {(() => {
-          if (totalSeconds < 59) {
+          if (isRunning) {
             return (
               <button
                 className="transition-all rounded-xl py-2 px-4 text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 mx-2 w-32"
                 onClick={() => {
-                  // const time = new Date();
-                  // time.setSeconds(time.getSeconds() + 60);
                   resetStates();
                 }}
               >
@@ -80,33 +78,6 @@ export default function MyTimer({
                 }}
               >
                 Start
-              </button>
-            );
-          }
-        })()}
-        {(() => {
-          if (isRunning) {
-            return (
-              <button
-                className="transition-all rounded-xl py-2 px-4 text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 mx-2 w-32"
-                onClick={() => {
-                  setIsTimerRunning(false);
-                  pause();
-                }}
-              >
-                Pause
-              </button>
-            );
-          } else if (!isRunning && totalSeconds < 60) {
-            return (
-              <button
-                className="transition-all rounded-xl py-2 px-4 text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 mx-2 w-32"
-                onClick={() => {
-                  setIsTimerRunning(true);
-                  resume();
-                }}
-              >
-                Resume
               </button>
             );
           }
