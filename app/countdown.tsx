@@ -16,7 +16,7 @@ export default function MyTimer({
   setIsFinished,
 }: MyTimerProps) {
   const time = new Date();
-  time.setSeconds(time.getSeconds() + 5); // 60 seconds timer
+  time.setSeconds(time.getSeconds() + 60); // 60 seconds timer
   const { totalSeconds, isRunning, pause, resume, restart } = useTimer({
     expiryTimestamp: time,
     autoStart: false,

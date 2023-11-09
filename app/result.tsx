@@ -37,42 +37,57 @@ const ResultScore = ({
       }
     }
   }
-  const accuracy =
-    ((totalTypedChars - wrongAnswers.length) / totalTypedChars) * 100;
+  const accuracy = (
+    ((totalTypedChars - wrongAnswers.length) / totalTypedChars) *
+    100
+  ).toFixed(1);
   useEffect(() => {
     if (!isFinished) {
       // why justru !isFinished to set score ? because if isFinished == true, the app reset totalTypedChars and accuracy (on resetState)
-      console.log("YYYYYYYYYYYY");
       setPreviousScore({
         WPM: totalTypedWords,
-        accuracy: accuracy,
+        accuracy: parseFloat(accuracy),
       });
     }
   }, [totalTypedChars, accuracy]);
-  useEffect(() => {
-    console.log(previousScore);
-  }, [previousScore]);
   if (!isTimerRunning && previousScore.WPM && previousScore.accuracy) {
     return (
       <div className="text-center">
         <div className="font-bold">Previous Attempt</div>
-        <div>
-          WPM : <span className="font-semibold">{previousScore.WPM}</span>
-        </div>
-        <div>
-          Character accuracy :{" "}
-          <span className="font-semibold">{previousScore.accuracy}</span>
+        <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center">
+          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
+            <span className="">WPM</span>
+            <span className="font-semibold text-xl">{previousScore.WPM}</span>
+          </div>
+          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
+            <div>
+              <span>Character accuracy : </span>
+              <span className="font-semibold">{previousScore.accuracy}%</span>
+            </div>
+            <div>
+              <span>Most innacurate character : -</span>
+            </div>
+          </div>
         </div>
       </div>
     );
   } else {
     return (
       <div className="text-center">
-        <div>
-          WPM : <span className="font-semibold">{totalTypedWords}</span>
-        </div>
-        <div>
-          Character accuracy : <span className="font-semibold">{accuracy}</span>
+        <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center">
+          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
+            <span className="">WPM</span>
+            <span className="font-semibold text-xl">{totalTypedWords}</span>
+          </div>
+          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
+            <div>
+              <span>Character accuracy : </span>
+              <span className="font-semibold">{accuracy}%</span>
+            </div>
+            <div>
+              <span>Most innacurate character : -</span>
+            </div>
+          </div>
         </div>
       </div>
     );

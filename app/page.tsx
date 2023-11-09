@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { fetchTypingTestData } from "./apiService";
 import MyTimer from "./countdown";
 import ResultScore from "./result";
+import Loading from "./components/Loading";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -24,7 +25,6 @@ interface PreviousScore {
   WPM?: number;
   accuracy?: number;
 }
-var fetchingHowManyTimesAlready = 0;
 
 const Home = () => {
   const [documents, setDocuments] = useState<DocumentsSchema>({
@@ -52,6 +52,8 @@ const Home = () => {
     WPM: 0,
     accuracy: 0,
   });
+  const [fetchingHowManyTimesAlready, setFetchingHowManyTimesAlready] =
+    useState<number>(0);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,10 +75,13 @@ const Home = () => {
 
   const fetchData = async (ifRestart?: string) => {
     console.log("requesting");
-    fetchingHowManyTimesAlready += 1;
+    if (!ifRestart) {
+      // restart not adding fetchingHowManyTimesAlready because it already initially set to 1 for resetState()
+      setFetchingHowManyTimesAlready(fetchingHowManyTimesAlready + 1);
+    }
     try {
       const data = await fetchTypingTestData();
-      // console.log(data);
+      console.log("data fresh from fetch :", data);
       const content = data.content.replace(/\n+/g, " ");
 
       if (documents.quotes[0].words.length <= 1 || ifRestart === "restart") {
@@ -140,18 +145,21 @@ const Home = () => {
     }
   }, []);
   const fetchMoreDocument = (ifRestart?: string) => {
-    if (
+    if (ifRestart === "restart") {
+      console.log("FETCH FROM RESTARTTTT");
+      fetchData(ifRestart);
+    } else if (
       fetchingHowManyTimesAlready === documents.quotes.length &&
       documents.quotes.length - currentQuoteIndex <= 1
     ) {
       // so if no fetched data coming queue, system ready to re-fetch
       // also, next quotes have to be existed max at 1
-      fetchData(ifRestart);
+      fetchData();
     }
   };
   const resetStates = () => {
     console.log("QQQQQQQ");
-    fetchingHowManyTimesAlready = 1;
+    setFetchingHowManyTimesAlready(1);
     setDocuments({
       quotes: [
         {
@@ -179,7 +187,7 @@ const Home = () => {
     console.log("ZZZZZZ");
   };
   if (loading) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
   if (error) {
     return <p>{error}</p>;
@@ -221,6 +229,7 @@ const Home = () => {
         (documents.quotes[currentQuoteIndex].currentWordIndex + 1) <=
         6
     ) {
+      console.log("FETCHMORREEEEEEE");
       // if on last 6 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
       fetchMoreDocument();
     }
@@ -312,14 +321,7 @@ const Home = () => {
   };
 
   return (
-    <div className="w-full min-h-screen  flex flex-col flex-wrap justify-center items-center gap-2 transition-all">
-      <ResultScore
-        documents={documents}
-        isTimerRunning={isTimerRunning}
-        previousScore={previousScore}
-        setPreviousScore={setPreviousScore}
-        isFinished={isFinished}
-      />
+    <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
       <MyTimer
         setIsTimerRunning={setIsTimerRunning}
         triggerStart={triggerStart}
@@ -327,96 +329,107 @@ const Home = () => {
         resetStates={resetStates}
         setIsFinished={setIsFinished}
       />
-      <div
-        id="quotes"
-        className="rounded-xl  bg-indigo-50 w-8/12 h-96 overflow-clip text-ellipsis pb-4"
-      >
+      <div className="flex flex-row flex-wrap gap-4 justify-around w-full">
+        <ResultScore
+          documents={documents}
+          isTimerRunning={isTimerRunning}
+          previousScore={previousScore}
+          setPreviousScore={setPreviousScore}
+          isFinished={isFinished}
+        />
         <div
-          id="currentQuotes"
-          className="bg-indigo-100 p-4 rounded-xl text-justify"
+          id="quotes"
+          className="rounded-xl  bg-indigo-50 h-80 w-4/6 overflow-clip text-ellipsis pb-4"
         >
-          {documents.quotes[currentQuoteIndex].words.map((word, wordIndex) => {
-            const children = (
-              <>
-                {word.chars.map((char: String, charIndex: Number) => {
-                  if (
-                    word.wrongCharacters.includes(
-                      `${currentQuoteIndex}_${wordIndex}_${charIndex}`
-                    )
-                  ) {
-                    return (
+          <div
+            id="currentQuotes"
+            className="bg-indigo-100 p-4 rounded-xl text-justify"
+          >
+            {documents.quotes[currentQuoteIndex].words.map(
+              (word, wordIndex) => {
+                const children = (
+                  <>
+                    {word.chars.map((char: String, charIndex: Number) => {
+                      if (
+                        word.wrongCharacters.includes(
+                          `${currentQuoteIndex}_${wordIndex}_${charIndex}`
+                        )
+                      ) {
+                        return (
+                          <span
+                            key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                            className="text-red-600"
+                          >
+                            {char}
+                          </span>
+                        );
+                      } else {
+                        return (
+                          <span
+                            key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                          >
+                            {char}
+                          </span>
+                        );
+                      }
+                    })}
+                  </>
+                );
+                if (wordIndex === currentWordIndex) {
+                  return (
+                    <span
+                      key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
+                    >
                       <span
-                        key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                        className="text-red-600"
+                        key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                        className="text-2xl p-1 bg-indigo-300 rounded-md tracking-wider"
                       >
-                        {char}
-                      </span>
-                    );
-                  } else {
-                    return (
+                        {children}
+                      </span>{" "}
+                    </span>
+                  );
+                } else {
+                  return (
+                    <span
+                      key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
+                    >
                       <span
-                        key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                        key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                        className="text-2xl p-1 tracking-wider"
                       >
-                        {char}
-                      </span>
-                    );
-                  }
-                })}
-              </>
-            );
-            if (wordIndex === currentWordIndex) {
-              return (
-                <span
-                  key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                >
-                  <span
-                    key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                    className="text-2xl p-1 bg-indigo-300 rounded-md tracking-wider"
-                  >
-                    {children}
-                  </span>{" "}
-                </span>
-              );
-            } else {
-              return (
-                <span
-                  key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                >
-                  <span
-                    key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                    className="text-2xl p-1 tracking-wider"
-                  >
-                    {children}
-                  </span>{" "}
-                </span>
-              );
-            }
-          })}
-        </div>
-        <div id="nextQotes" className="p-4 text-justify ">
-          {documents.quotes.map((quoteObj, index) => {
-            if (index > currentQuoteIndex) {
-              return (
-                <div key={`nextQuote_${index}`} className="text-2xl">
-                  {quoteObj.words.map((wordObj, index2) => {
-                    return (
-                      <span
-                        className="px-1"
-                        key={`nextQuote_${index}_${index2}`}
-                      >
-                        {wordObj.text}{" "}
-                      </span>
-                    );
-                  })}
-                </div>
-              );
-            }
-          })}
+                        {children}
+                      </span>{" "}
+                    </span>
+                  );
+                }
+              }
+            )}
+          </div>
+          <div id="nextQotes" className="p-4 text-justify ">
+            {documents.quotes.map((quoteObj, index) => {
+              if (index > currentQuoteIndex) {
+                return (
+                  <div key={`nextQuote_${index}`} className="text-2xl">
+                    {quoteObj.words.map((wordObj, index2) => {
+                      return (
+                        <span
+                          className="px-1"
+                          key={`nextQuote_${index}_${index2}`}
+                        >
+                          {wordObj.text}{" "}
+                        </span>
+                      );
+                    })}
+                  </div>
+                );
+              }
+            })}
+          </div>
         </div>
       </div>
       <input
         type="text"
-        className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-auto focus:outline-none focus:ring focus:ring-indigo-300 focus:w-auto  w-32 no-underline"
+        className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline"
         onChange={handleChange}
         value={typedWord}
         spellCheck="false"
