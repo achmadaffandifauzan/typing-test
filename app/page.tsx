@@ -14,6 +14,7 @@ interface Quotes {
   text: string;
   words: Words[];
   currentWordIndex: number;
+  originator: string;
 }
 interface Words {
   text: string;
@@ -40,6 +41,7 @@ const Home = () => {
           },
         ],
         currentWordIndex: 0,
+        originator: "",
       },
     ],
     currentDocumentIndex: 0,
@@ -82,7 +84,11 @@ const Home = () => {
     try {
       const data = await fetchTypingTestData();
       console.log("data fresh from fetch :", data);
-      const content = data.content.replace(/\n+/g, " ");
+      const originatorName = data.originator.name;
+      const content = data.content
+        .replace(/[^a-zA-Z0-9'.,/()\-=&$@!?[\]{}:; \n]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
 
       if (documents.quotes[0].words.length <= 1 || ifRestart === "restart") {
         // new quotes, to : 1. refresh page (replace empty initial quotes) ;or 2. reset quotes if counter is done
@@ -100,6 +106,7 @@ const Home = () => {
                 };
               }),
               currentWordIndex: 0,
+              originator: originatorName,
             },
           ],
           currentDocumentIndex: 0,
@@ -123,6 +130,7 @@ const Home = () => {
                 };
               }),
               currentWordIndex: 0,
+              originator: originatorName,
             },
           ],
         };
@@ -173,6 +181,7 @@ const Home = () => {
             },
           ],
           currentWordIndex: 0,
+          originator: "",
         },
       ],
       currentDocumentIndex: 0,
@@ -353,81 +362,97 @@ const Home = () => {
             id="currentQuotes"
             className="bg-indigo-100 p-4 rounded-xl text-justify"
           >
-            {documents.quotes[currentQuoteIndex].words.map(
-              (word, wordIndex) => {
-                const children = (
-                  <>
-                    {word.chars.map((char: String, charIndex: Number) => {
-                      if (
-                        word.wrongCharacters.includes(
-                          `${currentQuoteIndex}_${wordIndex}_${charIndex}`
-                        )
-                      ) {
-                        return (
-                          <span
-                            key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                            className="text-red-600"
-                          >
-                            {char}
-                          </span>
-                        );
-                      } else {
-                        return (
-                          <span
-                            key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                          >
-                            {char}
-                          </span>
-                        );
-                      }
-                    })}
-                  </>
-                );
-                if (wordIndex === currentWordIndex) {
-                  return (
-                    <span
-                      key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                    >
-                      <span
-                        key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                        className="text-2xl p-1 bg-indigo-300 rounded-md tracking-wider"
-                      >
-                        {children}
-                      </span>{" "}
-                    </span>
+            <div>
+              {documents.quotes[currentQuoteIndex].words.map(
+                (word, wordIndex) => {
+                  const children = (
+                    <>
+                      {word.chars.map((char: String, charIndex: Number) => {
+                        if (
+                          word.wrongCharacters.includes(
+                            `${currentQuoteIndex}_${wordIndex}_${charIndex}`
+                          )
+                        ) {
+                          return (
+                            <span
+                              key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                              className="text-red-600"
+                            >
+                              {char}
+                            </span>
+                          );
+                        } else {
+                          return (
+                            <span
+                              key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                            >
+                              {char}
+                            </span>
+                          );
+                        }
+                      })}
+                    </>
                   );
-                } else {
-                  return (
-                    <span
-                      key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                    >
+                  if (wordIndex === currentWordIndex) {
+                    return (
                       <span
-                        key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                        className="text-2xl p-1 tracking-wider"
+                        key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
                       >
-                        {children}
-                      </span>{" "}
-                    </span>
-                  );
+                        <span
+                          key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                          className="text-2xl p-1 bg-indigo-300 rounded-md tracking-wider"
+                        >
+                          {children}
+                        </span>{" "}
+                      </span>
+                    );
+                  } else {
+                    return (
+                      <span
+                        key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
+                      >
+                        <span
+                          key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                          className="text-2xl p-1 tracking-wider"
+                        >
+                          {children}
+                        </span>{" "}
+                      </span>
+                    );
+                  }
                 }
-              }
-            )}
+              )}
+            </div>
+            <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
+              <span className="text-lg flex items-center">~ </span>
+              <span className="text-base flex items-center">
+                {documents.quotes[currentQuoteIndex].originator}
+              </span>
+            </div>
           </div>
           <div id="nextQotes" className="p-4 text-justify ">
             {documents.quotes.map((quoteObj, index) => {
               if (index > currentQuoteIndex) {
                 return (
                   <div key={`nextQuote_${index}`} className="text-2xl">
-                    {quoteObj.words.map((wordObj, index2) => {
-                      return (
-                        <span
-                          className="px-1"
-                          key={`nextQuote_${index}_${index2}`}
-                        >
-                          {wordObj.text}{" "}
-                        </span>
-                      );
-                    })}
+                    <div>
+                      {quoteObj.words.map((wordObj, index2) => {
+                        return (
+                          <span
+                            className="px-1"
+                            key={`nextQuote_${index}_${index2}`}
+                          >
+                            {wordObj.text}{" "}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
+                      <span className="text-lg flex items-center">~ </span>
+                      <span className="text-base flex items-center">
+                        {quoteObj.originator}
+                      </span>
+                    </div>
                   </div>
                 );
               }
