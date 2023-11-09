@@ -1,5 +1,5 @@
 import { useState, CSSProperties } from "react";
-import SyncLoader from "react-spinners/SyncLoader";
+import PropagateLoader from "react-spinners/PropagateLoader";
 
 const override: CSSProperties = {
   display: "block",
@@ -12,12 +12,11 @@ const Loading = () => {
 
   return (
     <div className="sweet-loading flex flex-wrap w-full h-screen justify-center items-center">
-      <SyncLoader
+      <PropagateLoader
         color={color}
         loading={true}
         cssOverride={override}
         size={20}
-        margin={5}
         aria-label="Loading Spinner"
         data-testid="loader"
       />

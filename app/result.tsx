@@ -32,8 +32,7 @@ const ResultScore = ({
     for (let wordObj of quoteObj.words) {
       if (wordObj.currentCharIndex !== 0 && wordObj.chars.length !== 1) {
         // check if user already typing it, since some word is just 1 characters, and since all words (typed and not yet typed) have currentCharIndex of 0 by default
-        totalTypedChars += wordObj.chars.length;
-        // why not currentCharIndex ? because user not always finished a word when the time is up, accuracy is still apply to untyped char
+        totalTypedChars += wordObj.currentCharIndex;
       }
     }
   }

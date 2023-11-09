@@ -256,7 +256,14 @@ const Home = () => {
       updatedDocuments.quotes[currentQuoteIndex].words[
         currentWordIndex
       ].wrongCharacters.push(...newWrongChars);
-      // update indexing happening in conditional below this one
+      // update currentCharIndex to match the chars length (for accuracy calculation also)
+      documents.quotes[currentQuoteIndex].words[
+        currentWordIndex
+      ].currentCharIndex =
+        updatedDocuments.quotes[currentQuoteIndex].words[
+          currentWordIndex
+        ].chars.length;
+      // update currentWordIndex happening in conditional below this
     }
     if (
       event.target.value.slice(-1) === " " &&
@@ -266,7 +273,7 @@ const Home = () => {
       // if on last word & user press space
       rotateQuotes();
     } else if (event.target.value.slice(-1) === " ") {
-      // reset states if user enter a space / when user input space
+      // reset typedWord if user enter a space / when user input space
       const updatedDocuments = { ...documents };
 
       updatedDocuments.quotes[currentQuoteIndex].currentWordIndex += 1;
