@@ -336,6 +336,17 @@ const Home = () => {
       }
     }
   };
+  const handleKeyboardEvent = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    const PreventedKeys = ["ArrowLeft"];
+    if (PreventedKeys.includes(event.key)) {
+      event.preventDefault();
+    } else if (event.ctrlKey) {
+      event.preventDefault();
+    }
+    return null;
+  };
 
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
@@ -466,6 +477,7 @@ const Home = () => {
         onChange={handleChange}
         value={typedWord}
         spellCheck="false"
+        onKeyDown={handleKeyboardEvent}
       />
     </div>
   );
