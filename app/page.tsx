@@ -21,6 +21,7 @@ interface Words {
   chars: string[];
   currentCharIndex: number;
   wrongCharacters: string[];
+  wrongCharactersIndex: string[];
 }
 interface PreviousScore {
   WPM?: number;
@@ -38,6 +39,7 @@ const Home = () => {
             chars: [""],
             currentCharIndex: 0,
             wrongCharacters: [],
+            wrongCharactersIndex: [],
           },
         ],
         currentWordIndex: 0,
@@ -103,6 +105,7 @@ const Home = () => {
                   chars: word.split(""),
                   currentCharIndex: 0,
                   wrongCharacters: [],
+                  wrongCharactersIndex: [],
                 };
               }),
               currentWordIndex: 0,
@@ -127,6 +130,7 @@ const Home = () => {
                   chars: word.split(""),
                   currentCharIndex: 0,
                   wrongCharacters: [],
+                  wrongCharactersIndex: [],
                 };
               }),
               currentWordIndex: 0,
@@ -143,7 +147,9 @@ const Home = () => {
       setLoading(false);
     }
   };
-
+  // useEffect(() => {
+  //   console.log(documents);
+  // }, [documents]);
   useEffect(() => {
     // initial fetch
     if (!hasInitiallyFetchedData.current) {
@@ -178,6 +184,7 @@ const Home = () => {
               chars: [""],
               currentCharIndex: 0,
               wrongCharacters: [],
+              wrongCharactersIndex: [],
             },
           ],
           currentWordIndex: 0,
@@ -194,7 +201,6 @@ const Home = () => {
     setIsFinished(true);
 
     fetchMoreDocument("restart");
-    console.log("ZZZZZZ");
   };
   if (loading) {
     return <Loading />;
@@ -252,6 +258,7 @@ const Home = () => {
       // if user hit space but there's still remaining char
       const updatedDocuments = { ...documents };
       let newWrongChars = [];
+      let newWrongCharsIndex = [];
 
       for (
         let i = currentCharIndex;
@@ -260,13 +267,23 @@ const Home = () => {
           .length;
         i++
       ) {
-        newWrongChars.push(`${currentQuoteIndex}_${currentWordIndex}_${i}`);
+        newWrongChars.push(
+          updatedDocuments.quotes[currentQuoteIndex].words[currentWordIndex]
+            .chars[i]
+        );
+        newWrongCharsIndex.push(
+          `${currentQuoteIndex}_${currentWordIndex}_${i}`
+        );
       }
-      // assign updated wrongChar Array
+      // assign updated wrongCharacters Array
       updatedDocuments.quotes[currentQuoteIndex].words[
         currentWordIndex
       ].wrongCharacters.push(...newWrongChars);
-      // update currentCharIndex to match the chars length (for accuracy calculation also)
+      // assign updated wrongCharactersIndex Array
+      updatedDocuments.quotes[currentQuoteIndex].words[
+        currentWordIndex
+      ].wrongCharactersIndex.push(...newWrongCharsIndex);
+      // update currentCharIndex by matching the chars length (for accuracy calculation also)
       documents.quotes[currentQuoteIndex].words[
         currentWordIndex
       ].currentCharIndex =
@@ -291,20 +308,23 @@ const Home = () => {
       setTypedWord("");
     } else if (event.target.value.length < typedWord.length) {
       // when user delete the char
-      const removedAWrongChar = currentWordObject.wrongCharacters.filter(
-        (char) => {
+      const removedAWrongChar = currentWordObject.wrongCharacters.splice(-1);
+      const removedAWrongCharIndex =
+        currentWordObject.wrongCharactersIndex.filter((char) => {
           return (
             char !==
             `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex - 1}`
           );
-        }
-      );
+        });
       // updating documents state
       const updatedDocuments = { ...documents };
-      // update wrong chart list
+      // update wrong chars list
       updatedDocuments.quotes[currentQuoteIndex].words[
         currentWordIndex
       ].wrongCharacters = removedAWrongChar;
+      updatedDocuments.quotes[currentQuoteIndex].words[
+        currentWordIndex
+      ].wrongCharactersIndex = removedAWrongCharIndex;
       // update current char index
       updatedDocuments.quotes[currentQuoteIndex].words[
         currentWordIndex
@@ -323,9 +343,12 @@ const Home = () => {
         ) {
           // check char similarity
           currentWordObject.wrongCharacters.push(
+            currentWordObject.chars[currentWordObject.currentCharIndex]
+          );
+          // wrongCharactersIndex array -> docIndex_wordIndex_charIndex
+          currentWordObject.wrongCharactersIndex.push(
             `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
           );
-          // wrong char array -> docIndex_wordIndex_charIndex
         }
         // update for next chart index
         const updatedDocuments = { ...documents };
@@ -347,7 +370,6 @@ const Home = () => {
     }
     return null;
   };
-
   return (
     <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
       <MyTimer
@@ -380,7 +402,7 @@ const Home = () => {
                     <>
                       {word.chars.map((char: String, charIndex: Number) => {
                         if (
-                          word.wrongCharacters.includes(
+                          word.wrongCharactersIndex.includes(
                             `${currentQuoteIndex}_${wordIndex}_${charIndex}`
                           )
                         ) {
