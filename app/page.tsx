@@ -26,6 +26,7 @@ interface Words {
 interface PreviousScore {
   WPM?: number;
   accuracy?: number;
+  wrongCharCount?: object;
 }
 
 const Home = () => {
@@ -379,6 +380,14 @@ const Home = () => {
         resetStates={resetStates}
         setIsFinished={setIsFinished}
       />
+      <input
+        type="text"
+        className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline"
+        onChange={handleChange}
+        value={typedWord}
+        spellCheck="false"
+        onKeyDown={handleKeyboardEvent}
+      />
       <div className="flex flex-row flex-wrap gap-4 justify-around w-full">
         <ResultScore
           documents={documents}
@@ -389,7 +398,7 @@ const Home = () => {
         />
         <div
           id="quotes"
-          className="rounded-xl  bg-indigo-50 h-80 w-4/6 overflow-clip text-ellipsis pb-4"
+          className="rounded-xl  bg-indigo-50 min-h-min w-4/6 overflow-clip text-ellipsis pb-4"
         >
           <div
             id="currentQuotes"
@@ -493,14 +502,6 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <input
-        type="text"
-        className="transition-all rounded-xl py-2 px-3 mt-4 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline"
-        onChange={handleChange}
-        value={typedWord}
-        spellCheck="false"
-        onKeyDown={handleKeyboardEvent}
-      />
     </div>
   );
 };

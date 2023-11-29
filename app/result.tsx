@@ -89,6 +89,7 @@ const ResultScore = ({
       setPreviousScore({
         WPM: totalTypedWords,
         accuracy: accuracy,
+        wrongCharCount: wrongCharCount,
       });
     }
   }, [totalTypedChars, accuracy]);
@@ -107,7 +108,17 @@ const ResultScore = ({
               <span className="font-semibold">{previousScore.accuracy}%</span>
             </div>
             <div>
-              <span>Most innacurate character : -</span>
+              <span>TagCloud innacurate character</span>
+              {/* <TagCloud
+                minSize={15}
+                maxSize={50}
+                tags={Object.entries(previousScore.wrongCharCount).map(
+                  ([value, count]) => ({
+                    value,
+                    count,
+                  })
+                )}
+              /> */}
             </div>
           </div>
         </div>
@@ -116,7 +127,7 @@ const ResultScore = ({
   } else {
     return (
       <div className="text-center">
-        <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center">
+        <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center w-80">
           <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
             <span className="">WPM</span>
             <span className="font-semibold text-xl">{totalTypedWords}</span>
@@ -126,17 +137,16 @@ const ResultScore = ({
               <span>Character accuracy : </span>
               <span className="font-semibold">{accuracy}%</span>
             </div>
-            <div>
-              <span>Most innacurate character : -</span>
+            <div className="sm:h-48 h-36">
+              <span>TagCloud innacurate character</span>
               <TagCloud
-                minSize={12}
-                maxSize={35}
+                minSize={15}
+                maxSize={50}
                 tags={Object.entries(wrongCharCount).map(([value, count]) => ({
                   value,
                   count,
                 }))}
               />
-              ;
             </div>
           </div>
         </div>
