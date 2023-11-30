@@ -126,33 +126,48 @@ const ResultScore = ({
     );
   } else {
     return (
-      <div className="text-center">
+      <div className="text-center sm:text-base text-sm">
         <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center w-80">
-          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
-            <span className="">WPM</span>
-            <span className="font-semibold text-xl">{totalTypedWords}</span>
-          </div>
-          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
-            <div>
-              <span>Character accuracy : </span>
-              <span className="font-semibold">{accuracy}%</span>
-            </div>
-            <div className="sm:h-48 h-36">
-              <span>TagCloud innacurate character</span>
-              <TagCloud
-                minSize={15}
-                maxSize={50}
-                tags={Object.entries(wrongCharCount).map(([value, count]) => ({
-                  value,
-                  count,
-                }))}
-              />
-            </div>
-          </div>
+          {displayWPM(totalTypedWords)}
+          {displayAccuracy(accuracy, wrongCharCount)}
         </div>
       </div>
     );
   }
 };
 
-export default ResultScore;
+const displayWPM = (totalTypedWords: number) => {
+  return (
+    <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
+      <span className="">WPM</span>
+      <span className="font-semibold text-xl">{totalTypedWords}</span>
+    </div>
+  );
+};
+const displayAccuracy = (
+  accuracy: number,
+  wrongCharCount: {
+    [key: string]: number;
+  }
+) => {
+  return (
+    <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
+      <div>
+        <span>Character accuracy : </span>
+        <span className="font-semibold">{accuracy}%</span>
+      </div>
+      <div className="sm:h-48 h-36">
+        <span>TagCloud innacurate character</span>
+        <TagCloud
+          minSize={15}
+          maxSize={50}
+          tags={Object.entries(wrongCharCount).map(([value, count]) => ({
+            value,
+            count,
+          }))}
+        />
+      </div>
+    </div>
+  );
+};
+export { ResultScore, displayWPM, displayAccuracy };

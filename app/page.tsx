@@ -2,8 +2,10 @@
 import { useEffect, useState, useRef } from "react";
 import { fetchTypingTestData } from "./apiService";
 import MyTimer from "./countdown";
-import ResultScore from "./result";
+import { ResultScore, displayWPM } from "./result";
 import Loading from "./components/Loading";
+import Footer from "./footer";
+import Link from "next/link";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -372,137 +374,164 @@ const Home = () => {
     return null;
   };
   return (
-    <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
-      <MyTimer
-        setIsTimerRunning={setIsTimerRunning}
-        triggerStart={triggerStart}
-        setTriggerStart={setTriggerStart}
-        resetStates={resetStates}
-        setIsFinished={setIsFinished}
-      />
-      <input
-        type="text"
-        className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline"
-        onChange={handleChange}
-        value={typedWord}
-        spellCheck="false"
-        onKeyDown={handleKeyboardEvent}
-      />
-      <div className="flex flex-row flex-wrap gap-4 justify-around w-full">
-        <ResultScore
-          documents={documents}
-          isTimerRunning={isTimerRunning}
-          previousScore={previousScore}
-          setPreviousScore={setPreviousScore}
-          isFinished={isFinished}
+    <>
+      <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
+        <div className="w-full px-5 sm:pt-4 flex flex-row flex-wrap sm:justify-start justify-center items-center text-indigo-500 max-sm:bg-indigo-200">
+          <Link
+            className="rounded-xl bg-indigo-200 flex flex-row flex-wrap justify-center items-center px-3 py-2 sm:absolute sm:top-5"
+            href="/"
+          >
+            <img src="/icons/keyboard.svg" className="w-5" alt="" />
+            <div className="font-bold">TypingTest</div>
+          </Link>
+        </div>
+        <MyTimer
+          setIsTimerRunning={setIsTimerRunning}
+          triggerStart={triggerStart}
+          setTriggerStart={setTriggerStart}
+          resetStates={resetStates}
+          setIsFinished={setIsFinished}
         />
-        <div
-          id="quotes"
-          className="rounded-xl  bg-indigo-50 min-h-min w-4/6 overflow-clip text-ellipsis pb-4"
-        >
+        <input
+          type="text"
+          className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline"
+          onChange={handleChange}
+          value={typedWord}
+          spellCheck="false"
+          onKeyDown={handleKeyboardEvent}
+        />
+        <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 justify-around w-full">
+          <ResultScore
+            documents={documents}
+            isTimerRunning={isTimerRunning}
+            previousScore={previousScore}
+            setPreviousScore={setPreviousScore}
+            isFinished={isFinished}
+          />
           <div
-            id="currentQuotes"
-            className="bg-indigo-100 p-4 rounded-xl text-justify"
+            id="quotes"
+            className="rounded-xl  bg-indigo-50 min-h-min sm:w-4/6 w-11/12 overflow-clip text-ellipsis  flex flex-col justify-between gap-2 sm:text-2xl text-base"
           >
             <div>
-              {documents.quotes[currentQuoteIndex].words.map(
-                (word, wordIndex) => {
-                  const children = (
-                    <>
-                      {word.chars.map((char: String, charIndex: Number) => {
-                        if (
-                          word.wrongCharactersIndex.includes(
-                            `${currentQuoteIndex}_${wordIndex}_${charIndex}`
-                          )
-                        ) {
-                          return (
-                            <span
-                              key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                              className="text-red-600"
-                            >
-                              {char}
-                            </span>
-                          );
-                        } else {
-                          return (
-                            <span
-                              key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                            >
-                              {char}
-                            </span>
-                          );
-                        }
-                      })}
-                    </>
-                  );
-                  if (wordIndex === currentWordIndex) {
-                    return (
-                      <span
-                        key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                      >
-                        <span
-                          key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                          className="text-2xl p-1 bg-indigo-300 rounded-md tracking-wider"
-                        >
-                          {children}
-                        </span>{" "}
-                      </span>
-                    );
-                  } else {
-                    return (
-                      <span
-                        key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                      >
-                        <span
-                          key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                          className="text-2xl p-1 tracking-wider"
-                        >
-                          {children}
-                        </span>{" "}
-                      </span>
-                    );
-                  }
-                }
-              )}
-            </div>
-            <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
-              <span className="text-lg flex items-center">~ </span>
-              <span className="text-base flex items-center">
-                {documents.quotes[currentQuoteIndex].originator}
-              </span>
-            </div>
-          </div>
-          <div id="nextQotes" className="p-4 text-justify ">
-            {documents.quotes.map((quoteObj, index) => {
-              if (index > currentQuoteIndex) {
-                return (
-                  <div key={`nextQuote_${index}`} className="text-2xl">
-                    <div>
-                      {quoteObj.words.map((wordObj, index2) => {
+              <div
+                id="currentQuotes"
+                className="bg-indigo-100 p-4 rounded-xl text-justify"
+              >
+                <div>
+                  {documents.quotes[currentQuoteIndex].words.map(
+                    (word, wordIndex) => {
+                      const children = (
+                        <>
+                          {word.chars.map((char: String, charIndex: Number) => {
+                            if (
+                              word.wrongCharactersIndex.includes(
+                                `${currentQuoteIndex}_${wordIndex}_${charIndex}`
+                              )
+                            ) {
+                              return (
+                                <span
+                                  key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                                  className="text-red-600"
+                                >
+                                  {char}
+                                </span>
+                              );
+                            } else {
+                              return (
+                                <span
+                                  key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                                >
+                                  {char}
+                                </span>
+                              );
+                            }
+                          })}
+                        </>
+                      );
+                      if (wordIndex === currentWordIndex) {
                         return (
                           <span
-                            className="px-1"
-                            key={`nextQuote_${index}_${index2}`}
+                            key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
                           >
-                            {wordObj.text}{" "}
+                            <span
+                              key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                              className="p-1 bg-indigo-300 rounded-md tracking-wider"
+                            >
+                              {children}
+                            </span>{" "}
                           </span>
                         );
-                      })}
-                    </div>
-                    <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
-                      <span className="text-lg flex items-center">~ </span>
-                      <span className="text-base flex items-center">
-                        {quoteObj.originator}
-                      </span>
-                    </div>
-                  </div>
-                );
-              }
-            })}
+                      } else {
+                        return (
+                          <span
+                            key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
+                          >
+                            <span
+                              key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                              className="p-1 tracking-wider"
+                            >
+                              {children}
+                            </span>{" "}
+                          </span>
+                        );
+                      }
+                    }
+                  )}
+                </div>
+                <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
+                  <span className="sm:text-lg text-base flex items-center">
+                    ~{" "}
+                  </span>
+                  <span className="sm:text-base text-sm flex items-center">
+                    {documents.quotes[currentQuoteIndex].originator}
+                  </span>
+                </div>
+              </div>
+              <div id="nextQotes" className="p-4 text-justify ">
+                {documents.quotes.map((quoteObj, index) => {
+                  if (index > currentQuoteIndex) {
+                    return (
+                      <div key={`nextQuote_${index}`}>
+                        <div>
+                          {quoteObj.words.map((wordObj, index2) => {
+                            return (
+                              <span
+                                className="px-1"
+                                key={`nextQuote_${index}_${index2}`}
+                              >
+                                {wordObj.text}{" "}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
+                          <span className="text-lg flex items-center">~ </span>
+                          <span className="text-base flex items-center">
+                            {quoteObj.originator}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            </div>
+            <div className="text-xs text-center p-1">
+              These are random famous quotes generated from
+              <a
+                href="https://rapidapi.com/martin.svoboda/api/quotes15/"
+                className="text-blue-500"
+                target="_blank"
+              >
+                {" "}
+                this
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 
