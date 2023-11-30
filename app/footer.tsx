@@ -1,6 +1,6 @@
 import React from "react";
 
-const footer = () => {
+const Footer = () => {
   return (
     <div className="w-full min-h-max sm:py-1.5 py-8 bg-indigo-50 flex sm:flex-row flex-col gap-3 flex-wrap items-center sm:justify-between  sm:px-10 text-sm">
       <div>
@@ -8,7 +8,7 @@ const footer = () => {
         <div></div>
       </div>
       <a
-        className="flex flex-row flex-wrap items-center gap-2 rounded-xl  bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-300  focus:outline-none focus:ring focus:ring-indigo-400 py-1.5 px-2"
+        className="flex flex-row flex-wrap items-center gap-2 rounded-xl  bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-300  focus:outline-none focus:ring focus:ring-indigo-400 py-2 px-2"
         href="https://github.com/achmadaffandifauzan/typing-test"
         target="_blank"
       >
@@ -50,4 +50,4 @@ const footer = () => {
   );
 };
 
-export default footer;
+export default Footer;

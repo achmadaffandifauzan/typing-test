@@ -5,7 +5,7 @@ import MyTimer from "./countdown";
 import { ResultScore, displayWPM } from "./result";
 import Loading from "./components/Loading";
 import Footer from "./footer";
-import Link from "next/link";
+import Header from "./header";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -376,15 +376,7 @@ const Home = () => {
   return (
     <>
       <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
-        <div className="w-full px-5 sm:pt-4 flex flex-row flex-wrap sm:justify-start justify-center items-center text-indigo-500 max-sm:bg-indigo-200">
-          <Link
-            className="rounded-xl bg-indigo-200 flex flex-row flex-wrap justify-center items-center px-3 py-2 sm:absolute sm:top-5"
-            href="/"
-          >
-            <img src="/icons/keyboard.svg" className="w-5" alt="" />
-            <div className="font-bold">TypingTest</div>
-          </Link>
-        </div>
+        <Header />
         <MyTimer
           setIsTimerRunning={setIsTimerRunning}
           triggerStart={triggerStart}
@@ -524,7 +516,7 @@ const Home = () => {
                 target="_blank"
               >
                 {" "}
-                this
+                Here
               </a>
             </div>
           </div>
