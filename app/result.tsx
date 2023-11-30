@@ -1,6 +1,9 @@
+"use client";
+
+import DisplayAccuracy from "./DisplayAccuracy";
+import DisplayWPM from "./DisplayWPM";
 import { DocumentsSchema, PreviousScore } from "./page";
 import { useEffect, useState } from "react";
-import { TagCloud } from "react-tagcloud";
 
 interface ResultScoreProps {
   documents: DocumentsSchema;
@@ -98,29 +101,8 @@ const ResultScore = ({
       <div className="text-center">
         <div className="font-bold">Previous Attempt</div>
         <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center">
-          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
-            <span className="">WPM</span>
-            <span className="font-semibold text-xl">{previousScore.WPM}</span>
-          </div>
-          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
-            <div>
-              <span>Character accuracy : </span>
-              <span className="font-semibold">{previousScore.accuracy}%</span>
-            </div>
-            <div>
-              <span>TagCloud innacurate character</span>
-              {/* <TagCloud
-                minSize={15}
-                maxSize={50}
-                tags={Object.entries(previousScore.wrongCharCount).map(
-                  ([value, count]) => ({
-                    value,
-                    count,
-                  })
-                )}
-              /> */}
-            </div>
-          </div>
+          {DisplayWPM({ currentOrPrevious: "previous", previousScore })}
+          {DisplayAccuracy({ currentOrPrevious: "previous", previousScore })}
         </div>
       </div>
     );
@@ -128,46 +110,16 @@ const ResultScore = ({
     return (
       <div className="text-center sm:text-base text-sm">
         <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center w-80">
-          {displayWPM(totalTypedWords)}
-          {displayAccuracy(accuracy, wrongCharCount)}
+          {DisplayWPM({ currentOrPrevious: "current", totalTypedWords })}
+          {DisplayAccuracy({
+            currentOrPrevious: "current",
+            accuracy,
+            wrongCharCount,
+          })}
         </div>
       </div>
     );
   }
 };
 
-const displayWPM = (totalTypedWords: number) => {
-  return (
-    <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
-      <span className="">WPM</span>
-      <span className="font-semibold text-xl">{totalTypedWords}</span>
-    </div>
-  );
-};
-const displayAccuracy = (
-  accuracy: number,
-  wrongCharCount: {
-    [key: string]: number;
-  }
-) => {
-  return (
-    <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
-      <div>
-        <span>Character accuracy : </span>
-        <span className="font-semibold">{accuracy}%</span>
-      </div>
-      <div className="sm:h-48 h-36">
-        <span>TagCloud innacurate character</span>
-        <TagCloud
-          minSize={15}
-          maxSize={50}
-          tags={Object.entries(wrongCharCount).map(([value, count]) => ({
-            value,
-            count,
-          }))}
-        />
-      </div>
-    </div>
-  );
-};
-export { ResultScore, displayWPM, displayAccuracy };
+export default ResultScore;

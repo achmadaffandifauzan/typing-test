@@ -2,10 +2,12 @@
 import { useEffect, useState, useRef } from "react";
 import { fetchTypingTestData } from "./apiService";
 import MyTimer from "./countdown";
-import { ResultScore, displayWPM } from "./result";
+import ResultScore from "./result";
 import Loading from "./components/Loading";
 import Footer from "./footer";
 import Header from "./header";
+import DisplayCurrentQuote from "./DisplayCurrentQuote";
+import DisplayNextQuote from "./DisplayNextQuote";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -405,111 +407,11 @@ const Home = () => {
             className="rounded-xl  bg-indigo-50 min-h-min sm:w-4/6 w-11/12 overflow-clip text-ellipsis  flex flex-col justify-between gap-2 sm:text-2xl text-base"
           >
             <div>
-              <div
-                id="currentQuotes"
-                className="bg-indigo-100 p-4 rounded-xl text-justify"
-              >
-                <div>
-                  {documents.quotes[currentQuoteIndex].words.map(
-                    (word, wordIndex) => {
-                      const children = (
-                        <>
-                          {word.chars.map((char: String, charIndex: Number) => {
-                            if (
-                              word.wrongCharactersIndex.includes(
-                                `${currentQuoteIndex}_${wordIndex}_${charIndex}`
-                              )
-                            ) {
-                              return (
-                                <span
-                                  key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                                  className="text-red-600"
-                                >
-                                  {char}
-                                </span>
-                              );
-                            } else {
-                              return (
-                                <span
-                                  key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
-                                >
-                                  {char}
-                                </span>
-                              );
-                            }
-                          })}
-                        </>
-                      );
-                      if (wordIndex === currentWordIndex) {
-                        return (
-                          <span
-                            key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                          >
-                            <span
-                              key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                              className="p-1 bg-indigo-300 rounded-md tracking-wider"
-                            >
-                              {children}
-                            </span>{" "}
-                          </span>
-                        );
-                      } else {
-                        return (
-                          <span
-                            key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}
-                          >
-                            <span
-                              key={`${currentQuoteIndex}_${word}_${wordIndex}`}
-                              className="p-1 tracking-wider"
-                            >
-                              {children}
-                            </span>{" "}
-                          </span>
-                        );
-                      }
-                    }
-                  )}
-                </div>
-                <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
-                  <span className="sm:text-lg text-base flex items-center">
-                    ~{" "}
-                  </span>
-                  <span className="sm:text-base text-sm flex items-center">
-                    {documents.quotes[currentQuoteIndex].originator}
-                  </span>
-                </div>
-              </div>
-              <div id="nextQotes" className="p-4 text-justify ">
-                {documents.quotes.map((quoteObj, index) => {
-                  if (index > currentQuoteIndex) {
-                    return (
-                      <div key={`nextQuote_${index}`}>
-                        <div>
-                          {quoteObj.words.map((wordObj, index2) => {
-                            return (
-                              <span
-                                className="px-1"
-                                key={`nextQuote_${index}_${index2}`}
-                              >
-                                {wordObj.text}{" "}
-                              </span>
-                            );
-                          })}
-                        </div>
-                        <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
-                          <span className="text-lg flex items-center">~ </span>
-                          <span className="text-base flex items-center">
-                            {quoteObj.originator}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  }
-                })}
-              </div>
+              <DisplayCurrentQuote documents={documents} />
+              <DisplayNextQuote documents={documents} />
             </div>
             <div className="text-xs text-center p-1">
-              These are random famous quotes generated from
+              Those are random famous quotes generated from
               <a
                 href="https://rapidapi.com/martin.svoboda/api/quotes15/"
                 className="text-blue-500"
