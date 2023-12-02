@@ -325,23 +325,44 @@ const Home = () => {
       setTypedWord("");
     } else if (event.target.value.length < typedWord.length) {
       // when user delete the char
-      const removedAWrongChar = currentWordObject.wrongCharacters.splice(-1);
-      const removedAWrongCharIndex =
-        currentWordObject.wrongCharactersIndex.filter((char) => {
-          return (
-            char !==
-            `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex - 1}`
-          );
-        });
-      // updating documents state
+      let removedAWrongChar: string[] = [];
+      let removedAWrongCharIndex: string[] = [];
+      // updating documents state for later
       const updatedDocuments = { ...documents };
-      // update wrong chars list
-      updatedDocuments.quotes[currentQuoteIndex].words[
-        currentWordIndex
-      ].wrongCharacters = removedAWrongChar;
-      updatedDocuments.quotes[currentQuoteIndex].words[
-        currentWordIndex
-      ].wrongCharactersIndex = removedAWrongCharIndex;
+      const currentQuotesChar = currentWordObject.chars[currentCharIndex - 1];
+      console.log(
+        "----",
+        currentQuotesChar,
+        "---",
+        currentWordObject.wrongCharacters.slice(-1)[0],
+        "----"
+      );
+      console.log(currentWordObject.wrongCharacters);
+      if (
+        currentQuotesChar === currentWordObject.wrongCharacters.slice(-1)[0]
+      ) {
+        console.log("yessirrrrr");
+        // update wrong chars list only if user delete a wrong char
+        removedAWrongChar = currentWordObject.wrongCharacters.slice(
+          0,
+          currentWordObject.wrongCharacters.length - 1
+        ); // get the new array without the last alement
+        removedAWrongCharIndex = currentWordObject.wrongCharactersIndex.filter(
+          (charIndex) => {
+            return (
+              charIndex !==
+              `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex - 1}`
+            );
+          }
+        );
+        // update wrong chars list
+        updatedDocuments.quotes[currentQuoteIndex].words[
+          currentWordIndex
+        ].wrongCharacters = removedAWrongChar;
+        updatedDocuments.quotes[currentQuoteIndex].words[
+          currentWordIndex
+        ].wrongCharactersIndex = removedAWrongCharIndex;
+      }
       // update current char index
       updatedDocuments.quotes[currentQuoteIndex].words[
         currentWordIndex
@@ -389,7 +410,7 @@ const Home = () => {
     return null;
   };
 
-  // 3 below is to prevent any mouse event after input tag is focused, so that prevent like moving the "caret" or delete multiple chars at the same thme
+  // 4 below is to prevent any mouse event after input tag is focused, so that prevent like moving the "caret" or delete multiple chars at the same thme
   const handleFocus = () => {
     setIsInputFocused(true);
   };
