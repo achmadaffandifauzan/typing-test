@@ -82,7 +82,6 @@ const ResultScore = ({
         ).toFixed(1)
       )
     );
-    console.log(flattenedWrongCharacters);
   }, [documents]);
 
   useEffect(() => {

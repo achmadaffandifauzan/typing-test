@@ -65,6 +65,7 @@ const Home = () => {
     useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const hasInitiallyFetchedData = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null); // for detect when user click start button, then to focus the input tag
@@ -259,10 +260,10 @@ const Home = () => {
       event.target.value.slice(-1) === " " &&
       documents.quotes[currentQuoteIndex].words.length -
         (documents.quotes[currentQuoteIndex].currentWordIndex + 1) <=
-        6
+        9
     ) {
       console.log("FETCHMORREEEEEEE");
-      // if on last 6 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
+      // if on last 9 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
       fetchMoreDocument();
     }
     if (
@@ -387,6 +388,25 @@ const Home = () => {
     }
     return null;
   };
+
+  // 3 below is to prevent any mouse event after input tag is focused, so that prevent like moving the "caret" or delete multiple chars at the same thme
+  const handleFocus = () => {
+    setIsInputFocused(true);
+  };
+  const handleBlur = () => {
+    setIsInputFocused(false);
+  };
+  const handleMouseEvents = (event: React.MouseEvent<HTMLInputElement>) => {
+    // Disable mouse events if input is focused
+    if (isInputFocused) {
+      event.preventDefault();
+    }
+  };
+  const handleContextMenu = (event: React.MouseEvent<HTMLInputElement>) => {
+    // Prevent right-click context menu
+    event.preventDefault();
+  };
+
   return (
     <>
       <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
@@ -400,12 +420,18 @@ const Home = () => {
         />
         <input
           type="text"
-          className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline"
+          className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline "
           onChange={handleChange}
           value={typedWord}
           spellCheck="false"
           onKeyDown={handleKeyboardEvent}
           ref={inputRef}
+          // below is to prevent the mouse events
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onMouseDown={handleMouseEvents}
+          onMouseUp={handleMouseEvents}
+          onContextMenu={handleContextMenu}
         />
         <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 justify-around w-full">
           <ResultScore
