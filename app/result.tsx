@@ -46,14 +46,14 @@ const ResultScore = ({
     }
     let temporaryTotalTypedWords = 0;
     let temporaryTotalTypedChars = 0;
-    // not very efficient way, always recalculate accuracy and wpm everytime user press char key
+    // not very efficient way, it always recalculate accuracy and wpm everytime user press char key
     for (let quoteObj of documents.quotes) {
       if (quoteObj.currentWordIndex !== 0) {
         temporaryTotalTypedWords += quoteObj.currentWordIndex;
       }
       for (let wordObj of quoteObj.words) {
-        if (wordObj.currentCharIndex !== 0 && wordObj.chars.length !== 1) {
-          // check if user already typing it, since some word is just 1 characters, and since all words (typed and not yet typed) have currentCharIndex of 0 by default
+        if (wordObj.currentCharIndex !== 0) {
+          // check if user already typing it, why check? so system doesn't need to loop over un-typed words
           temporaryTotalTypedChars += wordObj.currentCharIndex;
         }
       }

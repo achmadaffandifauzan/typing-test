@@ -311,15 +311,13 @@ const Home = () => {
     }
     if (
       event.target.value.slice(-1) === " " &&
-      documents.quotes[currentQuoteIndex].currentWordIndex ===
-        documents.quotes[currentQuoteIndex].words.length - 1
+      currentWordIndex === documents.quotes[currentQuoteIndex].words.length - 1
     ) {
       // if on last word & user press space
       rotateQuotes();
     } else if (event.target.value.slice(-1) === " ") {
       // reset typedWord if user enter a space / when user input space
       const updatedDocuments = { ...documents };
-
       updatedDocuments.quotes[currentQuoteIndex].currentWordIndex += 1;
       setDocuments(updatedDocuments);
       setTypedWord("");
@@ -330,18 +328,9 @@ const Home = () => {
       // updating documents state for later
       const updatedDocuments = { ...documents };
       const currentQuotesChar = currentWordObject.chars[currentCharIndex - 1];
-      console.log(
-        "----",
-        currentQuotesChar,
-        "---",
-        currentWordObject.wrongCharacters.slice(-1)[0],
-        "----"
-      );
-      console.log(currentWordObject.wrongCharacters);
       if (
         currentQuotesChar === currentWordObject.wrongCharacters.slice(-1)[0]
       ) {
-        console.log("yessirrrrr");
         // update wrong chars list only if user delete a wrong char
         removedAWrongChar = currentWordObject.wrongCharacters.slice(
           0,
@@ -374,14 +363,15 @@ const Home = () => {
 
       if (currentCharIndex < currentWordObject.chars.length) {
         // pastikan sisa huruf belum habis di kata itu
+
         setTypedWord(event.target.value);
         if (
           event.target.value.slice(-1) !==
-          currentWordObject.chars[currentWordObject.currentCharIndex]
+          currentWordObject.chars[currentCharIndex]
         ) {
-          // check char similarity
+          // check char similarity, if wrong, enter this, if correct, to the next char...
           currentWordObject.wrongCharacters.push(
-            currentWordObject.chars[currentWordObject.currentCharIndex]
+            currentWordObject.chars[currentCharIndex]
           );
           // wrongCharactersIndex array -> docIndex_wordIndex_charIndex
           currentWordObject.wrongCharactersIndex.push(
