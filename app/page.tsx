@@ -215,6 +215,7 @@ const Home = () => {
     setIsTimerRunning(false);
     setTriggerStartTime(false);
     setIsFinished(true);
+    setIsInputFocused(false);
 
     fetchMoreDocument("restart");
   };
