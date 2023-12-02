@@ -3,21 +3,21 @@ import { useEffect, useState, useRef } from "react";
 import { useTimer } from "react-timer-hook";
 interface MyTimerProps {
   setIsTimerRunning: React.Dispatch<React.SetStateAction<boolean>>;
-  triggerStart: boolean;
-  setTriggerStart: React.Dispatch<React.SetStateAction<boolean>>;
+  triggerStartTime: boolean;
+  setTriggerStartTime: React.Dispatch<React.SetStateAction<boolean>>;
   resetStates: Function;
   setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function MyTimer({
   setIsTimerRunning,
-  triggerStart,
-  setTriggerStart,
+  triggerStartTime,
+  setTriggerStartTime,
   resetStates,
   setIsFinished,
 }: MyTimerProps) {
   const time = new Date();
   time.setSeconds(time.getSeconds() + 60); // 60 seconds timer
-  const { totalSeconds, isRunning, pause, resume, restart } = useTimer({
+  const { totalSeconds, isRunning, restart } = useTimer({
     expiryTimestamp: time,
     autoStart: false,
     onExpire: () => {
@@ -27,13 +27,13 @@ export default function MyTimer({
     },
   });
   useEffect(() => {
-    if (triggerStart) {
+    if (triggerStartTime) {
       setIsFinished(false);
       restart(time);
       setIsTimerRunning(true);
-      setTriggerStart(false);
+      setTriggerStartTime(false);
     }
-  }, [triggerStart]);
+  }, [triggerStartTime]);
   return (
     <div className="text-center flex flex-row flex-wrap gap-2 sm:h-20 h-10">
       <div className="flex flex-col justify-center items-center transition-all rounded-xl  text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 sm:py-2 px-4  max-sm:flex-row max-sm:justify-around">

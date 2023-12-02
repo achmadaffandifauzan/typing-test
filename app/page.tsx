@@ -55,7 +55,7 @@ const Home = () => {
   });
   const [typedWord, setTypedWord] = useState<string>("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [triggerStart, setTriggerStart] = useState(false);
+  const [triggerStartTime, setTriggerStartTime] = useState(false);
   const [isFinished, setIsFinished] = useState(true);
   const [previousScore, setPreviousScore] = useState<PreviousScore>({
     WPM: 0,
@@ -63,11 +63,11 @@ const Home = () => {
   });
   const [fetchingHowManyTimesAlready, setFetchingHowManyTimesAlready] =
     useState<number>(0);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const hasInitiallyFetchedData = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null); // for detect when user click start button, then to focus the input tag
 
   // make the variables to simplify the process
   const currentWordObject =
@@ -155,6 +155,7 @@ const Home = () => {
   // useEffect(() => {
   //   console.log(documents);
   // }, [documents]);
+
   useEffect(() => {
     // initial fetch
     if (!hasInitiallyFetchedData.current) {
@@ -163,6 +164,14 @@ const Home = () => {
       hasInitiallyFetchedData.current = true;
     }
   }, []);
+
+  useEffect(() => {
+    // focus on input tag if user click start button
+    if (isTimerRunning && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isTimerRunning]);
+
   const fetchMoreDocument = (ifRestart?: string) => {
     if (ifRestart === "restart") {
       console.log("FETCH FROM RESTARTTTT");
@@ -176,6 +185,7 @@ const Home = () => {
       fetchData();
     }
   };
+
   const resetStates = () => {
     console.log("QQQQQQQ");
     setFetchingHowManyTimesAlready(1);
@@ -202,11 +212,12 @@ const Home = () => {
     setLoading(true);
     setError(null);
     setIsTimerRunning(false);
-    setTriggerStart(false);
+    setTriggerStartTime(false);
     setIsFinished(true);
 
     fetchMoreDocument("restart");
   };
+
   if (loading) {
     return <Loading />;
   }
@@ -228,7 +239,7 @@ const Home = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!isTimerRunning && isFinished) {
       console.log("AA");
-      setTriggerStart(true);
+      setTriggerStartTime(true);
     }
     if (
       loading ||
@@ -364,6 +375,7 @@ const Home = () => {
       }
     }
   };
+
   const handleKeyboardEvent = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
@@ -381,8 +393,8 @@ const Home = () => {
         <Header />
         <MyTimer
           setIsTimerRunning={setIsTimerRunning}
-          triggerStart={triggerStart}
-          setTriggerStart={setTriggerStart}
+          triggerStartTime={triggerStartTime}
+          setTriggerStartTime={setTriggerStartTime}
           resetStates={resetStates}
           setIsFinished={setIsFinished}
         />
@@ -393,6 +405,7 @@ const Home = () => {
           value={typedWord}
           spellCheck="false"
           onKeyDown={handleKeyboardEvent}
+          ref={inputRef}
         />
         <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 justify-around w-full">
           <ResultScore
