@@ -1,9 +1,10 @@
+"use server";
 import axios from "axios";
 
 const instance = axios.create({
   baseURL: "https://quotes15.p.rapidapi.com",
   headers: {
-    "X-RapidAPI-Key": process.env.NEXT_PUBLIC_KEY_RAPIDAPI_QUOTES21,
+    "X-RapidAPI-Key": process.env.KEY_RAPIDAPI_QUOTES21,
     "X-RapidAPI-Host": "quotes15.p.rapidapi.com",
   },
 });
