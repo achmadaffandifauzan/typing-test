@@ -19,10 +19,12 @@ const DisplayWPM = ({
       </div>
     );
   } else if (currentOrPrevious === "previous") {
-    <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
-      <span className="">WPM</span>
-      <span className="font-semibold text-xl">{previousScore.WPM}</span>
-    </div>;
+    return (
+      <div className="flex flex-col bg-indigo-200 p-3 rounded-xl ">
+        <span className="">WPM</span>
+        <span className="font-semibold text-xl">{previousScore.WPM}</span>
+      </div>
+    );
   }
 };
 
