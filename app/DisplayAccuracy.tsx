@@ -22,7 +22,11 @@ const DisplayAccuracy = ({
       <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
         <div>
           <span>Character accuracy : </span>
-          <span className="font-semibold">{accuracy}%</span>
+          {accuracy ? (
+            <span className="font-semibold">{accuracy}%</span>
+          ) : (
+            <span className="font-semibold">-</span>
+          )}
         </div>
         <div className="sm:h-48 h-36">
           <span>TagCloud innacurate character</span>
@@ -45,8 +49,8 @@ const DisplayAccuracy = ({
           <span className="font-semibold">{previousScore.accuracy}%</span>
         </div>
         <div>
-          <span>TagCloud innacurate character</span>
-          {/* <TagCloud
+          {/*<span>TagCloud innacurate character</span>
+           <TagCloud
           minSize={15}
           maxSize={50}
           tags={Object.entries(previousScore.wrongCharCount).map(
