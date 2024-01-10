@@ -53,6 +53,7 @@ const Home = () => {
     ],
     currentDocumentIndex: 0,
   });
+  const [allTypedChar, setAllTypedChar] = useState<string[]>([]);
   const [typedWord, setTypedWord] = useState<string>("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [triggerStartTime, setTriggerStartTime] = useState(false);
@@ -379,6 +380,10 @@ const Home = () => {
             `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
           );
         }
+        setAllTypedChar([
+          ...allTypedChar,
+          currentWordObject.chars[currentCharIndex],
+        ]);
         // update for next chart index
         const updatedDocuments = { ...documents };
         updatedDocuments.quotes[currentQuoteIndex].words[
@@ -452,6 +457,7 @@ const Home = () => {
             previousScore={previousScore}
             setPreviousScore={setPreviousScore}
             isFinished={isFinished}
+            allTypedChar={allTypedChar}
           />
           <div
             id="quotes"
