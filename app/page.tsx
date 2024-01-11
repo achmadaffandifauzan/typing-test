@@ -8,6 +8,7 @@ import Footer from "./footer";
 import Header from "./header";
 import DisplayCurrentQuote from "./DisplayCurrentQuote";
 import DisplayNextQuote from "./DisplayNextQuote";
+import Notification from "./Notification";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -70,6 +71,8 @@ const Home = () => {
 
   const hasInitiallyFetchedData = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null); // for detect when user click start button, then to focus the input tag
+
+  const [openNotif, setOpenNotif] = useState(false);
 
   // make the variables to simplify the process
   const currentWordObject =
@@ -467,8 +470,19 @@ const Home = () => {
               <DisplayCurrentQuote documents={documents} />
               <DisplayNextQuote documents={documents} />
             </div>
-            <div className="text-xs text-center p-1">
-              Those are random famous quotes generated from
+            <div
+              className="text-xs text-center p-1 cursor-help"
+              onMouseEnter={() => setOpenNotif(true)}
+              onMouseDown={() => setOpenNotif(true)}
+              onMouseLeave={() => setOpenNotif(false)}
+            >
+              Be aware that those quotes are{" "}
+              {openNotif ? (
+                <span className="text-yellow-500 font-bold">RANDOM</span>
+              ) : (
+                <span className="text-red-500 font-bold">RANDOM</span>
+              )}
+              , generated from
               <a
                 href="https://rapidapi.com/martin.svoboda/api/quotes15/"
                 className="text-blue-500"
@@ -478,6 +492,15 @@ const Home = () => {
                 Here
               </a>
             </div>
+            {openNotif ? (
+              <Notification
+                message={
+                  "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly"
+                }
+                type={"warning"}
+                openNotification={true}
+              />
+            ) : null}
           </div>
         </div>
       </div>
