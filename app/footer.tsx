@@ -8,14 +8,23 @@ const Footer = () => {
         <div></div>
       </div>
       <a
-        className="flex flex-row flex-wrap items-center gap-2 rounded-xl  bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-300  focus:outline-none focus:ring focus:ring-indigo-400 py-2 px-2"
+        className="flex flex-row flex-wrap items-center gap-2 rounded-md  bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-300  focus:outline-none focus:ring focus:ring-indigo-400 py-2 px-2"
         href="https://github.com/achmadaffandifauzan/typing-test"
         target="_blank"
       >
         <div>Source Code </div>
         <img src="/icons/github.svg" className="w-5" alt="" />
       </a>
-      <div className="flex flex-row flex-wrap justify-center items-center bg-indigo-200 rounded-xl py-1.5 ps-3 pe-2">
+      <a
+        className="flex flex-row flex-wrap items-center gap-2 rounded-md  bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-300  focus:outline-none focus:ring focus:ring-indigo-400 py-2 px-2"
+        href="https://affandif.com"
+        target="_blank"
+      >
+        <div>My Portofolio</div>
+        <img src="/icons/logo192.png" className="w-5" alt="" />
+      </a>
+
+      <div className="flex flex-row flex-wrap justify-center items-center bg-indigo-200 rounded-md py-1.5 ps-3 pe-2">
         <span className="">My Socials</span>
         <a
           href="https://github.com/achmadaffandifauzan"
