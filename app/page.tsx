@@ -227,8 +227,21 @@ const Home = () => {
   if (loading) {
     return <Loading />;
   }
-  if (error) {
-    return <p>{error}</p>;
+  if (error == "Error fetching data.") {
+    return (
+      <div className="w-full h-screen flex flex-col justify-center items-center">
+        <div className="flex flex-row justify-center items-center">
+          <div className="font-semibold">Unable to fetch quotes, sorry</div>
+          <img src="/icons/sad.svg" className="sm:w-9 w-6" alt="" />
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="text-xl py-3 px-5 bg-indigo-400 text-white my-3 rounded-xl"
+        >
+          Try again
+        </button>
+      </div>
+    );
   }
 
   const rotateQuotes = () => {
