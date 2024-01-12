@@ -474,7 +474,7 @@ const Home = () => {
               {openNotif ? (
                 <span className="text-yellow-500 font-bold">RANDOM</span>
               ) : (
-                <span className="text-red-500 font-bold">RANDOM</span>
+                <span className="text-blue-500 font-bold">RANDOM</span>
               )}
               , generated from
               <a
