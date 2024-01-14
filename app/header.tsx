@@ -9,7 +9,7 @@ const Header = () => {
     if (session) {
       return (
         <button
-          className="bg-indigo-100 hover:bg-indigo-500 hover:text-white text-indigo-500 font-semibold flex flex-row sm:w-full justify-center items-center text-sm h-10 sm:py-2 py-0.5 px-3 rounded-b-xl rounded-r-none hover:ring-4 hover:shadow-xl transition-all"
+          className="bg-indigo-100 hover:bg-indigo-500 hover:text-white text-indigo-500 font-semibold flex flex-row sm:w-full justify-center items-center text-sm h-10 sm:py-2 py-0.5 px-3 rounded-b-xl rounded-r-none hover:ring-4 hover:shadow-xl transition-all gap-1"
           onClick={() => signOut()}
         >
           <div>Logout</div>
@@ -31,13 +31,9 @@ const Header = () => {
   const displayGreeting = () => {
     if (session) {
       return (
-        <div className="absolute sm:top-5 sm:right-5 right-28 flex flex-row justify-center items-center max-sm:text-center ">
+        <div className="absolute sm:top-5 sm:right-12 right-28 flex flex-row gap-2 justify-center items-center max-sm:text-center ">
           <div>
-            Hi{" "}
-            <span className="font-bold">
-              {session?.user?.name?.split(" ")[0]}
-            </span>
-            !
+            Hi <span className="font-bold">{session?.user?.name}</span>!
           </div>
           <img src="/icons/waving-hand.svg" className="sm:w-7 w-5" alt="" />
         </div>
