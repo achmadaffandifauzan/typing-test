@@ -2,11 +2,21 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
+const isDevelopment = process.env.NODE_ENV === "development";
+
+const githubClientId = isDevelopment
+  ? process.env.GITHUB_ID_DEVELOPMENT
+  : process.env.GITHUB_ID_PRODUCTION;
+
+const githubClientSecret = isDevelopment
+  ? process.env.GITHUB_SECRET_DEVELOPMENT
+  : process.env.GITHUB_SECRET_PRODUCTION;
+
 const authOptions: NextAuthOptions = {
   providers: [
     GitHubProvider({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
+      clientId: githubClientId as string,
+      clientSecret: githubClientSecret as string,
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID as string,
