@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 
 import SessionProvider from "./components/SessionProvider";
 import { getServerSession } from "next-auth";
@@ -21,7 +22,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <SessionProvider session={session}>
+          {children}
+          <Toaster position="top-right" expand={true} richColors />
+        </SessionProvider>
       </body>
     </html>
   );

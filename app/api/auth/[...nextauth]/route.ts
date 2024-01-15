@@ -1,8 +1,8 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -13,6 +13,13 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_SECRET as string,
     }),
   ],
+  session: {
+    // Choose how you want to save the user session.
+    strategy: "jwt",
+
+    // Seconds - How long until an idle session expires and is no longer valid.
+    maxAge: 3 * 24 * 60 * 60, // 3 days
+  },
 };
 
 export const handler = NextAuth(authOptions);
