@@ -13,7 +13,6 @@ const githubClientSecret = isDevelopment
   : process.env.GITHUB_SECRET_PRODUCTION;
 
 const authOptions: NextAuthOptions = {
-  secret: process.env.SECRET as string,
   providers: [
     GitHubProvider({
       clientId: githubClientId as string,
@@ -31,6 +30,7 @@ const authOptions: NextAuthOptions = {
     // Seconds - How long until an idle session expires and is no longer valid.
     maxAge: 3 * 24 * 60 * 60, // 3 days
   },
+  secret: process.env.NEXTAUTH_SECRET as string,
 };
 
 const handler = NextAuth(authOptions);
