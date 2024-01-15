@@ -13,6 +13,7 @@ const githubClientSecret = isDevelopment
   : process.env.GITHUB_SECRET_PRODUCTION;
 
 const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GitHubProvider({
       clientId: githubClientId as string,
