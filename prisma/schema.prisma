@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id              Int             @id @default(autoincrement())
+  username        String          @db.VarChar(25)
+  typingHistories TypingHistory[]
+}
+
+model TypingHistory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  author    User?    @relation(fields: [authorid], references: [id])
+  authorid  Int
+  result    String   @db.VarChar(45)
+}

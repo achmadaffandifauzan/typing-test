@@ -8,7 +8,8 @@ import Footer from "./footer";
 import Header from "./header";
 import DisplayCurrentQuote from "./DisplayCurrentQuote";
 import DisplayNextQuote from "./DisplayNextQuote";
-import Notification from "./Notification";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -54,6 +55,7 @@ const Home = () => {
     ],
     currentDocumentIndex: 0,
   });
+  const [allTypedChar, setAllTypedChar] = useState<string[]>([]);
   const [typedWord, setTypedWord] = useState<string>("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [triggerStartTime, setTriggerStartTime] = useState(false);
@@ -71,7 +73,8 @@ const Home = () => {
   const hasInitiallyFetchedData = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null); // for detect when user click start button, then to focus the input tag
 
-  const [openNotif, setOpenNotif] = useState(false);
+  const [userAuthenticatedOnPageLoad, setUserAuthenticatedOnPageLoad] =
+    useState(false);
 
   // make the variables to simplify the process
   const currentWordObject =
@@ -85,6 +88,9 @@ const Home = () => {
     ].currentCharIndex;
   const currentWordIndex =
     documents.quotes[documents.currentDocumentIndex].currentWordIndex;
+
+  // get user authentication status
+  const { data: session } = useSession();
 
   const fetchData = async (ifRestart?: string) => {
     console.log("requesting");
@@ -167,6 +173,10 @@ const Home = () => {
       fetchData();
       hasInitiallyFetchedData.current = true;
     }
+
+    if (session) {
+      setUserAuthenticatedOnPageLoad(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -175,6 +185,12 @@ const Home = () => {
       inputRef.current.focus();
     }
   }, [isTimerRunning]);
+
+  useEffect(() => {
+    if (userAuthenticatedOnPageLoad) {
+      toast.success("Welcome Back!");
+    }
+  }, [userAuthenticatedOnPageLoad]);
 
   const fetchMoreDocument = (ifRestart?: string) => {
     if (ifRestart === "restart") {
@@ -226,8 +242,21 @@ const Home = () => {
   if (loading) {
     return <Loading />;
   }
-  if (error) {
-    return <p>{error}</p>;
+  if (error == "Error fetching data.") {
+    return (
+      <div className="w-full h-screen flex flex-col justify-center items-center">
+        <div className="flex flex-row justify-center items-center">
+          <div className="font-semibold">Unable to fetch quotes, sorry</div>
+          <img src="/icons/sad.svg" className="sm:w-9 w-6" alt="" />
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="text-xl py-3 px-5 bg-indigo-400 text-white my-3 rounded-xl"
+        >
+          Try again
+        </button>
+      </div>
+    );
   }
 
   const rotateQuotes = () => {
@@ -382,6 +411,10 @@ const Home = () => {
             `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
           );
         }
+        setAllTypedChar([
+          ...allTypedChar,
+          currentWordObject.chars[currentCharIndex],
+        ]);
         // update for next chart index
         const updatedDocuments = { ...documents };
         updatedDocuments.quotes[currentQuoteIndex].words[
@@ -455,6 +488,7 @@ const Home = () => {
             previousScore={previousScore}
             setPreviousScore={setPreviousScore}
             isFinished={isFinished}
+            allTypedChar={allTypedChar}
           />
           <div
             id="quotes"
@@ -465,18 +499,27 @@ const Home = () => {
               <DisplayNextQuote documents={documents} />
             </div>
             <div
-              className="text-xs text-center p-1 cursor-help"
-              onMouseEnter={() => setOpenNotif(true)}
-              onMouseDown={() => setOpenNotif(true)}
-              onMouseLeave={() => setOpenNotif(false)}
+              className="text-xs text-center p-1 cursor-help w-fit self-center hover:bg-indigo-200 rounded-md"
+              onMouseDown={() =>
+                toast.error(
+                  "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly",
+                  {
+                    id: "disclaimer quotes",
+                  }
+                )
+              }
+              onMouseEnter={() =>
+                toast.error(
+                  "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly",
+                  {
+                    id: "disclaimer quotes",
+                  }
+                )
+              }
             >
               Be aware that those quotes are{" "}
-              {openNotif ? (
-                <span className="text-yellow-500 font-bold">RANDOM</span>
-              ) : (
-                <span className="text-blue-500 font-bold">RANDOM</span>
-              )}
-              , generated from
+              <span className="text-blue-500 font-bold ">RANDOM</span>,
+              generated from
               <a
                 href="https://rapidapi.com/martin.svoboda/api/quotes15/"
                 className="text-blue-500"
@@ -486,15 +529,6 @@ const Home = () => {
                 Here
               </a>
             </div>
-            {openNotif ? (
-              <Notification
-                message={
-                  "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly"
-                }
-                type={"warning"}
-                openNotification={true}
-              />
-            ) : null}
           </div>
         </div>
       </div>

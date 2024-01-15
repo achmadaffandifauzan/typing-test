@@ -11,6 +11,13 @@ interface ResultScoreProps {
   previousScore: PreviousScore;
   setPreviousScore: React.Dispatch<React.SetStateAction<PreviousScore>>;
   isFinished: boolean;
+  allTypedChar: string[];
+}
+interface ResultSchema {
+  allTypedChar: string[];
+  wrongCharacters: string[];
+  accuracy: number;
+  wpm: number;
 }
 
 const ResultScore = ({
@@ -19,7 +26,14 @@ const ResultScore = ({
   previousScore,
   setPreviousScore,
   isFinished,
+  allTypedChar,
 }: ResultScoreProps) => {
+  const [result, setResult] = useState<ResultSchema>({
+    allTypedChar: [""],
+    wrongCharacters: [""],
+    accuracy: 0,
+    wpm: 0,
+  });
   const [accuracy, setAccuracy] = useState<number>(0);
   const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
   const [totalTypedChars, setTotalTypedChars] = useState<number>(0);
@@ -92,6 +106,15 @@ const ResultScore = ({
         WPM: totalTypedWords,
         accuracy: accuracy,
         wrongCharCount: wrongCharCount,
+      });
+
+      // result only for Authenticated users,
+      // previousScore is exist because the fact that there are unauthenticated users that still need to access WPM, accuracy, and  wrongCharObject
+      setResult({
+        allTypedChar: allTypedChar,
+        wrongCharacters: [...result.wrongCharacters],
+        accuracy: accuracy,
+        wpm: totalTypedWords,
       });
     }
   }, [totalTypedChars, accuracy]);
