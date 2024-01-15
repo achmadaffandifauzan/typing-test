@@ -60,7 +60,7 @@ export default function Register() {
             />
           </div>
           <button className="mt-3 py-2 w-full bg-emerald-600 text-white rounded-md self-start hover:bg-emerald-700 focus:outline-none focus:ring focus:ring-emerald-400 transition">
-            Register
+            cooming soon!
           </button>
           <Link
             href="/login"

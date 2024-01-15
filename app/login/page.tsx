@@ -1,15 +1,8 @@
 import Link from "next/link";
-import { SessionProvider } from "next-auth/react";
-import type { AppProps } from "next/app";
 
-export default function Login({
-  Component,
-  pageProps: { session, ...pageProps },
-}: AppProps) {
+export default function Login() {
   return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
+    <div>coming soon!</div>
     // <main>
     //   <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center ">
     //     <div className="mb-5  font-bold">Login With : </div>
