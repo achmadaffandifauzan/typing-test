@@ -10,6 +10,7 @@ export default function Login() {
   if (session) return redirect("/");
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
+      <div className="py-3 text-sm text-indigo-500 font-bold">Login with:</div>
       <div className="flex flex-col gap-2 mb-5 w-9/12 sm:w-3/12">
         <AuthButtonGoogle />
         <AuthButtonGithub />
