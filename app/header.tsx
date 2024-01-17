@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const Header = () => {
   const { data: session } = useSession();
@@ -9,7 +9,7 @@ const Header = () => {
     if (session) {
       return (
         <button
-          className="bg-indigo-100 hover:bg-indigo-500 hover:text-white text-indigo-500 font-semibold flex flex-row sm:w-full justify-center items-center text-sm h-10 sm:py-2 py-0.5 px-3 rounded-b-xl rounded-r-none hover:ring-4 hover:shadow-xl transition-all gap-1"
+          className="bg-indigo-100 hover:bg-indigo-500 hover:text-white text-indigo-500 font-semibold flex flex-row sm:w-full justify-center items-center text-sm h-10 sm:py-2 py-0.5 px-3 rounded-b-xl hover:ring-4 hover:shadow-xl transition-all gap-1"
           onClick={() => signOut()}
         >
           <div>Logout</div>
@@ -18,13 +18,13 @@ const Header = () => {
       );
     } else {
       return (
-        <button
+        <Link
+          href="/login"
           className="bg-indigo-100 hover:bg-indigo-500 hover:text-white text-indigo-500 font-semibold flex flex-row items-center text-sm h-10 sm:py-2 py-0.5 px-3 sm:rounded-b-xl max-sm:rounded-r-none max-sm:rounded-l-xl hover:ring-4 hover:shadow-xl transition-all"
-          onClick={() => signIn()}
         >
           <img src="/icons/login.svg" className="sm:w-6 w-5" alt="" />
           <div>Login to save result!</div>
-        </button>
+        </Link>
       );
     }
   };

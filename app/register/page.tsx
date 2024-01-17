@@ -33,6 +33,7 @@ export default function Register() {
               name="username"
               id=""
               required
+              disabled
             />
           </div>
           <div className="mb-4 flex flex-col w-full">
@@ -45,6 +46,7 @@ export default function Register() {
               name="password"
               id=""
               required
+              disabled
             />
           </div>
           <div className="mb-4 flex flex-col w-full">
@@ -57,10 +59,11 @@ export default function Register() {
               name="c-password"
               id=""
               required
+              disabled
             />
           </div>
           <button className="mt-3 py-2 w-full bg-emerald-600 text-white rounded-md self-start hover:bg-emerald-700 focus:outline-none focus:ring focus:ring-emerald-400 transition">
-            cooming soon!
+            Register
           </button>
           <Link
             href="/login"
