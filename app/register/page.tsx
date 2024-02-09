@@ -49,7 +49,9 @@ export default function RegisterPage(props: CredentialsFormProps) {
           username: data.get("username"),
           password: data.get("password"),
           redirect: false,
+          callbackUrl: `${window.location.origin}/`,
         });
+        console.log(loginResponse);
         return loginResponse;
       }
     } catch (error) {

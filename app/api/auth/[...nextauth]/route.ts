@@ -4,7 +4,6 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { GET, POST } from "@/app/api/auth/route";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -37,24 +36,20 @@ const authOptions: NextAuthOptions = {
         if (!credentials || !credentials.username || !credentials.password)
           return null;
 
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
           where: { username: credentials.username },
         });
 
         if (user?.password) {
           // user log in attempt
-          bcrypt.compare(
+          const passwordMatched = await bcrypt.compare(
             credentials.password,
-            user.password,
-            function (err, result) {
-              if (result) {
-                return user;
-                // const { password, createdAt, id, ...dbUserWithoutPassword } = dbUser; // https://github.com/ipenywis/nextjs-auth/blob/main/lib/auth.ts
-              } else {
-                return null;
-              }
-            }
+            user.password
           );
+          const { password, createdAt, id, ...dbUserWithoutPassword } = user; // https://github.com/ipenywis/nextjs-auth/blob/main/lib/auth.ts ....why? so that password not brought to session in client
+          if (passwordMatched) {
+            return dbUserWithoutPassword as any;
+          }
         }
         return null;
       },
@@ -68,6 +63,16 @@ const authOptions: NextAuthOptions = {
     maxAge: 3 * 24 * 60 * 60, // 3 days
   },
   secret: process.env.NEXTAUTH_SECRET as string,
+  // callbacks: {
+  //   async jwt({ token, user }) {
+  //     user && (token.user = user);
+  //     return token;
+  //   },
+  //   async session({ session, token }) {
+  //     session.user = token.user!;
+  //     return session;
+  //   },
+  // },
 };
 
 const handler = NextAuth(authOptions);

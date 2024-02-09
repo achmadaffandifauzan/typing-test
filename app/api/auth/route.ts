@@ -34,17 +34,17 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-// Action to read
-export const GET = async (req: NextRequest) => {
-  const { email } = await req.json();
+// // Action to read
+// export const GET = async (req: NextRequest) => {
+//   const { email } = await req.json();
 
-  const user = await prisma.user.findUnique({
-    where: {
-      username: email,
-    },
-  });
+//   const user = await prisma.user.findUnique({
+//     where: {
+//       username: email,
+//     },
+//   });
 
-  return NextResponse.json({
-    user,
-  });
-};
+//   return NextResponse.json({
+//     user,
+//   });
+// };
