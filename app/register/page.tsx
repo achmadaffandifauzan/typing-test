@@ -9,11 +9,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 
-interface CredentialsFormProps {
-  csrfToken?: string;
-}
-
-export default function RegisterPage(props: CredentialsFormProps) {
+export default function RegisterPage() {
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -64,7 +60,6 @@ export default function RegisterPage(props: CredentialsFormProps) {
   if (session) router.push("/");
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
-      {props.csrfToken}
       <div className="py-3 text-sm text-indigo-500 font-bold">
         Register with:
       </div>
