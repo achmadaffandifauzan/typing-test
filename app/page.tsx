@@ -93,14 +93,14 @@ const Home = () => {
   const { data: session } = useSession();
 
   const fetchData = async (ifRestart?: string) => {
-    console.log("requesting");
+    // console.log("requesting");
     if (!ifRestart) {
       // restart not adding fetchingHowManyTimesAlready because it already initially set to 1 for resetState()
       setFetchingHowManyTimesAlready(fetchingHowManyTimesAlready + 1);
     }
     try {
       const data = await fetchTypingTestData();
-      console.log("data fresh from fetch :", data);
+      // console.log("data fresh from fetch :", data);
       const originatorName = data.originator.name;
       const content = data.content
         .replace(/[^a-zA-Z0-9'.,/()\-=&$@!?[\]{}:; \n]/g, "")
@@ -109,7 +109,7 @@ const Home = () => {
 
       if (documents.quotes[0].words.length <= 1 || ifRestart === "restart") {
         // new quotes, to : 1. refresh page (replace empty initial quotes) ;or 2. reset quotes if counter is done
-        console.log("LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLLOOLL");
+        // console.log("LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLLOOLL");
         const new_docs = {
           quotes: [
             {
@@ -129,7 +129,7 @@ const Home = () => {
           ],
           currentDocumentIndex: 0,
         };
-        console.log(new_docs);
+        // console.log(new_docs);
         setDocuments(new_docs);
       } else {
         // adding to existing documents
@@ -153,7 +153,7 @@ const Home = () => {
             },
           ],
         };
-        console.log(new_docs);
+        // console.log(new_docs);
         setDocuments(new_docs);
       }
     } catch (err) {
@@ -176,6 +176,7 @@ const Home = () => {
 
     if (session) {
       setUserAuthenticatedOnPageLoad(true);
+      console.log("session =====", session);
     }
   }, []);
 
@@ -194,7 +195,7 @@ const Home = () => {
 
   const fetchMoreDocument = (ifRestart?: string) => {
     if (ifRestart === "restart") {
-      console.log("FETCH FROM RESTARTTTT");
+      // console.log("FETCH FROM RESTARTTTT");
       fetchData(ifRestart);
     } else if (
       fetchingHowManyTimesAlready === documents.quotes.length &&
@@ -207,7 +208,6 @@ const Home = () => {
   };
 
   const resetStates = () => {
-    console.log("QQQQQQQ");
     setFetchingHowManyTimesAlready(1);
     setDocuments({
       quotes: [
@@ -272,7 +272,6 @@ const Home = () => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!isTimerRunning && isFinished) {
-      console.log("AA");
       setTriggerStartTime(true);
     }
     if (
@@ -295,7 +294,7 @@ const Home = () => {
         (documents.quotes[currentQuoteIndex].currentWordIndex + 1) <=
         9
     ) {
-      console.log("FETCHMORREEEEEEE");
+      // console.log("FETCHMORREEEEEEE");
       // if on last 9 word of a quote, need to fetch again for the next quote to be shown, but with restriction on fetchMoreDocument() function
       fetchMoreDocument();
     }
@@ -501,7 +500,7 @@ const Home = () => {
             <div
               className="text-xs text-center p-1 cursor-help w-fit self-center hover:bg-indigo-200 rounded-md"
               onMouseDown={() =>
-                toast.error(
+                toast.warning(
                   "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly",
                   {
                     id: "disclaimer quotes",
@@ -509,7 +508,7 @@ const Home = () => {
                 )
               }
               onMouseEnter={() =>
-                toast.error(
+                toast.warning(
                   "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly",
                   {
                     id: "disclaimer quotes",

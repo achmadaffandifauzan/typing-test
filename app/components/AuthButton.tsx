@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 
 const AuthButtonGoogle = () => {
   const handleClickGoogle = () => {
-    signIn("google");
+    signIn("google").then(async () => {});
   };
   return (
     <button

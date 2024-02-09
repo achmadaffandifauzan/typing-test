@@ -10,14 +10,28 @@ datasource db {
 
 model User {
   id              Int             @id @default(autoincrement())
-  username        String          @db.VarChar(25)
+  username        String?         @unique @db.VarChar(25)
+  name            String?         @db.VarChar(25)
+  password        String?         @db.VarChar(300)
+  createdAt       DateTime        @default(now())
   typingHistories TypingHistory[]
 }
 
 model TypingHistory {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  author    User?    @relation(fields: [authorid], references: [id])
-  authorid  Int
-  result    String   @db.VarChar(45)
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  authorId        Int
+  wpm             Int
+  wrongCharacters String?  @db.VarChar(500)
+  quote           Quote?
+  author          User     @relation(fields: [authorId], references: [id])
+
+  @@index([authorId], map: "TypingHistory_authorId_fkey")
+}
+
+model Quote {
+  id              Int           @id @default(autoincrement())
+  quoteString     String        @db.VarChar(300)
+  typingHistoryId Int           @unique
+  typingHistory   TypingHistory @relation(fields: [typingHistoryId], references: [id])
 }

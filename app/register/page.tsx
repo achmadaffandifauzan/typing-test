@@ -1,15 +1,68 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { AuthButtonGoogle } from "../components/AuthButton";
 import { AuthButtonGithub } from "../components/AuthButton";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
-export default function RegisterPage() {
+interface CredentialsFormProps {
+  csrfToken?: string;
+}
+
+export default function RegisterPage(props: CredentialsFormProps) {
+  const router = useRouter();
   const { data: session } = useSession();
-  if (session) return redirect("/");
+
+  const handleSubmit = async (e: {
+    preventDefault: () => void;
+    currentTarget: HTMLFormElement | undefined;
+  }) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+
+    if (data.get("password") !== data.get("re_password")) {
+      return toast.error("Passwords do not match. Please try again.", {
+        duration: 2000,
+      });
+    }
+    try {
+      const registerResponseJSON = await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: data.get("username"),
+          password: data.get("password"),
+        }),
+      });
+      if (registerResponseJSON.status == 200) {
+        // const registerResponse = await registerResponseJSON.json();
+        // console.log(registerResponse);
+
+        // Log in the user after successful registration
+        const loginResponse = await signIn("credentials", {
+          username: data.get("username"),
+          password: data.get("password"),
+          redirect: false,
+        });
+        return loginResponse;
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+      return toast.error("Error. Please try again.", {
+        duration: 2000,
+      });
+    }
+  };
+  if (session) router.push("/");
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
+      {props.csrfToken}
       <div className="py-3 text-sm text-indigo-500 font-bold">
         Register with:
       </div>
@@ -18,7 +71,7 @@ export default function RegisterPage() {
         <AuthButtonGithub />
       </div>
       <form
-        action=""
+        onSubmit={handleSubmit}
         className="flex flex-col flex-wrap justify-center items-center w-9/12 sm:w-3/12 "
       >
         <div className="flex flex-row w-full gap-2 items-center mb-5">
@@ -28,7 +81,7 @@ export default function RegisterPage() {
         </div>
         <div className="mb-4 flex flex-col w-full">
           <label htmlFor="username" className="">
-            Username or E-mail
+            Username
           </label>
           <input
             className="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring focus:ring-indigo-200 transition"

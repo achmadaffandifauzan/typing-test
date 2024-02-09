@@ -4,6 +4,7 @@ import { AuthButtonGoogle } from "../components/AuthButton";
 import { AuthButtonGithub } from "../components/AuthButton";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function Login() {
   const { data: session } = useSession();
@@ -26,7 +27,7 @@ export default function Login() {
         </div>
         <div className="mb-4 flex flex-col w-full">
           <label htmlFor="username" className="">
-            Username or E-mail
+            Username
           </label>
           <input
             className="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring focus:ring-indigo-200 transition"
