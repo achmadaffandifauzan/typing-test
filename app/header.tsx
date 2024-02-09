@@ -33,11 +33,7 @@ const Header = () => {
       return (
         <div className="absolute sm:top-5 sm:right-12 right-28 flex flex-row gap-2 justify-center items-center max-sm:text-center ">
           <div>
-            Hi{" "}
-            <span className="font-bold">
-              {session?.user?.name || session?.user?.username}
-            </span>
-            !
+            Hi <span className="font-bold">{session?.user?.name}</span>!
           </div>
           <img src="/icons/waving-hand.svg" className="sm:w-7 w-5" alt="" />
         </div>
