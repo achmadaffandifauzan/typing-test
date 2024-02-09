@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
 
 export const POST = async (req: NextRequest) => {
+  // POST here only for register (when client req on /api/auth on POST method)
   try {
     const { username, password } = await req.json();
 

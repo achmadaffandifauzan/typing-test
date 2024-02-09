@@ -63,16 +63,20 @@ const authOptions: NextAuthOptions = {
     maxAge: 3 * 24 * 60 * 60, // 3 days
   },
   secret: process.env.NEXTAUTH_SECRET as string,
-  // callbacks: {
-  //   async jwt({ token, user }) {
-  //     user && (token.user = user);
-  //     return token;
-  //   },
-  //   async session({ session, token }) {
-  //     session.user = token.user!;
-  //     return session;
-  //   },
-  // },
+  callbacks: {
+    // as far as i know, to provide session data after login success / while authenticated, and add more content to session object
+    async jwt({ token, user }) {
+      user && (token.user = user);
+      return token;
+    },
+    async session({ session, token }) {
+      // console.log("session...", session);
+      // console.log("token...", token);
+
+      session.user = token.user!;
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
