@@ -189,7 +189,7 @@ const Home = () => {
 
   useEffect(() => {
     if (userAuthenticatedOnPageLoad) {
-      toast.success("Welcome Back!");
+      toast.success("Welcome Back!", { duration: 1500 });
     }
   }, [userAuthenticatedOnPageLoad]);
 

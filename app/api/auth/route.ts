@@ -28,24 +28,25 @@ export const POST = async (req: NextRequest) => {
         username: username,
       },
     });
-    return NextResponse.json(newUser);
+    return new Response(JSON.stringify(newUser));
   } catch (error) {
     console.error("Error during user registration:", error);
     return new Response("Internal Server Error", { status: 500 });
   }
 };
 
-// // Action to read
-// export const GET = async (req: NextRequest) => {
-//   const { email } = await req.json();
+export const GET = async (req: NextRequest) => {
+  const { username } = await req.json();
+  // Check if the username already exists
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      username: username,
+    },
+  });
 
-//   const user = await prisma.user.findUnique({
-//     where: {
-//       username: email,
-//     },
-//   });
-
-//   return NextResponse.json({
-//     user,
-//   });
-// };
+  if (existingUser) {
+    return new Response(JSON.stringify(existingUser));
+  } else {
+    return new Response("User does not exist", { status: 409 });
+  }
+};

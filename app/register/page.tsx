@@ -47,8 +47,6 @@ export default function RegisterPage() {
           redirect: false,
           callbackUrl: `${window.location.origin}/`,
         });
-        console.log(loginResponse);
-        return loginResponse;
       }
     } catch (error) {
       console.log("Error: ", error);

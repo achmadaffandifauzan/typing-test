@@ -1,10 +1,14 @@
 "use client";
 import React from "react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 
 const AuthButtonGoogle = () => {
   const handleClickGoogle = () => {
-    signIn("google").then(async () => {});
+    signIn("google").then(async (res: any) => {
+      console.log("success login");
+      const session = await getSession();
+      console.log("session after signin", session);
+    });
   };
   return (
     <button
