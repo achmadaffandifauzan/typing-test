@@ -2,10 +2,16 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// datasource db {
+//   provider          = "mysql"
+//   url               = env("DATABASE_URL")
+//   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+// }
+
 datasource db {
-  provider          = "mysql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model User {
@@ -25,8 +31,6 @@ model TypingHistory {
   wrongCharacters String?  @db.VarChar(500)
   quote           Quote?
   author          User     @relation(fields: [authorId], references: [id])
-
-  @@index([authorId], map: "TypingHistory_authorId_fkey")
 }
 
 model Quote {
