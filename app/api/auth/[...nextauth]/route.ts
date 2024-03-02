@@ -76,6 +76,30 @@ const authOptions: NextAuthOptions = {
       session.user = token.user!;
       return session;
     },
+    async signIn({ user }) {
+      // Use this callback to control if a user is allowed to sign in. Returning true will continue the sign-in flow. Throwing an error or returning a string will stop the flow, and redirect the user.
+      // https://next-auth.js.org/configuration/callbacks
+      console.log(user);
+      const foundUser = await prisma.user.findUnique({
+        where: { username: user.email! },
+      });
+      if (foundUser) {
+        return true;
+      } else {
+        // Create a new user if user with this email not existed
+        const newUser = await prisma.user.create({
+          data: {
+            username: user.email!,
+            name: user.name,
+          },
+        });
+        if (newUser) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
   },
 };
 

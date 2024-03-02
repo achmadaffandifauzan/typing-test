@@ -16,8 +16,8 @@ datasource db {
 
 model User {
   id              Int             @id @default(autoincrement())
-  username        String?         @unique @db.VarChar(25)
-  name            String?         @db.VarChar(25)
+  username        String          @unique @db.VarChar(50)
+  name            String?         @db.VarChar(100)
   password        String?         @db.VarChar(300)
   createdAt       DateTime        @default(now())
   typingHistories TypingHistory[]
