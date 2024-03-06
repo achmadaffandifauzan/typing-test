@@ -30,9 +30,10 @@ interface Words {
   wrongCharactersIndex: string[];
 }
 interface PreviousScore {
+  allTypedChar?: string[];
   WPM?: number;
   accuracy?: number;
-  wrongCharCount?: object;
+  wrongCharacters?: object;
 }
 
 const Home = () => {

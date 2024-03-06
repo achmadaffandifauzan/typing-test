@@ -28,12 +28,6 @@ const ResultScore = ({
   isFinished,
   allTypedChar,
 }: ResultScoreProps) => {
-  const [result, setResult] = useState<ResultSchema>({
-    allTypedChar: [""],
-    wrongCharacters: [""],
-    accuracy: 0,
-    wpm: 0,
-  });
   const [accuracy, setAccuracy] = useState<number>(0);
   const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
   const [totalTypedChars, setTotalTypedChars] = useState<number>(0);
@@ -67,7 +61,7 @@ const ResultScore = ({
       }
       for (let wordObj of quoteObj.words) {
         if (wordObj.currentCharIndex !== 0) {
-          // check if user already typing it, why check? so system doesn't need to loop over un-typed words
+          // check if user already typing it, why check? so system doesn't need to loop over words that havent been typed
           temporaryTotalTypedChars += wordObj.currentCharIndex;
         }
       }
@@ -103,22 +97,50 @@ const ResultScore = ({
       // why justru !isFinished to set score ? because if isFinished == true, the app reset totalTypedChars and accuracy (on resetState)
       // previousScore only displayed after user is completing the typingtest
       setPreviousScore({
+        allTypedChar: allTypedChar,
         WPM: totalTypedWords,
         accuracy: accuracy,
-        wrongCharCount: wrongCharCount,
-      });
-
-      // result only for Authenticated users,
-      // previousScore is exist because the fact that there are unauthenticated users that still need to access WPM, accuracy, and  wrongCharObject
-      setResult({
-        allTypedChar: allTypedChar,
-        wrongCharacters: [...result.wrongCharacters],
-        accuracy: accuracy,
-        wpm: totalTypedWords,
+        wrongCharacters: wrongCharCount,
       });
     }
   }, [totalTypedChars, accuracy]);
+  const saveResultToDatabase = async (data: any) => {
+    const { wpm, wrongCharacters, allTypedChar, authorId } = data;
+    try {
+      console.log(data);
+      const savingResponseJSON = await fetch("/api/typing", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          wpm,
+          wrongCharacters,
+          allTypedChar,
+          authorId,
+        }),
+      });
+      console.log(savingResponseJSON);
+      if (savingResponseJSON.status == 200) {
+        return savingResponseJSON;
+      } else {
+        throw new Error("Error while saving your result");
+      }
+    } catch (error) {
+      return error;
+    }
+  };
   if (!isTimerRunning && previousScore.WPM && previousScore.accuracy) {
+    // save result to db
+    if (isFinished) {
+      useEffect(() => {
+        if (previousScore.WPM !== 0) {
+          console.log("Sending result to server", previousScore);
+          const saveAttempt = saveResultToDatabase(previousScore);
+          console.log(saveAttempt);
+        }
+      }, [previousScore]);
+    }
     return (
       <div className="text-center">
         <div className="font-bold">Previous Attempt</div>

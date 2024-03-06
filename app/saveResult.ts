@@ -1,4 +1,5 @@
 const saveResult = async (content: any) => {
+  const { WPM, accuracy, allTypedChar, wrongCharacters } = content;
   const fetchPOST = await fetch("/api/posts", {
     method: "POST",
     headers: {

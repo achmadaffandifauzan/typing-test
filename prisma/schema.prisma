@@ -2,12 +2,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// datasource db {
-//   provider          = "mysql"
-//   url               = env("DATABASE_URL")
-//   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-// }
-
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
@@ -28,14 +22,8 @@ model TypingHistory {
   createdAt       DateTime @default(now())
   authorId        Int
   wpm             Int
-  wrongCharacters String?  @db.VarChar(500)
-  quote           Quote?
+  accuracy        Int
+  wrongCharacters String[] @db.VarChar(500)
+  allTypedChar    String[] @db.VarChar(300)
   author          User     @relation(fields: [authorId], references: [id])
-}
-
-model Quote {
-  id              Int           @id @default(autoincrement())
-  quoteString     String        @db.VarChar(300)
-  typingHistoryId Int           @unique
-  typingHistory   TypingHistory @relation(fields: [typingHistoryId], references: [id])
 }
