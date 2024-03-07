@@ -91,7 +91,7 @@ const Home = () => {
     documents.quotes[documents.currentDocumentIndex].currentWordIndex;
 
   // get user authentication status
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const fetchData = async (ifRestart?: string) => {
     // console.log("requesting");
@@ -175,7 +175,7 @@ const Home = () => {
       hasInitiallyFetchedData.current = true;
     }
 
-    if (session) {
+    if (status === "authenticated") {
       setUserAuthenticatedOnPageLoad(true);
       console.log("session =====", session);
     }

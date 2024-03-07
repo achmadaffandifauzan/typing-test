@@ -4,6 +4,8 @@ import DisplayAccuracy from "./DisplayAccuracy";
 import DisplayWPM from "./DisplayWPM";
 import { DocumentsSchema, PreviousScore } from "./page";
 import { useEffect, useState } from "react";
+import { saveResultToDatabase } from "./saveResult";
+import { useSession } from "next-auth/react";
 
 interface ResultScoreProps {
   documents: DocumentsSchema;
@@ -12,12 +14,6 @@ interface ResultScoreProps {
   setPreviousScore: React.Dispatch<React.SetStateAction<PreviousScore>>;
   isFinished: boolean;
   allTypedChar: string[];
-}
-interface ResultSchema {
-  allTypedChar: string[];
-  wrongCharacters: string[];
-  accuracy: number;
-  wpm: number;
 }
 
 const ResultScore = ({
@@ -34,6 +30,7 @@ const ResultScore = ({
   const [wrongCharCount, setWrongCharCount] = useState<{
     [key: string]: number;
   }>({});
+  const { data: session, status } = useSession();
   // state example
   // }
   //   "a": 2,
@@ -104,40 +101,17 @@ const ResultScore = ({
       });
     }
   }, [totalTypedChars, accuracy]);
-  const saveResultToDatabase = async (data: any) => {
-    const { wpm, wrongCharacters, allTypedChar, authorId } = data;
-    try {
-      console.log(data);
-      const savingResponseJSON = await fetch("/api/typing", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          wpm,
-          wrongCharacters,
-          allTypedChar,
-          authorId,
-        }),
-      });
-      console.log(savingResponseJSON);
-      if (savingResponseJSON.status == 200) {
-        return savingResponseJSON;
-      } else {
-        throw new Error("Error while saving your result");
-      }
-    } catch (error) {
-      return error;
-    }
-  };
   if (!isTimerRunning && previousScore.WPM && previousScore.accuracy) {
     // save result to db
     if (isFinished) {
       useEffect(() => {
         if (previousScore.WPM !== 0) {
           console.log("Sending result to server", previousScore);
-          const saveAttempt = saveResultToDatabase(previousScore);
-          console.log(saveAttempt);
+
+          if (status === "authenticated") {
+            const saveAttempt = saveResultToDatabase(previousScore, session);
+            console.log(saveAttempt);
+          }
         }
       }, [previousScore]);
     }

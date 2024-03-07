@@ -66,14 +66,18 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     // as far as i know, to provide session data after login success / while authenticated, and add more content to session object
     async jwt({ token, user }) {
-      user && (token.user = user);
+      user && (token.username = user.username);
       return token;
     },
     async session({ session, token }) {
       // console.log("session...", session);
       // console.log("token...", token);
-
-      session.user = token.user!;
+      if (token.email) {
+        session.user.username = token.email;
+      }
+      if (token.username) {
+        session.user.username = token.username;
+      }
       return session;
     },
     async signIn({ user, account }) {

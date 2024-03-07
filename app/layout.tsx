@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 
 import SessionProvider from "./components/SessionProvider";
-import { getServerSession } from "next-auth";
+// import { getServerSession } from "next-auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,11 +18,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  // const session = await getServerSession();
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>
+        <SessionProvider>
           {children}
           <Toaster position="top-right" expand={true} richColors />
         </SessionProvider>
