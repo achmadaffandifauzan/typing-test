@@ -6,6 +6,7 @@ import { DocumentsSchema, PreviousScore } from "./page";
 import { useEffect, useState } from "react";
 import { saveResultToDatabase } from "./saveResult";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 interface ResultScoreProps {
   documents: DocumentsSchema;
@@ -106,11 +107,18 @@ const ResultScore = ({
     if (isFinished) {
       useEffect(() => {
         if (previousScore.WPM !== 0) {
-          console.log("Sending result to server", previousScore);
+          // console.log("Sending result to server", previousScore);
 
           if (status === "authenticated") {
-            const saveAttempt = saveResultToDatabase(previousScore, session);
-            console.log(saveAttempt);
+            const saveAttempt = async () => {
+              const result = await saveResultToDatabase(previousScore, session);
+              if (result == true) {
+                toast.success("Saving result success!", { duration: 2500 });
+              } else {
+                toast.error("Saving result failed!", { duration: 1500 });
+              }
+            };
+            saveAttempt();
           }
         }
       }, [previousScore]);

@@ -22,8 +22,8 @@ model TypingHistory {
   createdAt       DateTime @default(now())
   authorId        Int
   wpm             Int
-  accuracy        Int
-  wrongCharacters String[] @db.VarChar(500)
-  allTypedChar    String[] @db.VarChar(300)
+  accuracy        Float
+  wrongCharacters String   @db.VarChar(500)
+  allTypedChar    String   @db.VarChar(300)
   author          User     @relation(fields: [authorId], references: [id])
 }

@@ -35,18 +35,4 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-export const GET = async (req: NextRequest) => {
-  const { username } = await req.json();
-  // Check if the username already exists
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      username: username,
-    },
-  });
-
-  if (existingUser) {
-    return new Response(JSON.stringify(existingUser));
-  } else {
-    return new Response("User does not exist", { status: 409 });
-  }
-};
+// GET? no need, to get 1 user, we can directly use the ORM in server components
