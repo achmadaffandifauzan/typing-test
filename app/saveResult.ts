@@ -1,17 +1,14 @@
 "use server"; // maybe if the file is just .ts, the default value is use client, so need to explicitly state the use server
 import prisma from "@/lib/prisma";
+import { getOneUser } from "@/prisma/functions/user";
 export const saveResultToDatabase = async (data: any, session: any) => {
   const { WPM, accuracy, allTypedChar, wrongCharacters } = data;
   const { username } = session.user;
   try {
     // console.log("result to be stored", data);
 
-    // using ORM directly in the server components
-    const user = await prisma.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
+    // using ORM directly in the server components here
+    const user = await getOneUser(username);
     if (!user) {
       throw new Error("No user found!");
     }
@@ -35,8 +32,8 @@ export const saveResultToDatabase = async (data: any, session: any) => {
     //   }),
     // });
 
-    // use ORM directly in here
-    const newTypingHistory = await prisma.typingHistory.create({
+    // using ORM directly in the server components here
+    await prisma.typingHistory.create({
       data: {
         wpm: WPM,
         wrongCharacters: jsonWrongCharacters,

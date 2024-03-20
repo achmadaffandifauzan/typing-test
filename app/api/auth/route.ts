@@ -36,3 +36,4 @@ export const POST = async (req: NextRequest) => {
 };
 
 // GET? no need, to get 1 user, we can directly use the ORM in server components
+// https://www.reddit.com/r/nextjs/comments/175gg9c/how_to_retrieve_data_from_an_orm_in_next_js_13/

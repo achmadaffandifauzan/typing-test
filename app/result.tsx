@@ -105,23 +105,23 @@ const ResultScore = ({
   if (!isTimerRunning && previousScore.WPM && previousScore.accuracy) {
     // save result to db
     if (isFinished) {
-      useEffect(() => {
-        if (previousScore.WPM !== 0) {
-          // console.log("Sending result to server", previousScore);
+      // useEffect(() => {
+      if (previousScore.WPM !== 0) {
+        // console.log("Sending result to server", previousScore);
 
-          if (status === "authenticated") {
-            const saveAttempt = async () => {
-              const result = await saveResultToDatabase(previousScore, session);
-              if (result == true) {
-                toast.success("Saving result success!", { duration: 2500 });
-              } else {
-                toast.error("Saving result failed!", { duration: 1500 });
-              }
-            };
-            saveAttempt();
-          }
+        if (status === "authenticated") {
+          const saveAttempt = async () => {
+            const result = await saveResultToDatabase(previousScore, session);
+            if (result == true) {
+              toast.success("Saving result success!", { duration: 2500 });
+            } else {
+              toast.error("Saving result failed!", { duration: 1500 });
+            }
+          };
+          saveAttempt();
         }
-      }, [previousScore]);
+      }
+      // }, [previousScore]);
     }
     return (
       <div className="text-center">
