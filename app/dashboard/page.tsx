@@ -6,10 +6,13 @@ const Dashboard = () => {
       <Header />
       <div className="flex flex-col sm:h-screen px-10">
         <div className="flex flex-row h-4/6 flex-wrap justify-between items-center sm:pt-20">
-          <div className="w-4/12">Your Profile</div>
-          <div className="w-6/12">Graph</div>
+          <div className="text-center w-full font-bold text-lg text-indigo-700">
+            Coming Soon!
+          </div>
+          {/* <div className="w-4/12">Your Profile</div>
+          <div className="w-6/12">Graph</div> */}
         </div>
-        <div className="flex h-2/6">Keyboard</div>
+        {/* <div className="flex h-2/6">Keyboard</div> */}
       </div>
     </div>
   );
