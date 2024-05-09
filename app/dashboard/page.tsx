@@ -13,10 +13,10 @@ const Dashboard = async () => {
 
   const typingHistories = await getTypingHistories(user?.username);
   // console.log("typingHistories", typingHistories);
-  // change typing format to be chart data
 
+  // change typing format to be chart data
   const labels: any = typingHistories?.map((typing) => {
-    return dayjs(typing.createdAt.toString()).format("D/MM/YY");
+    return dayjs(typing.createdAt.toString()).format("D MMM");
   });
   const accuracyChartData: any = {
     label: "Accuracy",
@@ -46,7 +46,7 @@ const Dashboard = async () => {
             typingHistories={typingHistories}
           ></UpperContent>
         </div>
-        <div className="flex flex-col flex-wrap justify-around items-center sm:pt-20 sm:gap-8">
+        <div className="flex flex-col flex-wrap justify-around items-center sm:pt-9 sm:gap-8">
           <div className="sm:w-10/12 w-full bg-indigo-100 rounded-xl flex justify-start items-center">
             <AccuracyLineChart
               accuracyChartData={accuracyChartData}

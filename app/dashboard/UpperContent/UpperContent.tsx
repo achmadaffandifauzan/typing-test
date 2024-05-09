@@ -1,9 +1,11 @@
+import dayjs from "dayjs";
 import React from "react";
 
 const UpperContent = ({ user, session, typingHistories }: any) => {
-  // const userDateCreation = dayjs(user?.createdAt!.toString()).format(
-  //   "MMM D, YYYY"
-  // );
+  let userDateCreation = "Loading...";
+  if (user) {
+    userDateCreation = dayjs(user.createdAt!.toString()).format("MMM D, YYYY");
+  }
   let wpm_avg = 0;
   let accuracy_avg = 0;
   if (user) {
@@ -74,7 +76,6 @@ const UpperContent = ({ user, session, typingHistories }: any) => {
       </>
     );
   };
-  const userDateCreation = "today";
   return (
     <>
       <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl gap-1">
