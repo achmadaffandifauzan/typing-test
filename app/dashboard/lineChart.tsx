@@ -22,25 +22,38 @@ ChartJS.register(
   Legend
 );
 export const options = {
-  responsive: true,
   plugins: {
     legend: {
       position: "top" as const,
     },
-    title: {
-      display: true,
-      text: "Your Past Results",
+  },
+  layout: {
+    padding: {
+      left: 20,
+      right: 20,
+      top: 5,
+      bottom: 5,
     },
   },
-  maintainAspectRatio: true,
+
+  responsive: true,
+  maintainAspectRatio: false,
 };
-const LineChart = ({ accuracyChartData, wpmChartData, labels }: any) => {
+const AccuracyLineChart = ({ accuracyChartData, labels }: any) => {
   const data = {
     labels,
-    datasets: [accuracyChartData, wpmChartData],
+    datasets: [accuracyChartData],
   };
-  console.log(data);
-  return <Line options={options} data={data} />;
+  // console.log(data);
+  return <Line className="relative sm:h-56" options={options} data={data} />;
+};
+const WpmLineChart = ({ wpmChartData, labels }: any) => {
+  const data = {
+    labels,
+    datasets: [wpmChartData],
+  };
+  // console.log(data);
+  return <Line className="relative sm:h-56" options={options} data={data} />;
 };
 
-export default LineChart;
+export { AccuracyLineChart, WpmLineChart };

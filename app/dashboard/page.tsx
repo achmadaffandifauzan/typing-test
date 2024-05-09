@@ -4,14 +4,13 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getOneUser } from "@/prisma/functions/user";
 import dayjs from "dayjs";
-import LineChart from "./lineChart";
+import { AccuracyLineChart, WpmLineChart } from "./lineChart";
 import { getTypingHistories } from "@/prisma/functions/typing";
+import UpperContent from "./UpperContent/UpperContent";
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
   const user = await getOneUser(session?.user.username!);
-  const userDateCreation = dayjs(user?.createdAt!.toString()).format(
-    "MMM D, YYYY"
-  );
+
   const typingHistories = await getTypingHistories(user?.username);
   // console.log("typingHistories", typingHistories);
   // change typing format to be chart data
@@ -24,49 +23,41 @@ const Dashboard = async () => {
     data: typingHistories?.map((typing) => {
       return typing.accuracy;
     }),
-    borderColor: "#37a345",
-    backgroundColor: "#37a345",
+    borderColor: "rgb(31,209,167,0.7)",
+    backgroundColor: "rgb(31,209,167,0.8)",
   };
   const wpmChartData: any = {
     label: "WPM",
     data: typingHistories?.map((typing) => {
       return typing.wpm;
     }),
-    borderColor: "#d1221f",
-    backgroundColor: "#d1221f",
+    borderColor: "rgb(209,78,31,0.7",
+    backgroundColor: "rgb(209,78,31,0.8)",
   };
 
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Header />
       <div className="flex flex-col px-5">
-        <div className="flex sm:flex-row flex-col flex-wrap justify-around items-center sm:pt-20 ">
-          <div className="sm:w-3/12 bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl text-center">
-            {user?.name && (
-              <div>
-                <div>Name : {user?.name}</div>
-              </div>
-            )}
-            {session?.user.email && (
-              <div>
-                Email : <span>{session?.user.email}</span>
-              </div>
-            )}
-            {user?.username && !session?.user.email && (
-              <div>
-                Username : <span>{user?.username}</span>
-              </div>
-            )}
-            <div className="text-sm font-normal">
-              User since {userDateCreation}
-            </div>
-          </div>
-          <div className="sm:w-6/12 bg-indigo-100 rounded-xl sm:p-4 p-1 flex justify-start items-center">
-            <LineChart
+        <div className="flex sm:flex-row flex-col flex-wrap justify-around items-center sm:pt-28">
+          <UpperContent
+            user={user}
+            session={session}
+            typingHistories={typingHistories}
+          ></UpperContent>
+        </div>
+        <div className="flex flex-col flex-wrap justify-around items-center sm:pt-20 sm:gap-8">
+          <div className="sm:w-10/12 w-full bg-indigo-100 rounded-xl flex justify-start items-center">
+            <AccuracyLineChart
               accuracyChartData={accuracyChartData}
+              labels={labels}
+            ></AccuracyLineChart>
+          </div>
+          <div className="sm:w-10/12 w-full bg-indigo-100 rounded-xl flex justify-start items-center">
+            <WpmLineChart
               wpmChartData={wpmChartData}
               labels={labels}
-            ></LineChart>
+            ></WpmLineChart>
           </div>
         </div>
       </div>
