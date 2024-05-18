@@ -12,7 +12,7 @@ import {
   shiftPreviousCharIndex,
   shiftQuotesIndex,
   shiftWordIndex,
-  addWrongCharacter,
+  typingInputEvaluation,
   removeLastWrongCharacter,
 } from "./reduxSlices/typingDocumentsSlice";
 
@@ -30,7 +30,7 @@ export {
   shiftPreviousCharIndex,
   shiftQuotesIndex,
   shiftWordIndex,
-  addWrongCharacter,
+  typingInputEvaluation,
   removeLastWrongCharacter,
 };
 

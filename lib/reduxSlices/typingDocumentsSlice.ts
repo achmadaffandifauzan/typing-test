@@ -16,6 +16,7 @@ const typingDocumentsSlice = createSlice({
               {
                 text: "",
                 typeStatus: "untyped",
+                userInput: "untyped",
               },
             ],
           },
@@ -27,7 +28,7 @@ const typingDocumentsSlice = createSlice({
     currentDocumentIndex: 0,
   },
   reducers: {
-    resetQuotes(state, action) {
+    resetQuotes(state) {
       state = {
         quotes: [
           {
@@ -40,6 +41,7 @@ const typingDocumentsSlice = createSlice({
                   {
                     text: "",
                     typeStatus: "untyped",
+                    userInput: "untyped",
                   },
                 ],
               },
@@ -52,30 +54,34 @@ const typingDocumentsSlice = createSlice({
       };
     },
     addQuotes(state, action) {
+      if (!state.quotes[0].text) {
+        // remove first initial empty quotes
+        state.quotes.pop();
+      }
       state.quotes.push({
         text: action.payload.content,
         words: action.payload.content.split(" ").map((word: string) => {
           return {
-            text: "",
+            text: word,
             currentCharIndex: 0,
             chars: word.split("").map((char: string) => {
               return {
                 text: char,
-                correctness: null,
+                typeStatus: "untyped",
+                userInput: "untyped",
               };
             }),
           };
         }),
         currentWordIndex: 0,
-        author: action.payload.author.name,
+        author: action.payload.author,
       });
     },
-    shiftQuotesIndex(state, action) {
+    shiftQuotesIndex(state) {
       state.currentDocumentIndex += 1;
     },
     shiftWordIndex(state, action) {
       const currentQuoteIndex = action.payload.currentQuoteIndex;
-
       state.quotes[currentQuoteIndex].currentWordIndex += 1;
     },
     shiftNextCharIndex(state, action) {
@@ -94,15 +100,33 @@ const typingDocumentsSlice = createSlice({
         currentWordIndex
       ].currentCharIndex -= 1;
     },
-    addWrongCharacter(state, action) {
+    typingInputEvaluation(state, action) {
       const currentQuoteIndex = action.payload.currentQuoteIndex;
       const currentWordIndex = action.payload.currentWordIndex;
       const currentCharIndex = action.payload.currentCharIndex;
 
+      // change userInput value
       state.quotes[currentQuoteIndex].words[currentWordIndex].chars[
         currentCharIndex
-      ].typeStatus = "incorrect";
+      ].userInput = action.payload.userInput;
+
+      // evaluate correctness
+      if (
+        action.payload.userInput.toString() ===
+        state.quotes[currentQuoteIndex].words[currentWordIndex].chars[
+          currentCharIndex
+        ].text.toString()
+      ) {
+        state.quotes[currentQuoteIndex].words[currentWordIndex].chars[
+          currentCharIndex
+        ].typeStatus = "correct";
+      } else {
+        state.quotes[currentQuoteIndex].words[currentWordIndex].chars[
+          currentCharIndex
+        ].typeStatus = "incorrect";
+      }
     },
+
     removeLastWrongCharacter(state, action) {
       const currentQuoteIndex = action.payload.currentQuoteIndex;
       const currentWordIndex = action.payload.currentWordIndex;
@@ -122,7 +146,7 @@ export const {
   shiftPreviousCharIndex,
   shiftQuotesIndex,
   shiftWordIndex,
-  addWrongCharacter,
+  typingInputEvaluation,
   removeLastWrongCharacter,
 } = typingDocumentsSlice.actions;
 export const typingDocumentsReducer = typingDocumentsSlice.reducer;

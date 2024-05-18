@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { saveResultToDatabase } from "./saveResult";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 interface ResultScoreProps {
   documents: DocumentsSchema;
@@ -23,6 +24,10 @@ const ResultScore = ({
   setPreviousScore,
   isFinished,
 }: ResultScoreProps) => {
+  const dispatch = useAppDispatch();
+  const typingDocuments = useAppSelector((state) => {
+    return state.typingDocuments;
+  });
   const [accuracy, setAccuracy] = useState<number>(0);
   const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
   const [totalTypedChars, setTotalTypedChars] = useState<number>(0);
@@ -76,14 +81,41 @@ const ResultScore = ({
     // not updating state inside a loop. Instead, using temporaryWrongCharCount
     setWrongCharCount(temporaryWrongCharCount);
 
+    const totalTyped = typingDocuments.quotes.reduce((sumTotal, quote) => {
+      const subTotal = quote.words.reduce((sumSubTotal, word) => {
+        if (word.chars[0].typeStatus !== "untyped") {
+          return sumSubTotal + word.currentCharIndex;
+        } else {
+          return sumSubTotal;
+        }
+      }, 0);
+      return sumTotal + subTotal;
+    }, 0);
+
+    let typedIncorrectly = 0;
+    typingDocuments.quotes.map((quote) => {
+      quote.words.map((word) => {
+        word.chars.map((char) => {
+          if (char.typeStatus === "incorrect") {
+            typedIncorrectly += 1;
+          }
+        });
+      });
+    });
+
     // on setAccuracy, why not using totalTypedWords state? because not real time value / because the state value is not updated directly after setTotalTypedWords() above
+    // setAccuracy(
+    //   parseFloat(
+    //     (
+    //       ((temporaryTotalTypedChars - flattenedWrongCharactersIndex.length) /
+    //         temporaryTotalTypedChars) *
+    //       100
+    //     ).toFixed(1)
+    //   )
+    // );
     setAccuracy(
       parseFloat(
-        (
-          ((temporaryTotalTypedChars - flattenedWrongCharactersIndex.length) /
-            temporaryTotalTypedChars) *
-          100
-        ).toFixed(1)
+        (((totalTyped - typedIncorrectly) / totalTyped) * 100).toFixed(1)
       )
     );
   }, [documents]);

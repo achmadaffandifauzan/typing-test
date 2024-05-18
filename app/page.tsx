@@ -10,7 +10,17 @@ import DisplayCurrentQuote from "./DisplayCurrentQuote";
 import DisplayNextQuote from "./DisplayNextQuote";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { useAppDispatch, useAppSelector } from "../lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import {
+  addQuotes,
+  typingInputEvaluation,
+  removeLastWrongCharacter,
+  resetQuotes,
+  shiftNextCharIndex,
+  shiftPreviousCharIndex,
+  shiftQuotesIndex,
+  shiftWordIndex,
+} from "@/lib/store";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -41,7 +51,7 @@ const Home = () => {
   const typingDocuments = useAppSelector((state) => {
     return state.typingDocuments;
   });
-  console.log(typingDocuments);
+  console.log("typingDocuments", typingDocuments);
   const [documents, setDocuments] = useState<DocumentsSchema>({
     quotes: [
       {
@@ -82,17 +92,28 @@ const Home = () => {
     useState(false);
 
   // make the variables to simplify the process
+  const currentQuoteIndex = typingDocuments.currentDocumentIndex;
+  const currentWordIndex =
+    typingDocuments.quotes[typingDocuments.currentDocumentIndex]
+      .currentWordIndex;
+  const currentCharIndex =
+    typingDocuments.quotes[typingDocuments.currentDocumentIndex].words[
+      typingDocuments.quotes[typingDocuments.currentDocumentIndex]
+        .currentWordIndex
+    ].currentCharIndex;
+  console.log(currentQuoteIndex, currentWordIndex, currentCharIndex);
+
   const currentWordObject =
     documents.quotes[documents.currentDocumentIndex].words[
       documents.quotes[documents.currentDocumentIndex].currentWordIndex
     ];
-  const currentQuoteIndex = documents.currentDocumentIndex;
-  const currentCharIndex =
-    documents.quotes[documents.currentDocumentIndex].words[
-      documents.quotes[documents.currentDocumentIndex].currentWordIndex
-    ].currentCharIndex;
-  const currentWordIndex =
-    documents.quotes[documents.currentDocumentIndex].currentWordIndex;
+  // const currentQuoteIndex = documents.currentDocumentIndex;
+  // const currentCharIndex =
+  //   documents.quotes[documents.currentDocumentIndex].words[
+  //     documents.quotes[documents.currentDocumentIndex].currentWordIndex
+  //   ].currentCharIndex;
+  // const currentWordIndex =
+  //   documents.quotes[documents.currentDocumentIndex].currentWordIndex;
 
   // get user authentication status
   const { data: session, status } = useSession();
@@ -106,15 +127,20 @@ const Home = () => {
     try {
       const data = await fetchTypingTestData();
       // console.log("data fresh from fetch :", data);
-      const originatorName = data.originator.name;
+      const { originatorName, author } = data.originator.name;
       const content = data.content
         .replace(/[^a-zA-Z0-9'.,/()\-=&$@!?[\]{}:; \n]/g, "")
         .replace(/\s+/g, " ")
         .trim();
 
-      if (documents.quotes[0].words.length <= 1 || ifRestart === "restart") {
+      if (
+        typingDocuments.quotes[0].words.length <= 1 ||
+        ifRestart === "restart"
+      ) {
         // new quotes, to : 1. refresh page (replace empty initial quotes) ;or 2. reset quotes if counter is done
         // console.log("LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLLOOLL");
+        dispatch(resetQuotes());
+        dispatch(addQuotes({ content, author }));
         const new_docs = {
           quotes: [
             {
@@ -138,6 +164,7 @@ const Home = () => {
         setDocuments(new_docs);
       } else {
         // adding to existing documents
+        dispatch(addQuotes({ content, author }));
         const new_docs = {
           ...documents,
           quotes: [
@@ -163,18 +190,17 @@ const Home = () => {
       }
     } catch (err) {
       setError("Error fetching data.");
+      console.log("Error fetching data.", err);
     } finally {
       setLoading(false);
     }
   };
-  // useEffect(() => {
-  //   console.log(documents);
-  // }, [documents]);
 
   useEffect(() => {
     // initial fetch
     if (!hasInitiallyFetchedData.current) {
       setLoading(true);
+      // console.log("Im fetching a quote");
       fetchData();
       hasInitiallyFetchedData.current = true;
     }
@@ -203,17 +229,19 @@ const Home = () => {
       // console.log("FETCH FROM RESTARTTTT");
       fetchData(ifRestart);
     } else if (
-      fetchingHowManyTimesAlready === documents.quotes.length &&
-      documents.quotes.length - currentQuoteIndex <= 1
+      fetchingHowManyTimesAlready === typingDocuments.quotes.length &&
+      typingDocuments.quotes.length - currentQuoteIndex <= 1
     ) {
       // so if no fetched data coming queue, system ready to re-fetch
       // also, next quotes have to be existed max at 1
+      // console.log("Im fetching a quote");
       fetchData();
     }
   };
 
   const resetStates = () => {
     setFetchingHowManyTimesAlready(1);
+    dispatch(resetQuotes());
     setDocuments({
       quotes: [
         {
@@ -266,6 +294,7 @@ const Home = () => {
 
   const rotateQuotes = () => {
     try {
+      dispatch(shiftQuotesIndex());
       const updatedDocuments = { ...documents };
       updatedDocuments.currentDocumentIndex += 1;
       setDocuments(updatedDocuments);
@@ -284,19 +313,19 @@ const Home = () => {
       event.target.value === typedWord ||
       (event.target.value.length === 1 &&
         event.target.value.slice(-1) === " ") ||
-      (documents.quotes[currentQuoteIndex].words.length -
+      (typingDocuments.quotes[currentQuoteIndex].words.length -
         (currentWordIndex + 1) ===
         0 &&
         event.target.value.slice(-1) === " " &&
-        documents.quotes.length - (currentQuoteIndex + 1) === 0)
+        typingDocuments.quotes.length - (currentQuoteIndex + 1) === 0)
     ) {
-      // ignore if api data is loading || there is no changes || space in first char || press space at the end of wordlist while there is no next quotes
+      // ignore if api data is loading || there is no changes || space in first char || at the end of wordlist, press space, while there is no next quotes
       return null;
     }
     if (
       event.target.value.slice(-1) === " " &&
-      documents.quotes[currentQuoteIndex].words.length -
-        (documents.quotes[currentQuoteIndex].currentWordIndex + 1) <=
+      typingDocuments.quotes[currentQuoteIndex].words.length -
+        (typingDocuments.quotes[currentQuoteIndex].currentWordIndex + 1) <=
         9
     ) {
       // console.log("FETCHMORREEEEEEE");
@@ -305,7 +334,8 @@ const Home = () => {
     }
     if (
       event.target.value.slice(-1) === " " &&
-      documents.quotes[currentQuoteIndex].words[currentWordIndex].chars.length -
+      typingDocuments.quotes[currentQuoteIndex].words[currentWordIndex].chars
+        .length -
         currentCharIndex !==
         0
     ) {
@@ -317,10 +347,19 @@ const Home = () => {
       for (
         let i = currentCharIndex;
         i <
-        updatedDocuments.quotes[currentQuoteIndex].words[currentWordIndex].chars
+        typingDocuments.quotes[currentQuoteIndex].words[currentWordIndex].chars
           .length;
         i++
       ) {
+        dispatch(
+          typingInputEvaluation({
+            currentQuoteIndex,
+            currentWordIndex,
+            currentCharIndex: i,
+            userInput: "space",
+          })
+        );
+        dispatch(shiftNextCharIndex({ currentQuoteIndex, currentWordIndex }));
         newWrongChars.push(
           updatedDocuments.quotes[currentQuoteIndex].words[currentWordIndex]
             .chars[i]
@@ -348,12 +387,14 @@ const Home = () => {
     }
     if (
       event.target.value.slice(-1) === " " &&
-      currentWordIndex === documents.quotes[currentQuoteIndex].words.length - 1
+      currentWordIndex ===
+        typingDocuments.quotes[currentQuoteIndex].words.length - 1
     ) {
       // if on last word & user press space
       rotateQuotes();
     } else if (event.target.value.slice(-1) === " ") {
-      // reset typedWord if user enter a space / when user input space
+      // reset typedWord and shift word index if user enter a space / when user input space
+      dispatch(shiftWordIndex({ currentQuoteIndex }));
       const updatedDocuments = { ...documents };
       updatedDocuments.quotes[currentQuoteIndex].currentWordIndex += 1;
       setDocuments(updatedDocuments);
@@ -365,11 +406,19 @@ const Home = () => {
       // updating documents state for later
       const updatedDocuments = { ...documents };
 
-      const currentQuotesChar = currentWordObject.chars[currentCharIndex - 1];
       if (
-        currentQuotesChar === currentWordObject.wrongCharacters.slice(-1)[0]
+        typingDocuments.quotes[currentQuoteIndex].words[currentWordIndex].chars[
+          currentCharIndex - 1
+        ].typeStatus === "incorrect"
       ) {
         // update wrong chars list, but only if user delete a wrong char
+        dispatch(
+          removeLastWrongCharacter({
+            currentQuoteIndex,
+            currentWordIndex,
+            currentCharIndex,
+          })
+        );
         removedAWrongChar = currentWordObject.wrongCharacters.slice(
           0,
           currentWordObject.wrongCharacters.length - 1
@@ -391,23 +440,34 @@ const Home = () => {
         ].wrongCharactersIndex = removedAWrongCharIndex;
       }
       // update current char index
+      dispatch(shiftPreviousCharIndex({ currentQuoteIndex, currentWordIndex }));
       updatedDocuments.quotes[currentQuoteIndex].words[
         currentWordIndex
       ].currentCharIndex -= 1;
       setDocuments(updatedDocuments);
       setTypedWord(event.target.value);
     } else {
-      // console.log(currentWordObject);
-
-      if (currentCharIndex < currentWordObject.chars.length) {
-        // pastikan sisa huruf belum habis di kata itu
+      if (
+        currentCharIndex <
+        typingDocuments.quotes[currentQuoteIndex].words[currentWordIndex].chars
+          .length
+      ) {
+        // make sure there are no remaining char in the word
 
         setTypedWord(event.target.value);
         if (
           event.target.value.slice(-1) !==
           currentWordObject.chars[currentCharIndex]
         ) {
-          // check char similarity, if wrong, enter this, if correct, to the next char...
+          // check char similarity, if wrong, enter this, if correct enter else, then shift to the next char...
+          dispatch(
+            typingInputEvaluation({
+              currentQuoteIndex,
+              currentWordIndex,
+              currentCharIndex,
+              userInput: event.target.value.slice(-1),
+            })
+          );
           currentWordObject.wrongCharacters.push(
             currentWordObject.chars[currentCharIndex]
           );
@@ -415,8 +475,18 @@ const Home = () => {
           currentWordObject.wrongCharactersIndex.push(
             `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
           );
+        } else {
+          dispatch(
+            typingInputEvaluation({
+              currentQuoteIndex,
+              currentWordIndex,
+              currentCharIndex,
+              userInput: event.target.value.slice(-1),
+            })
+          );
         }
         // update for next chart index
+        dispatch(shiftNextCharIndex({ currentQuoteIndex, currentWordIndex }));
         const updatedDocuments = { ...documents };
         updatedDocuments.quotes[currentQuoteIndex].words[
           currentWordIndex
