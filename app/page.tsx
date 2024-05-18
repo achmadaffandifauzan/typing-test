@@ -10,6 +10,7 @@ import DisplayCurrentQuote from "./DisplayCurrentQuote";
 import DisplayNextQuote from "./DisplayNextQuote";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "../lib/hooks";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -30,13 +31,17 @@ interface Words {
   wrongCharactersIndex: string[];
 }
 interface PreviousScore {
-  allTypedChar?: string[];
   WPM?: number;
   accuracy?: number;
   wrongCharacters?: object;
 }
 
 const Home = () => {
+  const dispatch = useAppDispatch();
+  const typingDocuments = useAppSelector((state) => {
+    return state.typingDocuments;
+  });
+  console.log(typingDocuments);
   const [documents, setDocuments] = useState<DocumentsSchema>({
     quotes: [
       {
@@ -56,7 +61,6 @@ const Home = () => {
     ],
     currentDocumentIndex: 0,
   });
-  const [allTypedChar, setAllTypedChar] = useState<string[]>([]);
   const [typedWord, setTypedWord] = useState<string>("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [triggerStartTime, setTriggerStartTime] = useState(false);
@@ -360,11 +364,12 @@ const Home = () => {
       let removedAWrongCharIndex: string[] = [];
       // updating documents state for later
       const updatedDocuments = { ...documents };
+
       const currentQuotesChar = currentWordObject.chars[currentCharIndex - 1];
       if (
         currentQuotesChar === currentWordObject.wrongCharacters.slice(-1)[0]
       ) {
-        // update wrong chars list only if user delete a wrong char
+        // update wrong chars list, but only if user delete a wrong char
         removedAWrongChar = currentWordObject.wrongCharacters.slice(
           0,
           currentWordObject.wrongCharacters.length - 1
@@ -411,10 +416,6 @@ const Home = () => {
             `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
           );
         }
-        setAllTypedChar([
-          ...allTypedChar,
-          currentWordObject.chars[currentCharIndex],
-        ]);
         // update for next chart index
         const updatedDocuments = { ...documents };
         updatedDocuments.quotes[currentQuoteIndex].words[
@@ -488,7 +489,6 @@ const Home = () => {
             previousScore={previousScore}
             setPreviousScore={setPreviousScore}
             isFinished={isFinished}
-            allTypedChar={allTypedChar}
           />
           <div
             id="quotes"

@@ -14,7 +14,6 @@ interface ResultScoreProps {
   previousScore: PreviousScore;
   setPreviousScore: React.Dispatch<React.SetStateAction<PreviousScore>>;
   isFinished: boolean;
-  allTypedChar: string[];
 }
 
 const ResultScore = ({
@@ -23,7 +22,6 @@ const ResultScore = ({
   previousScore,
   setPreviousScore,
   isFinished,
-  allTypedChar,
 }: ResultScoreProps) => {
   const [accuracy, setAccuracy] = useState<number>(0);
   const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
@@ -92,10 +90,9 @@ const ResultScore = ({
 
   useEffect(() => {
     if (!isFinished) {
-      // why justru !isFinished to set score ? because if isFinished == true, the app reset totalTypedChars and accuracy (on resetState)
+      // why justru !isFinished to set score ? because if isFinished == true, the app had reset totalTypedChars and accuracy (on resetState)
       // previousScore only displayed after user is completing the typingtest
       setPreviousScore({
-        allTypedChar: allTypedChar,
         WPM: totalTypedWords,
         accuracy: accuracy,
         wrongCharacters: wrongCharCount,
