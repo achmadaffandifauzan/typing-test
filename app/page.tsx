@@ -282,13 +282,10 @@ const Home = () => {
       ) {
         dispatch(
           typingInputEvaluation({
-            currentQuoteIndex,
-            currentWordIndex,
-            currentCharIndex: i,
             userInput: "space",
           })
         );
-        dispatch(shiftNextCharIndex({ currentQuoteIndex, currentWordIndex }));
+        dispatch(shiftNextCharIndex());
       }
 
       // update currentWordIndex happening in conditional below this
@@ -305,7 +302,7 @@ const Home = () => {
       rotateQuotes();
     } else if (event.target.value.slice(-1) === " ") {
       // reset typedWord and shift word index if user enter a space / when user input space
-      dispatch(shiftWordIndex({ currentQuoteIndex }));
+      dispatch(shiftWordIndex());
       setTypedWord("");
     } else if (event.target.value.length < typedWord.length) {
       // when user delete the char
@@ -317,16 +314,10 @@ const Home = () => {
         "incorrect"
       ) {
         // update wrong chars list, but only if user delete a wrong char
-        dispatch(
-          removeLastWrongCharacter({
-            currentQuoteIndex,
-            currentWordIndex,
-            currentCharIndex,
-          })
-        );
+        dispatch(removeLastWrongCharacter());
       }
       // update current char index
-      dispatch(shiftPreviousCharIndex({ currentQuoteIndex, currentWordIndex }));
+      dispatch(shiftPreviousCharIndex());
       setTypedWord(event.target.value);
     } else {
       if (
@@ -340,14 +331,11 @@ const Home = () => {
         // correctness evaluation happened in typingDocuments reducer
         dispatch(
           typingInputEvaluation({
-            currentQuoteIndex,
-            currentWordIndex,
-            currentCharIndex,
             userInput: event.target.value.slice(-1),
           })
         );
         // update for next chart index
-        dispatch(shiftNextCharIndex({ currentQuoteIndex, currentWordIndex }));
+        dispatch(shiftNextCharIndex());
       }
     }
 

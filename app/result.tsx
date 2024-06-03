@@ -23,37 +23,37 @@ const ResultScore = ({ isTimerRunning, isFinished }: ResultScoreProps) => {
   const currentAttemptNumber = typingDocuments.currentAttemptNumber;
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    const totalTyped = typingDocuments.documents[
-      currentAttemptNumber
-    ].quotes.reduce((sumTotal, quote) => {
-      const subTotal = quote.words.reduce((sumSubTotal, word) => {
-        if (word.chars[0].typeStatus !== "untyped") {
-          return sumSubTotal + word.currentCharIndex;
-        } else {
-          return sumSubTotal;
-        }
-      }, 0);
-      return sumTotal + subTotal;
-    }, 0);
+  // useEffect(() => {
+  //   const totalTyped = typingDocuments.documents[
+  //     currentAttemptNumber
+  //   ].quotes.reduce((sumTotal, quote) => {
+  //     const subTotal = quote.words.reduce((sumSubTotal, word) => {
+  //       if (word.chars[0].typeStatus !== "untyped") {
+  //         return sumSubTotal + word.currentCharIndex;
+  //       } else {
+  //         return sumSubTotal;
+  //       }
+  //     }, 0);
+  //     return sumTotal + subTotal;
+  //   }, 0);
 
-    let typedIncorrectly = 0;
-    typingDocuments.documents[currentAttemptNumber].quotes.map((quote) => {
-      quote.words.map((word) => {
-        word.chars.map((char) => {
-          if (char.typeStatus === "incorrect") {
-            typedIncorrectly += 1;
-          }
-        });
-      });
-    });
+  //   let typedIncorrectly = 0;
+  //   typingDocuments.documents[currentAttemptNumber].quotes.map((quote) => {
+  //     quote.words.map((word) => {
+  //       word.chars.map((char) => {
+  //         if (char.typeStatus === "incorrect") {
+  //           typedIncorrectly += 1;
+  //         }
+  //       });
+  //     });
+  //   });
 
-    const accuracy = parseFloat(
-      (((totalTyped - typedIncorrectly) / totalTyped) * 100).toFixed(1)
-    );
-    dispatch(updateAccuracy({ accuracy }));
-    dispatch(updateWpm({ totalTyped }));
-  }, [typingDocuments]);
+  //   const accuracy = parseFloat(
+  //     (((totalTyped - typedIncorrectly) / totalTyped) * 100).toFixed(1)
+  //   );
+  //   dispatch(updateAccuracy({ accuracy }));
+  //   dispatch(updateWpm({ totalTyped }));
+  // }, [typingDocuments]);
 
   // if (!isTimerRunning && previousScore.WPM && previousScore.accuracy) {
   //   // save result to db

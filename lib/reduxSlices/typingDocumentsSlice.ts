@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import getIndexes from "./getIndexes";
 const typingDocumentsSlice = createSlice({
   name: "typingDocuments",
 
@@ -97,32 +97,30 @@ const typingDocumentsSlice = createSlice({
     shiftQuotesIndex(state) {
       state.documents[state.currentAttemptNumber].currentQuoteIndex += 1;
     },
-    shiftWordIndex(state, action) {
-      const currentQuoteIndex = action.payload.currentQuoteIndex;
+    shiftWordIndex(state) {
+      const { currentQuoteIndex } = getIndexes(state);
+
       state.documents[state.currentAttemptNumber].quotes[
         currentQuoteIndex
       ].currentWordIndex += 1;
     },
-    shiftNextCharIndex(state, action) {
-      const currentQuoteIndex = action.payload.currentQuoteIndex;
-      const currentWordIndex = action.payload.currentWordIndex;
+    shiftNextCharIndex(state) {
+      const { currentQuoteIndex, currentWordIndex } = getIndexes(state);
 
       state.documents[state.currentAttemptNumber].quotes[
         currentQuoteIndex
       ].words[currentWordIndex].currentCharIndex += 1;
     },
-    shiftPreviousCharIndex(state, action) {
-      const currentQuoteIndex = action.payload.currentQuoteIndex;
-      const currentWordIndex = action.payload.currentWordIndex;
+    shiftPreviousCharIndex(state) {
+      const { currentQuoteIndex, currentWordIndex } = getIndexes(state);
 
       state.documents[state.currentAttemptNumber].quotes[
         currentQuoteIndex
       ].words[currentWordIndex].currentCharIndex -= 1;
     },
     typingInputEvaluation(state, action) {
-      const currentQuoteIndex = action.payload.currentQuoteIndex;
-      const currentWordIndex = action.payload.currentWordIndex;
-      const currentCharIndex = action.payload.currentCharIndex;
+      const { currentQuoteIndex, currentWordIndex, currentCharIndex } =
+        getIndexes(state);
 
       // change userInput value
       state.documents[state.currentAttemptNumber].quotes[
@@ -149,10 +147,10 @@ const typingDocumentsSlice = createSlice({
       }
     },
 
-    removeLastWrongCharacter(state, action) {
-      const currentQuoteIndex = action.payload.currentQuoteIndex;
-      const currentWordIndex = action.payload.currentWordIndex;
-      const previousCharIndex = action.payload.currentCharIndex - 1; // get the previousIndex
+    removeLastWrongCharacter(state) {
+      const { currentQuoteIndex, currentWordIndex, currentCharIndex } =
+        getIndexes(state);
+      const previousCharIndex = currentCharIndex - 1; // get the previousIndex
 
       state.documents[state.currentAttemptNumber].quotes[
         currentQuoteIndex
@@ -162,6 +160,7 @@ const typingDocumentsSlice = createSlice({
     updateWpm(state, action) {
       state.documents[state.currentAttemptNumber].wpm = action.payload.wpm;
     },
+    calculateWpm(state, action) {},
     updateAccuracy(state, action) {
       state.documents[state.currentAttemptNumber].wpm = action.payload.accuracy;
     },
