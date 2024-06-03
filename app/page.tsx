@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { fetchTypingTestData } from "./apiService";
-import MyTimer from "./countdown";
+import { fetchTypingTestData } from "../lib/fetchQuotes";
+import MyTimer from "./components/countdown";
 import ResultScore from "./result";
 import Loading from "./components/Loading";
-import Footer from "./footer";
-import Header from "./header";
-import DisplayCurrentQuote from "./DisplayCurrentQuote";
-import DisplayNextQuote from "./DisplayNextQuote";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import DisplayCurrentQuote from "./components/DisplayCurrentQuote";
+import DisplayNextQuote from "./components/DisplayNextQuote";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -20,7 +20,8 @@ import {
   shiftPreviousCharIndex,
   shiftQuotesIndex,
   shiftWordIndex,
-  calculateWpmAndAccuracy,
+  calculateAccuracy,
+  increaseWpm,
 } from "@/lib/store";
 
 export type { DocumentsSchema, PreviousScore };
@@ -299,10 +300,12 @@ const Home = () => {
     ) {
       // if on last word & user press space
       rotateQuotes();
+      dispatch(increaseWpm());
     } else if (event.target.value.slice(-1) === " ") {
       // reset typedWord and shift word index if user enter a space / when user input space
       dispatch(shiftWordIndex());
       setTypedWord("");
+      dispatch(increaseWpm());
     } else if (event.target.value.length < typedWord.length) {
       // when user delete the char
 
@@ -339,7 +342,7 @@ const Home = () => {
     }
 
     // re-calculate wpm & accuracy
-    dispatch(calculateWpmAndAccuracy());
+    dispatch(calculateAccuracy());
   };
 
   const handleKeyboardEvent = (

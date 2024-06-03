@@ -15,7 +15,8 @@ import {
   shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
-  calculateWpmAndAccuracy,
+  calculateAccuracy,
+  increaseWpm,
 } from "./reduxSlices/typingDocumentsSlice";
 
 const makeStore = () => {
@@ -37,7 +38,8 @@ export {
   shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
-  calculateWpmAndAccuracy,
+  calculateAccuracy,
+  increaseWpm,
 };
 
 // Infer the type of makeStore

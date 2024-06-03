@@ -157,22 +157,21 @@ const typingDocumentsSlice = createSlice({
       ].words[currentWordIndex].chars[previousCharIndex].typeStatus = "untyped";
     },
 
-    calculateWpmAndAccuracy(state) {
+    calculateAccuracy(state) {
       const currentAttemptNumber = state.currentAttemptNumber;
 
-      const totalTyped = state.documents[currentAttemptNumber].quotes.reduce(
-        (sumTotal, quote) => {
-          const subTotal = quote.words.reduce((sumSubTotal, word) => {
-            if (word.chars[0].typeStatus !== "untyped") {
-              return sumSubTotal + word.currentCharIndex;
-            } else {
-              return sumSubTotal;
-            }
-          }, 0);
-          return sumTotal + subTotal;
-        },
-        0
-      );
+      const totalTypedChar = state.documents[
+        currentAttemptNumber
+      ].quotes.reduce((sumTotal, quote) => {
+        const subTotal = quote.words.reduce((sumSubTotal, word) => {
+          if (word.chars[0].typeStatus !== "untyped") {
+            return sumSubTotal + word.currentCharIndex;
+          } else {
+            return sumSubTotal;
+          }
+        }, 0);
+        return sumTotal + subTotal;
+      }, 0);
 
       let typedIncorrectly = 0;
       state.documents[currentAttemptNumber].quotes.map((quote) => {
@@ -186,12 +185,15 @@ const typingDocumentsSlice = createSlice({
       });
 
       const accuracy = parseFloat(
-        (((totalTyped - typedIncorrectly) / totalTyped) * 100).toFixed(1)
+        (((totalTypedChar - typedIncorrectly) / totalTypedChar) * 100).toFixed(
+          1
+        )
       );
-      // update wpm
-      state.documents[state.currentAttemptNumber].wpm = totalTyped;
-      // update accuracy
+      // update accuracy state
       state.documents[state.currentAttemptNumber].accuracy = accuracy;
+    },
+    increaseWpm(state) {
+      state.documents[state.currentAttemptNumber].wpm += 1;
     },
   },
 });
@@ -206,6 +208,7 @@ export const {
   shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
-  calculateWpmAndAccuracy,
+  calculateAccuracy,
+  increaseWpm,
 } = typingDocumentsSlice.actions;
 export const typingDocumentsReducer = typingDocumentsSlice.reducer;

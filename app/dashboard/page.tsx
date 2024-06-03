@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../header";
+import Header from "../components/Header";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getOneUser } from "@/prisma/functions/user";

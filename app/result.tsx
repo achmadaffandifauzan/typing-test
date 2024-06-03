@@ -4,11 +4,10 @@ import DisplayTagCloud from "./components/DisplayTagCloud";
 import DisplayWPMAndAccuracy from "./components/DisplayWpmAccuracy";
 import { DocumentsSchema, PreviousScore } from "./page";
 import { useEffect, useState } from "react";
-import { saveResultToDatabase } from "./saveResult";
+import { saveResultToDatabase } from "../lib/saveResult";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { calculateWpmAndAccuracy } from "@/lib/store";
 
 interface ResultScoreProps {
   isTimerRunning: boolean;
