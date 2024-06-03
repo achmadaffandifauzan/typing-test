@@ -157,12 +157,41 @@ const typingDocumentsSlice = createSlice({
       ].words[currentWordIndex].chars[previousCharIndex].typeStatus = "untyped";
     },
 
-    updateWpm(state, action) {
-      state.documents[state.currentAttemptNumber].wpm = action.payload.wpm;
-    },
-    calculateWpm(state, action) {},
-    updateAccuracy(state, action) {
-      state.documents[state.currentAttemptNumber].wpm = action.payload.accuracy;
+    calculateWpmAndAccuracy(state) {
+      const currentAttemptNumber = state.currentAttemptNumber;
+
+      const totalTyped = state.documents[currentAttemptNumber].quotes.reduce(
+        (sumTotal, quote) => {
+          const subTotal = quote.words.reduce((sumSubTotal, word) => {
+            if (word.chars[0].typeStatus !== "untyped") {
+              return sumSubTotal + word.currentCharIndex;
+            } else {
+              return sumSubTotal;
+            }
+          }, 0);
+          return sumTotal + subTotal;
+        },
+        0
+      );
+
+      let typedIncorrectly = 0;
+      state.documents[currentAttemptNumber].quotes.map((quote) => {
+        quote.words.map((word) => {
+          word.chars.map((char) => {
+            if (char.typeStatus === "incorrect") {
+              typedIncorrectly += 1;
+            }
+          });
+        });
+      });
+
+      const accuracy = parseFloat(
+        (((totalTyped - typedIncorrectly) / totalTyped) * 100).toFixed(1)
+      );
+      // update wpm
+      state.documents[state.currentAttemptNumber].wpm = totalTyped;
+      // update accuracy
+      state.documents[state.currentAttemptNumber].accuracy = accuracy;
     },
   },
 });
@@ -177,7 +206,6 @@ export const {
   shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
-  updateWpm,
-  updateAccuracy,
+  calculateWpmAndAccuracy,
 } = typingDocumentsSlice.actions;
 export const typingDocumentsReducer = typingDocumentsSlice.reducer;

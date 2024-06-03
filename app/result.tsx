@@ -1,14 +1,14 @@
 "use client";
 
-import DisplayAccuracy from "./DisplayAccuracy";
-import DisplayWPM from "./DisplayWPM";
+import DisplayTagCloud from "./components/DisplayTagCloud";
+import DisplayWPMAndAccuracy from "./components/DisplayWpmAccuracy";
 import { DocumentsSchema, PreviousScore } from "./page";
 import { useEffect, useState } from "react";
 import { saveResultToDatabase } from "./saveResult";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { updateWpm, updateAccuracy } from "@/lib/store";
+import { calculateWpmAndAccuracy } from "@/lib/store";
 
 interface ResultScoreProps {
   isTimerRunning: boolean;
@@ -20,40 +20,7 @@ const ResultScore = ({ isTimerRunning, isFinished }: ResultScoreProps) => {
   const typingDocuments = useAppSelector((state) => {
     return state.typingDocuments;
   });
-  const currentAttemptNumber = typingDocuments.currentAttemptNumber;
   const { data: session, status } = useSession();
-
-  // useEffect(() => {
-  //   const totalTyped = typingDocuments.documents[
-  //     currentAttemptNumber
-  //   ].quotes.reduce((sumTotal, quote) => {
-  //     const subTotal = quote.words.reduce((sumSubTotal, word) => {
-  //       if (word.chars[0].typeStatus !== "untyped") {
-  //         return sumSubTotal + word.currentCharIndex;
-  //       } else {
-  //         return sumSubTotal;
-  //       }
-  //     }, 0);
-  //     return sumTotal + subTotal;
-  //   }, 0);
-
-  //   let typedIncorrectly = 0;
-  //   typingDocuments.documents[currentAttemptNumber].quotes.map((quote) => {
-  //     quote.words.map((word) => {
-  //       word.chars.map((char) => {
-  //         if (char.typeStatus === "incorrect") {
-  //           typedIncorrectly += 1;
-  //         }
-  //       });
-  //     });
-  //   });
-
-  //   const accuracy = parseFloat(
-  //     (((totalTyped - typedIncorrectly) / totalTyped) * 100).toFixed(1)
-  //   );
-  //   dispatch(updateAccuracy({ accuracy }));
-  //   dispatch(updateWpm({ totalTyped }));
-  // }, [typingDocuments]);
 
   // if (!isTimerRunning && previousScore.WPM && previousScore.accuracy) {
   //   // save result to db
@@ -76,21 +43,12 @@ const ResultScore = ({ isTimerRunning, isFinished }: ResultScoreProps) => {
   //     }
   //     // }, [previousScore]);
   //   }`
-  //   return (
-  //     <div className="text-center">
-  //       <div className="font-bold">Previous Attempt</div>
-  //       <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center">
-  //         {DisplayWPM({ currentOrPrevious: "previous", previousScore })}
-  //         {DisplayAccuracy({ currentOrPrevious: "previous", previousScore })}
-  //       </div>
-  //     </div>
-  //   );
-  // } else {
+
   return (
     <div className="text-center sm:text-base text-sm">
       <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center w-80">
-        {DisplayWPM()}
-        {DisplayAccuracy()}
+        {<DisplayWPMAndAccuracy />}
+        {<DisplayTagCloud />}
       </div>
     </div>
   );

@@ -15,8 +15,7 @@ import {
   shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
-  updateWpm,
-  updateAccuracy,
+  calculateWpmAndAccuracy,
 } from "./reduxSlices/typingDocumentsSlice";
 
 const makeStore = () => {
@@ -24,6 +23,8 @@ const makeStore = () => {
     reducer: { typingDocuments: typingDocumentsReducer },
   });
 };
+
+// integrating dispatch functions into one source import, which is here
 
 export {
   makeStore,
@@ -36,8 +37,7 @@ export {
   shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
-  updateWpm,
-  updateAccuracy,
+  calculateWpmAndAccuracy,
 };
 
 // Infer the type of makeStore
