@@ -12,6 +12,8 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Typing Speed Test",
   description: "Typing speed test with real time accuracy calculation.",
+  keywords:
+    "typing test, affandif typing test, wpm calculation, typing speed test, achmad affandi fauzan",
 };
 
 export default async function RootLayout({

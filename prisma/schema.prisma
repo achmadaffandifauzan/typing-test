@@ -21,6 +21,7 @@ model TypingHistory {
   id              Int      @id @default(autoincrement())
   createdAt       DateTime @default(now())
   authorId        Int
+  quotes          Json
   wpm             Int
   accuracy        Float
   wrongCharacters String   @db.VarChar(500)

@@ -8,12 +8,15 @@ import {
   typingDocumentsReducer,
   resetQuotes,
   addQuotes,
-  shiftNextCharIndex,
-  shiftPreviousCharIndex,
+  shiftCurrentAttemptNumber,
   shiftQuotesIndex,
   shiftWordIndex,
+  shiftNextCharIndex,
+  shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
+  updateWpm,
+  updateAccuracy,
 } from "./reduxSlices/typingDocumentsSlice";
 
 const makeStore = () => {
@@ -26,12 +29,15 @@ export {
   makeStore,
   resetQuotes,
   addQuotes,
-  shiftNextCharIndex,
-  shiftPreviousCharIndex,
+  shiftCurrentAttemptNumber,
   shiftQuotesIndex,
   shiftWordIndex,
+  shiftNextCharIndex,
+  shiftPreviousCharIndex,
   typingInputEvaluation,
   removeLastWrongCharacter,
+  updateWpm,
+  updateAccuracy,
 };
 
 // Infer the type of makeStore
