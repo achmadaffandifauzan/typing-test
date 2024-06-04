@@ -6,9 +6,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import {
   typingDocumentsReducer,
-  resetQuotes,
   addQuotes,
-  shiftCurrentAttemptNumber,
+  addAttempt,
+  shiftNextAttempt,
   shiftQuotesIndex,
   shiftWordIndex,
   shiftNextCharIndex,
@@ -17,6 +17,8 @@ import {
   removeLastWrongCharacter,
   calculateAccuracy,
   increaseWpm,
+  userStartTyping,
+  userFinishTyping,
 } from "./reduxSlices/typingDocumentsSlice";
 
 const makeStore = () => {
@@ -29,9 +31,9 @@ const makeStore = () => {
 
 export {
   makeStore,
-  resetQuotes,
   addQuotes,
-  shiftCurrentAttemptNumber,
+  addAttempt,
+  shiftNextAttempt,
   shiftQuotesIndex,
   shiftWordIndex,
   shiftNextCharIndex,
@@ -40,6 +42,8 @@ export {
   removeLastWrongCharacter,
   calculateAccuracy,
   increaseWpm,
+  userStartTyping,
+  userFinishTyping,
 };
 
 // Infer the type of makeStore

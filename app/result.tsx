@@ -9,12 +9,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
-interface ResultScoreProps {
-  isTimerRunning: boolean;
-  isFinished: boolean;
-}
-
-const ResultScore = ({ isTimerRunning, isFinished }: ResultScoreProps) => {
+const ResultScore = () => {
   const dispatch = useAppDispatch();
   const typingDocuments = useAppSelector((state) => {
     return state.typingDocuments;

@@ -1,36 +1,34 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useAppDispatch } from "@/lib/hooks";
+import { userFinishTyping, userStartTyping } from "@/lib/store";
+import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
 interface MyTimerProps {
-  setIsTimerRunning: React.Dispatch<React.SetStateAction<boolean>>;
   triggerStartTime: boolean;
   setTriggerStartTime: React.Dispatch<React.SetStateAction<boolean>>;
   resetStates: Function;
-  setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function MyTimer({
-  setIsTimerRunning,
   triggerStartTime,
   setTriggerStartTime,
   resetStates,
-  setIsFinished,
 }: MyTimerProps) {
+  const dispatch = useAppDispatch();
   const time = new Date();
-  time.setSeconds(time.getSeconds() + 500); // 60 seconds timer
+  time.setSeconds(time.getSeconds() + 5); // 60 seconds timer
   const { totalSeconds, isRunning, restart } = useTimer({
     expiryTimestamp: time,
     autoStart: false,
     onExpire: () => {
       console.warn("onExpire called");
       resetStates();
-      setIsFinished(true);
+      dispatch(userFinishTyping());
     },
   });
   useEffect(() => {
     if (triggerStartTime) {
-      setIsFinished(false);
       restart(time);
-      setIsTimerRunning(true);
+      dispatch(userStartTyping());
       setTriggerStartTime(false);
     }
   }, [triggerStartTime]);
@@ -72,10 +70,9 @@ export default function MyTimer({
               className="transition-all rounded-xl text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 py-2 px-4 "
               onClick={() => {
                 const time = new Date();
-                time.setSeconds(time.getSeconds() + 60);
-                setIsFinished(false);
+                time.setSeconds(time.getSeconds() + 5);
                 restart(time);
-                setIsTimerRunning(true);
+                dispatch(userStartTyping());
               }}
             >
               Start

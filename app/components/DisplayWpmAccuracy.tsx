@@ -7,6 +7,7 @@ const DisplayWPMAndAccuracy = () => {
   const typingDocuments = useAppSelector((state) => {
     return state.typingDocuments;
   });
+  console.log(typingDocuments);
   return (
     <div className="flex flex-row gap-10">
       <div className="flex flex-col  items-center bg-indigo-100  rounded-xl ">

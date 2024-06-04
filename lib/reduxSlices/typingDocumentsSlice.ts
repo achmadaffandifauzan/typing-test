@@ -6,7 +6,6 @@ const typingDocumentsSlice = createSlice({
   initialState: {
     documents: [
       {
-        attemptNumber: 0,
         attemptStarted: false,
         attemptFinished: false,
         quotes: [
@@ -37,9 +36,12 @@ const typingDocumentsSlice = createSlice({
     currentAttemptNumber: 0,
   },
   reducers: {
-    resetQuotes(state) {
-      state.documents[0] = {
-        attemptNumber: 0,
+    addAttempt(state) {
+      if (!state.documents[state.documents.length - 1].quotes[0].text) {
+        // remove empty attempt first
+        state.documents.pop();
+      }
+      state.documents.push({
         attemptStarted: false,
         attemptFinished: false,
         quotes: [
@@ -65,12 +67,15 @@ const typingDocumentsSlice = createSlice({
         wpm: 0,
         accuracy: 0,
         currentQuoteIndex: 0,
-      };
+      });
+    },
+    shiftNextAttempt(state) {
+      state.currentAttemptNumber += 1;
     },
     addQuotes(state, action) {
       if (!state.documents[state.currentAttemptNumber].quotes[0].text) {
         // remove first initial empty quotes
-        state.documents[state.currentAttemptNumber].quotes.pop();
+        state.documents[state.currentAttemptNumber].quotes.shift();
       }
       state.documents[state.currentAttemptNumber].quotes.push({
         text: action.payload.content,
@@ -90,9 +95,6 @@ const typingDocumentsSlice = createSlice({
         currentWordIndex: 0,
         author: action.payload.author,
       });
-    },
-    shiftCurrentAttemptNumber(state) {
-      state.currentAttemptNumber += 1;
     },
     shiftQuotesIndex(state) {
       state.documents[state.currentAttemptNumber].currentQuoteIndex += 1;
@@ -195,13 +197,20 @@ const typingDocumentsSlice = createSlice({
     increaseWpm(state) {
       state.documents[state.currentAttemptNumber].wpm += 1;
     },
+
+    userStartTyping(state) {
+      state.documents[state.currentAttemptNumber].attemptStarted = true;
+    },
+    userFinishTyping(state) {
+      state.documents[state.currentAttemptNumber].attemptFinished = true;
+    },
   },
 });
 
 export const {
-  resetQuotes,
   addQuotes,
-  shiftCurrentAttemptNumber,
+  addAttempt,
+  shiftNextAttempt,
   shiftQuotesIndex,
   shiftWordIndex,
   shiftNextCharIndex,
@@ -210,5 +219,7 @@ export const {
   removeLastWrongCharacter,
   calculateAccuracy,
   increaseWpm,
+  userStartTyping,
+  userFinishTyping,
 } = typingDocumentsSlice.actions;
 export const typingDocumentsReducer = typingDocumentsSlice.reducer;

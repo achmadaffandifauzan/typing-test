@@ -15,14 +15,17 @@ import {
   addQuotes,
   typingInputEvaluation,
   removeLastWrongCharacter,
-  resetQuotes,
   shiftNextCharIndex,
   shiftPreviousCharIndex,
   shiftQuotesIndex,
   shiftWordIndex,
   calculateAccuracy,
   increaseWpm,
+  addAttempt,
+  shiftNextAttempt,
+  userFinishTyping,
 } from "@/lib/store";
+import { useDispatch } from "react-redux";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -53,12 +56,9 @@ const Home = () => {
   const typingDocuments = useAppSelector((state) => {
     return state.typingDocuments;
   });
-  console.log("typingDocuments", typingDocuments);
 
   const [typedWord, setTypedWord] = useState<string>("");
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [triggerStartTime, setTriggerStartTime] = useState(false);
-  const [isFinished, setIsFinished] = useState(true);
   const [fetchingHowManyTimesAlready, setFetchingHowManyTimesAlready] =
     useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,6 @@ const Home = () => {
           .currentQuoteIndex
       ].currentWordIndex
     ].currentCharIndex;
-  // console.log(currentQuoteIndex, currentWordIndex, currentCharIndex);
 
   // const currentQuoteIndex = documents.currentDocumentIndex;
   // const currentCharIndex =
@@ -123,9 +122,8 @@ const Home = () => {
           .length <= 1 ||
         ifRestart === "restart"
       ) {
-        // new quotes, to : 1. refresh page (replace empty initial quotes) ;or 2. reset quotes if counter is done
-        // console.log("LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLLOOLL");
-        dispatch(resetQuotes());
+        // new quotes, to : 1. refresh page (replace empty initial quotes by adding new attempt) ;or 2. reset quotes by adding new attempt if counter is done
+        dispatch(addAttempt());
         dispatch(addQuotes({ content, author }));
       } else {
         // adding to existing documents
@@ -150,16 +148,20 @@ const Home = () => {
 
     if (status === "authenticated") {
       setUserAuthenticatedOnPageLoad(true);
-      console.log("session =====", session);
+      // console.log("session =====", session);
     }
   }, []);
 
   useEffect(() => {
     // focus on input tag if user click start button
-    if (isTimerRunning && inputRef.current) {
+    if (
+      typingDocuments.documents[currentAttemptNumber].attemptStarted &&
+      !typingDocuments.documents[currentAttemptNumber].attemptFinished &&
+      inputRef.current
+    ) {
       inputRef.current.focus();
     }
-  }, [isTimerRunning]);
+  }, [typingDocuments]);
 
   useEffect(() => {
     if (userAuthenticatedOnPageLoad) {
@@ -187,14 +189,14 @@ const Home = () => {
 
   const resetStates = () => {
     setFetchingHowManyTimesAlready(1);
-    dispatch(resetQuotes());
+    dispatch(addAttempt());
+    dispatch(shiftNextAttempt());
 
     setTypedWord("");
     setLoading(true);
     setError(null);
-    setIsTimerRunning(false);
+    dispatch(userFinishTyping());
     setTriggerStartTime(false);
-    setIsFinished(true);
     setIsInputFocused(false);
 
     fetchMoreDocument("restart");
@@ -230,7 +232,10 @@ const Home = () => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isTimerRunning && isFinished) {
+    if (
+      !typingDocuments.documents[currentAttemptNumber].attemptStarted &&
+      !typingDocuments.documents[currentAttemptNumber].attemptFinished
+    ) {
       setTriggerStartTime(true);
     }
     if (
@@ -380,11 +385,9 @@ const Home = () => {
       <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
         <Header />
         <MyTimer
-          setIsTimerRunning={setIsTimerRunning}
           triggerStartTime={triggerStartTime}
           setTriggerStartTime={setTriggerStartTime}
           resetStates={resetStates}
-          setIsFinished={setIsFinished}
         />
         <input
           type="text"
@@ -402,10 +405,7 @@ const Home = () => {
           onContextMenu={handleContextMenu}
         />
         <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 justify-around w-full">
-          <ResultScore
-            isTimerRunning={isTimerRunning}
-            isFinished={isFinished}
-          />
+          <ResultScore />
           <div
             id="quotes"
             className="rounded-xl  bg-indigo-50 min-h-min sm:w-4/6 w-11/12 overflow-clip text-ellipsis  flex flex-col justify-between gap-2 sm:text-2xl text-base"
