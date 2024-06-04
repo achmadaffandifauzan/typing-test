@@ -1,10 +1,23 @@
 "use client";
 import React from "react";
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const AuthButtonGoogle = () => {
+  const router = useRouter();
+
   const handleClickGoogle = () => {
-    signIn("google");
+    try {
+      signIn("google");
+      return toast.info("Please wait!", {
+        duration: 2000,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      router.refresh();
+    }
   };
   return (
     <button
@@ -19,8 +32,19 @@ const AuthButtonGoogle = () => {
 };
 
 const AuthButtonGithub = () => {
+  const router = useRouter();
+
   const handleClickGithub = () => {
-    signIn("github");
+    try {
+      signIn("github");
+      return toast.info("Please wait!", {
+        duration: 2000,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      router.refresh();
+    }
   };
   return (
     <button

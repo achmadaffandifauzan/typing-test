@@ -4,14 +4,16 @@ import { AuthButtonGoogle } from "../components/AuthButton";
 import { AuthButtonGithub } from "../components/AuthButton";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
+import Loading from "../components/Loading";
 
 export default function Login() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: {
     preventDefault: () => void;
@@ -21,19 +23,36 @@ export default function Login() {
     const data = new FormData(e.currentTarget);
 
     try {
-      const loginResponse = await signIn("credentials", {
+      setLoading(true);
+
+      await signIn("credentials", {
         username: data.get("username"),
         password: data.get("password"),
         redirect: false,
       });
-      return loginResponse;
+      return toast.success(`Login success!, ${data.get("username")}!`, {
+        duration: 2000,
+      });
     } catch (error) {
       console.log("Error: ", error);
       return toast.error("Error. Please try again.", {
         duration: 2000,
       });
+    } finally {
+      setLoading(false);
+      router.refresh();
     }
   };
+  useEffect(() => {
+    if (status === "loading") {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [status]);
+  if (loading) {
+    return <Loading />;
+  }
   if (session) router.push("/");
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">

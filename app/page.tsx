@@ -70,9 +70,6 @@ const Home = () => {
   const hasInitiallyFetchedData = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null); // for detect when user click start button, then to focus the input tag
 
-  const [userAuthenticatedOnPageLoad, setUserAuthenticatedOnPageLoad] =
-    useState(false);
-
   // make the variables to simplify the process
   const currentAttemptNumber = typingDocuments.currentAttemptNumber;
   const currentQuoteIndex =
@@ -147,11 +144,6 @@ const Home = () => {
       fetchData();
       hasInitiallyFetchedData.current = true;
     }
-
-    if (status === "authenticated") {
-      setUserAuthenticatedOnPageLoad(true);
-      // console.log("session =====", session);
-    }
   }, []);
 
   useEffect(() => {
@@ -164,12 +156,6 @@ const Home = () => {
       inputRef.current.focus();
     }
   }, [typingDocuments]);
-
-  useEffect(() => {
-    if (userAuthenticatedOnPageLoad) {
-      toast.success("Welcome Back!", { duration: 1500 });
-    }
-  }, [userAuthenticatedOnPageLoad]);
 
   const fetchMoreDocument = (ifRestart?: string) => {
     if (ifRestart === "restart") {
