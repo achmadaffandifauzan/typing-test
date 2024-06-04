@@ -1,7 +1,6 @@
 "use client";
 
-import DisplayTagCloud from "./components/DisplayTagCloud";
-import DisplayWPMAndAccuracy from "./components/DisplayWpmAccuracy";
+import DisplayCurrentAttempt from "./components/DisplayCurrentAttempt";
 import { DocumentsSchema, PreviousScore } from "./page";
 import { useEffect, useState } from "react";
 import { saveResultToDatabase } from "../lib/saveResult";
@@ -41,8 +40,7 @@ const ResultScore = () => {
   return (
     <div className="text-center sm:text-base text-sm">
       <div className="flex sm:flex-col gap-5 flex-row flex-wrap justify-center items-center w-80">
-        {<DisplayWPMAndAccuracy />}
-        {<DisplayTagCloud />}
+        {<DisplayCurrentAttempt />}
       </div>
     </div>
   );

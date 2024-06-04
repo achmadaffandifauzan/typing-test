@@ -26,6 +26,7 @@ import {
   userFinishTyping,
 } from "@/lib/store";
 import { useDispatch } from "react-redux";
+import DisplayPreviousAttempt from "./components/DisplayPreviousAttempts";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -189,13 +190,13 @@ const Home = () => {
 
   const resetStates = () => {
     setFetchingHowManyTimesAlready(1);
+    dispatch(userFinishTyping());
     dispatch(addAttempt());
     dispatch(shiftNextAttempt());
 
     setTypedWord("");
     setLoading(true);
     setError(null);
-    dispatch(userFinishTyping());
     setTriggerStartTime(false);
     setIsInputFocused(false);
 
@@ -404,7 +405,7 @@ const Home = () => {
           onMouseUp={handleMouseEvents}
           onContextMenu={handleContextMenu}
         />
-        <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 justify-around w-full">
+        <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 gap-y-10 justify-around w-full mb-10">
           <ResultScore />
           <div
             id="quotes"
@@ -415,7 +416,7 @@ const Home = () => {
               <DisplayNextQuote />
             </div>
             <div
-              className="text-xs text-center p-1 cursor-help w-fit self-center hover:bg-indigo-200 rounded-md"
+              className="text-xs text-center p-1 px-2 cursor-help w-fit self-center hover:bg-indigo-200 rounded-md"
               onMouseDown={() =>
                 toast.warning(
                   "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly",
@@ -445,6 +446,12 @@ const Home = () => {
                 Here
               </a>
             </div>
+          </div>
+          <div className="sm:w-8/12 w-[95%] bg-indigo-500 text-white font-semibold text-center rounded-xl">
+            Previous Attempts :
+          </div>
+          <div className=" flex flex-row flex-wrap gap-5 justify-evenly items-center w-full sm:px-10 px-3">
+            <DisplayPreviousAttempt />
           </div>
         </div>
       </div>

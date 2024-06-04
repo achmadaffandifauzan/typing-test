@@ -21,8 +21,8 @@ export default function MyTimer({
     autoStart: false,
     onExpire: () => {
       console.warn("onExpire called");
-      resetStates();
       dispatch(userFinishTyping());
+      resetStates();
     },
   });
   useEffect(() => {
