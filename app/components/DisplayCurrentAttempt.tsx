@@ -35,8 +35,9 @@ const DisplayWPMAndAccuracy = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
-        <div className="sm:h-48 h-36">
+      {/* only in big displays, small one on the main page */}
+      <div className="max-sm:hidden flex flex-col bg-indigo-200 p-3 rounded-xl text-start ">
+        <div className="h-36 text-center">
           <span>TagCloud innacurate character</span>
           <TagCloud
             minSize={15}

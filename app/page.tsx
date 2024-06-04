@@ -27,6 +27,7 @@ import {
 } from "@/lib/store";
 import { useDispatch } from "react-redux";
 import DisplayPreviousAttempt from "./components/DisplayPreviousAttempts";
+import { TagCloud } from "react-tagcloud";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -405,7 +406,7 @@ const Home = () => {
           onMouseUp={handleMouseEvents}
           onContextMenu={handleContextMenu}
         />
-        <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 gap-y-10 justify-around w-full mb-10">
+        <div className="flex sm:flex-row flex-col max-sm:items-center flex-wrap gap-4 sm:gap-y-10 gap-y-5 justify-around w-full mb-10">
           <ResultScore />
           <div
             id="quotes"
@@ -447,7 +448,22 @@ const Home = () => {
               </a>
             </div>
           </div>
-          <div className="sm:w-8/12 w-[95%] bg-indigo-500 text-white font-semibold text-center rounded-xl text-sm py-0.5">
+          {/* only in small displays, big one on the <DisplayCurrentAttempt/> */}
+          <div className="sm:hidden flex flex-col bg-indigo-200 p-3 rounded-xl text-start  w-11/12">
+            <div className="h-30 text-md text-center">
+              <span>TagCloud innacurate character</span>
+              <TagCloud
+                minSize={15}
+                maxSize={50}
+                tags={
+                  typingDocuments.documents[
+                    typingDocuments.currentAttemptNumber
+                  ].wrongCharacters
+                }
+              />
+            </div>
+          </div>
+          <div className="sm:w-8/12 w-11/12 bg-indigo-500 text-white font-semibold text-center rounded-xl text-sm py-0.5 max-sm:mt-10">
             Previous Attempts :
           </div>
           <div className=" flex flex-row flex-wrap gap-5 justify-evenly items-center w-full sm:px-10 px-3">
