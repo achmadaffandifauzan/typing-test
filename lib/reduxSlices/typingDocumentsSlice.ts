@@ -28,6 +28,13 @@ const typingDocumentsSlice = createSlice({
             author: "",
           },
         ],
+        wrongCharacters: [
+          {
+            value: "",
+            count: 0,
+            userInputs: new Array<string>(),
+          },
+        ],
         wpm: 0,
         accuracy: 0,
         currentQuoteIndex: 0,
@@ -62,6 +69,13 @@ const typingDocumentsSlice = createSlice({
             ],
             currentWordIndex: 0,
             author: "",
+          },
+        ],
+        wrongCharacters: [
+          {
+            value: "",
+            count: 0,
+            userInputs: [],
           },
         ],
         wpm: 0,
@@ -131,12 +145,12 @@ const typingDocumentsSlice = createSlice({
         action.payload.userInput;
 
       // evaluate correctness
-      if (
-        action.payload.userInput.toString() ===
+      const correctAnswer =
         state.documents[state.currentAttemptNumber].quotes[
           currentQuoteIndex
-        ].words[currentWordIndex].chars[currentCharIndex].text.toString()
-      ) {
+        ].words[currentWordIndex].chars[currentCharIndex].text.toString();
+      const userInput = action.payload.userInput.toString();
+      if (userInput === correctAnswer) {
         state.documents[state.currentAttemptNumber].quotes[
           currentQuoteIndex
         ].words[currentWordIndex].chars[currentCharIndex].typeStatus =
@@ -146,6 +160,40 @@ const typingDocumentsSlice = createSlice({
           currentQuoteIndex
         ].words[currentWordIndex].chars[currentCharIndex].typeStatus =
           "incorrect";
+        // if incorrect, also put it on wrongCharacters object
+        // wrongCharacters = [{value = "", count = 0}]
+        // wrong char is for <TagCloud/>
+        if (
+          !state.documents[state.currentAttemptNumber].wrongCharacters[0].value
+        ) {
+          // replace initial wrongCharacters value
+          state.documents[state.currentAttemptNumber].wrongCharacters[0] = {
+            value: correctAnswer,
+            count: 1,
+            userInputs: [userInput],
+          };
+        } else {
+          // find then increase count  or create new wrong char obj
+          let alreadyExist = false;
+          state.documents[state.currentAttemptNumber].wrongCharacters.forEach(
+            (wrongChar) => {
+              if (wrongChar.value) {
+                if (wrongChar.value === correctAnswer) {
+                  alreadyExist = true;
+                  wrongChar.count += 1;
+                  wrongChar.userInputs.push(userInput);
+                }
+              }
+            }
+          );
+          if (!alreadyExist) {
+            state.documents[state.currentAttemptNumber].wrongCharacters.push({
+              value: correctAnswer,
+              count: 1,
+              userInputs: [userInput],
+            });
+          }
+        }
       }
     },
 

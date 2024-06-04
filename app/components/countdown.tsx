@@ -15,7 +15,7 @@ export default function MyTimer({
 }: MyTimerProps) {
   const dispatch = useAppDispatch();
   const time = new Date();
-  time.setSeconds(time.getSeconds() + 5); // 60 seconds timer
+  time.setSeconds(time.getSeconds() + 60); // 60 seconds timer
   const { totalSeconds, isRunning, restart } = useTimer({
     expiryTimestamp: time,
     autoStart: false,
@@ -70,7 +70,7 @@ export default function MyTimer({
               className="transition-all rounded-xl text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 py-2 px-4 "
               onClick={() => {
                 const time = new Date();
-                time.setSeconds(time.getSeconds() + 5);
+                time.setSeconds(time.getSeconds() + 60);
                 restart(time);
                 dispatch(userStartTyping());
               }}

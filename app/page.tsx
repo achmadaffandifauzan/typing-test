@@ -447,7 +447,7 @@ const Home = () => {
               </a>
             </div>
           </div>
-          <div className="sm:w-8/12 w-[95%] bg-indigo-500 text-white font-semibold text-center rounded-xl">
+          <div className="sm:w-8/12 w-[95%] bg-indigo-500 text-white font-semibold text-center rounded-xl text-sm py-0.5">
             Previous Attempts :
           </div>
           <div className=" flex flex-row flex-wrap gap-5 justify-evenly items-center w-full sm:px-10 px-3">

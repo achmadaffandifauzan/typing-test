@@ -2,12 +2,12 @@
 
 import React from "react";
 import { useAppSelector } from "@/lib/hooks";
+import { TagCloud } from "react-tagcloud";
 
 const DisplayWPMAndAccuracy = () => {
   const typingDocuments = useAppSelector((state) => {
     return state.typingDocuments;
   });
-  console.log(typingDocuments);
   return (
     <>
       <div className="flex flex-row gap-10">
@@ -38,14 +38,14 @@ const DisplayWPMAndAccuracy = () => {
       <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
         <div className="sm:h-48 h-36">
           <span>TagCloud innacurate character</span>
-          {/* <TagCloud
-              minSize={15}
-              maxSize={50}
-              tags={Object.entries(wrongCharCount).map(([value, count]) => ({
-                value,
-                count,
-              }))}
-            /> */}
+          <TagCloud
+            minSize={15}
+            maxSize={50}
+            tags={
+              typingDocuments.documents[typingDocuments.currentAttemptNumber]
+                .wrongCharacters
+            }
+          />
         </div>
       </div>
     </>
