@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import StoreProvider from "./components/StoreProvider";
-import Head from "next/head";
 
 import SessionProvider from "./components/SessionProvider";
 // import { getServerSession } from "next-auth";
@@ -25,10 +24,6 @@ export default async function RootLayout({
   // const session = await getServerSession();
   return (
     <html lang="en">
-      <Head>
-        {/* Import CSS for nprogress */}
-        <link rel="stylesheet" type="text/css" href="/nprogress.css" />
-      </Head>
       <body className={inter.className}>
         <StoreProvider>
           <SessionProvider>

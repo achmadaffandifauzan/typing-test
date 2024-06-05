@@ -31,7 +31,6 @@ const Header = () => {
   if (loading) {
     return <Loading />;
   }
-  if (session) router.push("/");
   const getAuthBtn = () => {
     if (session) {
       return (

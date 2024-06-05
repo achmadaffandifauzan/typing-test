@@ -41,8 +41,16 @@ const typingDocumentsSlice = createSlice({
       },
     ],
     currentAttemptNumber: 0,
+    nFetchingQuotes: 0,
+    nRecievedQuotes: 0,
   },
   reducers: {
+    addQuoteFetchAttempt(state) {
+      state.nFetchingQuotes += 1;
+    },
+    addQuoteReceived(state) {
+      state.nRecievedQuotes += 1;
+    },
     addAttempt(state) {
       if (!state.documents[state.documents.length - 1].quotes[0].text) {
         // remove empty attempt first
@@ -257,6 +265,8 @@ const typingDocumentsSlice = createSlice({
 
 export const {
   addQuotes,
+  addQuoteFetchAttempt,
+  addQuoteReceived,
   addAttempt,
   shiftNextAttempt,
   shiftQuotesIndex,

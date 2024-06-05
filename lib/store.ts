@@ -7,6 +7,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import {
   typingDocumentsReducer,
   addQuotes,
+  addQuoteFetchAttempt,
+  addQuoteReceived,
   addAttempt,
   shiftNextAttempt,
   shiftQuotesIndex,
@@ -32,6 +34,8 @@ const makeStore = () => {
 export {
   makeStore,
   addQuotes,
+  addQuoteFetchAttempt,
+  addQuoteReceived,
   addAttempt,
   shiftNextAttempt,
   shiftQuotesIndex,

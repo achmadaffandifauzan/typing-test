@@ -24,8 +24,9 @@ import {
   addAttempt,
   shiftNextAttempt,
   userFinishTyping,
+  addQuoteReceived,
+  addQuoteFetchAttempt,
 } from "@/lib/store";
-import { useDispatch } from "react-redux";
 import DisplayPreviousAttempt from "./components/DisplayPreviousAttempts";
 import { TagCloud } from "react-tagcloud";
 
@@ -61,13 +62,9 @@ const Home = () => {
 
   const [typedWord, setTypedWord] = useState<string>("");
   const [triggerStartTime, setTriggerStartTime] = useState(false);
-  const [fetchingHowManyTimesAlready, setFetchingHowManyTimesAlready] =
-    useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
-
-  const hasInitiallyFetchedData = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null); // for detect when user click start button, then to focus the input tag
 
   // make the variables to simplify the process
@@ -91,23 +88,7 @@ const Home = () => {
       ].currentWordIndex
     ].currentCharIndex;
 
-  // const currentQuoteIndex = documents.currentDocumentIndex;
-  // const currentCharIndex =
-  //   documents.quotes[documents.currentDocumentIndex].words[
-  //     documents.quotes[documents.currentDocumentIndex].currentWordIndex
-  //   ].currentCharIndex;
-  // const currentWordIndex =
-  //   documents.quotes[documents.currentDocumentIndex].currentWordIndex;
-
-  // get user authentication status
-  const { data: session, status } = useSession();
-
   const fetchData = async (ifRestart?: string) => {
-    // console.log("requesting");
-    if (!ifRestart) {
-      // restart not adding fetchingHowManyTimesAlready because it already initially set to 1 for resetState()
-      setFetchingHowManyTimesAlready(fetchingHowManyTimesAlready + 1);
-    }
     try {
       const data = await fetchTypingTestData();
       const author = data.originator.name;
@@ -128,6 +109,7 @@ const Home = () => {
         // adding to existing documents
         dispatch(addQuotes({ content, author }));
       }
+      dispatch(addQuoteReceived());
     } catch (err) {
       setError("Error fetching data.");
       console.log("Error fetching data.", err);
@@ -138,11 +120,11 @@ const Home = () => {
 
   useEffect(() => {
     // initial fetch
-    if (!hasInitiallyFetchedData.current) {
+    if (typingDocuments.nFetchingQuotes === 0) {
       setLoading(true);
-      // console.log("Im fetching a quote");
+      console.log("INITIALLY Im fetching a quote");
+      dispatch(addQuoteFetchAttempt());
       fetchData();
-      hasInitiallyFetchedData.current = true;
     }
   }, []);
 
@@ -158,12 +140,13 @@ const Home = () => {
   }, [typingDocuments]);
 
   const fetchMoreDocument = (ifRestart?: string) => {
+    // all quote fetching is centralized here, to manage req queue
     if (ifRestart === "restart") {
-      // console.log("FETCH FROM RESTARTTTT");
+      dispatch(addQuoteFetchAttempt());
+      setLoading(true);
       fetchData(ifRestart);
     } else if (
-      fetchingHowManyTimesAlready ===
-        typingDocuments.documents[currentAttemptNumber].quotes.length &&
+      typingDocuments.nFetchingQuotes === typingDocuments.nRecievedQuotes &&
       typingDocuments.documents[currentAttemptNumber].quotes.length -
         currentQuoteIndex <=
         1
@@ -171,12 +154,12 @@ const Home = () => {
       // so if no fetched data coming queue, system ready to re-fetch
       // also, next quotes have to be existed max at 1
       // console.log("Im fetching a quote");
+      dispatch(addQuoteFetchAttempt());
       fetchData();
     }
   };
 
   const resetStates = () => {
-    setFetchingHowManyTimesAlready(1);
     dispatch(userFinishTyping());
     dispatch(addAttempt());
     dispatch(shiftNextAttempt());
