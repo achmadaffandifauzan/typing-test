@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { getOneUser } from "./user";
+import { Prisma } from "@prisma/client";
 const getTypingHistories = async (username: any) => {
   try {
     const user = await getOneUser(username);
@@ -9,7 +10,17 @@ const getTypingHistories = async (username: any) => {
         author: user!,
       },
     });
-    return newTypingHistory;
+    let typingHistories: any = [];
+    if (newTypingHistory) {
+      typingHistories = newTypingHistory.map((typing) => {
+        return {
+          ...typing,
+          wrongCharacters: typing.wrongCharacters as Prisma.JsonArray,
+          quotes: typing.quotes as Prisma.JsonArray,
+        };
+      });
+    }
+    return typingHistories;
   } catch (error) {
     return null;
   }

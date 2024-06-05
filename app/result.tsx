@@ -12,7 +12,6 @@ const ResultScore = () => {
   const typingDocuments = useAppSelector((state) => {
     return state.typingDocuments;
   });
-  console.log(typingDocuments);
   const { data: session, status } = useSession();
   if (typingDocuments.triggerSaveResult) {
     // if <countdown/> trigger to save the result, then loop typingDocuments to save any unsaved result
