@@ -1,15 +1,34 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { fetchTypingTestData } from "./apiService";
-import MyTimer from "./countdown";
+import { fetchTypingTestData } from "../lib/fetchQuotes";
+import MyTimer from "./components/countdown";
 import ResultScore from "./result";
 import Loading from "./components/Loading";
-import Footer from "./footer";
-import Header from "./header";
-import DisplayCurrentQuote from "./DisplayCurrentQuote";
-import DisplayNextQuote from "./DisplayNextQuote";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import DisplayCurrentQuote from "./components/DisplayCurrentQuote";
+import DisplayNextQuote from "./components/DisplayNextQuote";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import {
+  addQuotes,
+  typingInputEvaluation,
+  removeLastWrongCharacter,
+  shiftNextCharIndex,
+  shiftPreviousCharIndex,
+  shiftQuotesIndex,
+  shiftWordIndex,
+  calculateAccuracy,
+  increaseWpm,
+  addAttempt,
+  shiftNextAttempt,
+  userFinishTyping,
+  addQuoteReceived,
+  addQuoteFetchAttempt,
+} from "@/lib/store";
+import DisplayPreviousAttempt from "./components/DisplayPreviousAttempts";
+import { TagCloud } from "react-tagcloud";
 
 export type { DocumentsSchema, PreviousScore };
 interface DocumentsSchema {
@@ -32,208 +51,125 @@ interface Words {
 interface PreviousScore {
   WPM?: number;
   accuracy?: number;
-  wrongCharCount?: object;
+  wrongCharacters?: object;
 }
 
 const Home = () => {
-  const [documents, setDocuments] = useState<DocumentsSchema>({
-    quotes: [
-      {
-        text: "",
-        words: [
-          {
-            text: "",
-            chars: [""],
-            currentCharIndex: 0,
-            wrongCharacters: [],
-            wrongCharactersIndex: [],
-          },
-        ],
-        currentWordIndex: 0,
-        originator: "",
-      },
-    ],
-    currentDocumentIndex: 0,
+  const dispatch = useAppDispatch();
+  const typingDocuments = useAppSelector((state) => {
+    return state.typingDocuments;
   });
-  const [allTypedChar, setAllTypedChar] = useState<string[]>([]);
+
   const [typedWord, setTypedWord] = useState<string>("");
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [triggerStartTime, setTriggerStartTime] = useState(false);
-  const [isFinished, setIsFinished] = useState(true);
-  const [previousScore, setPreviousScore] = useState<PreviousScore>({
-    WPM: 0,
-    accuracy: 0,
-  });
-  const [fetchingHowManyTimesAlready, setFetchingHowManyTimesAlready] =
-    useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
-
-  const hasInitiallyFetchedData = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null); // for detect when user click start button, then to focus the input tag
 
-  const [userAuthenticatedOnPageLoad, setUserAuthenticatedOnPageLoad] =
-    useState(false);
-
   // make the variables to simplify the process
-  const currentWordObject =
-    documents.quotes[documents.currentDocumentIndex].words[
-      documents.quotes[documents.currentDocumentIndex].currentWordIndex
-    ];
-  const currentQuoteIndex = documents.currentDocumentIndex;
-  const currentCharIndex =
-    documents.quotes[documents.currentDocumentIndex].words[
-      documents.quotes[documents.currentDocumentIndex].currentWordIndex
-    ].currentCharIndex;
+  const currentAttemptNumber = typingDocuments.currentAttemptNumber;
+  const currentQuoteIndex =
+    typingDocuments.documents[typingDocuments.currentAttemptNumber]
+      .currentQuoteIndex;
   const currentWordIndex =
-    documents.quotes[documents.currentDocumentIndex].currentWordIndex;
-
-  // get user authentication status
-  const { data: session } = useSession();
+    typingDocuments.documents[typingDocuments.currentAttemptNumber].quotes[
+      typingDocuments.documents[typingDocuments.currentAttemptNumber]
+        .currentQuoteIndex
+    ].currentWordIndex;
+  const currentCharIndex =
+    typingDocuments.documents[typingDocuments.currentAttemptNumber].quotes[
+      typingDocuments.documents[typingDocuments.currentAttemptNumber]
+        .currentQuoteIndex
+    ].words[
+      typingDocuments.documents[typingDocuments.currentAttemptNumber].quotes[
+        typingDocuments.documents[typingDocuments.currentAttemptNumber]
+          .currentQuoteIndex
+      ].currentWordIndex
+    ].currentCharIndex;
 
   const fetchData = async (ifRestart?: string) => {
-    // console.log("requesting");
-    if (!ifRestart) {
-      // restart not adding fetchingHowManyTimesAlready because it already initially set to 1 for resetState()
-      setFetchingHowManyTimesAlready(fetchingHowManyTimesAlready + 1);
-    }
+    // console.log("fetching quote!!!");
     try {
       const data = await fetchTypingTestData();
-      // console.log("data fresh from fetch :", data);
-      const originatorName = data.originator.name;
+      const author = data.originator.name;
       const content = data.content
         .replace(/[^a-zA-Z0-9'.,/()\-=&$@!?[\]{}:; \n]/g, "")
         .replace(/\s+/g, " ")
         .trim();
 
-      if (documents.quotes[0].words.length <= 1 || ifRestart === "restart") {
-        // new quotes, to : 1. refresh page (replace empty initial quotes) ;or 2. reset quotes if counter is done
-        // console.log("LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLLOOLL");
-        const new_docs = {
-          quotes: [
-            {
-              text: content,
-              words: content.split(" ").map((word: string) => {
-                return {
-                  text: word,
-                  chars: word.split(""),
-                  currentCharIndex: 0,
-                  wrongCharacters: [],
-                  wrongCharactersIndex: [],
-                };
-              }),
-              currentWordIndex: 0,
-              originator: originatorName,
-            },
-          ],
-          currentDocumentIndex: 0,
-        };
-        // console.log(new_docs);
-        setDocuments(new_docs);
+      if (
+        typingDocuments.documents[currentAttemptNumber].quotes[0].words
+          .length <= 1 ||
+        ifRestart === "restart"
+      ) {
+        // new quotes, to : 1. refresh page (replace empty initial quotes by adding new attempt) ;or 2. reset quotes by adding new attempt if counter is done
+        dispatch(addAttempt());
+        dispatch(addQuotes({ content, author }));
       } else {
         // adding to existing documents
-        const new_docs = {
-          ...documents,
-          quotes: [
-            ...documents.quotes,
-            {
-              text: content,
-              words: content.split(" ").map((word: string) => {
-                return {
-                  text: word,
-                  chars: word.split(""),
-                  currentCharIndex: 0,
-                  wrongCharacters: [],
-                  wrongCharactersIndex: [],
-                };
-              }),
-              currentWordIndex: 0,
-              originator: originatorName,
-            },
-          ],
-        };
-        // console.log(new_docs);
-        setDocuments(new_docs);
+        dispatch(addQuotes({ content, author }));
       }
+      dispatch(addQuoteReceived());
     } catch (err) {
       setError("Error fetching data.");
+      console.log("Error fetching data.", err);
     } finally {
       setLoading(false);
     }
   };
-  // useEffect(() => {
-  //   console.log(documents);
-  // }, [documents]);
 
   useEffect(() => {
+    setLoading(false); // cleaning redirect / router pushes loading state from login / register
     // initial fetch
-    if (!hasInitiallyFetchedData.current) {
+    if (typingDocuments.nFetchingQuotes === 0) {
       setLoading(true);
+      // console.log("INITIALLY Im fetching a quote");
+      dispatch(addQuoteFetchAttempt());
       fetchData();
-      hasInitiallyFetchedData.current = true;
-    }
-
-    if (session) {
-      setUserAuthenticatedOnPageLoad(true);
-      console.log("session =====", session);
     }
   }, []);
 
   useEffect(() => {
     // focus on input tag if user click start button
-    if (isTimerRunning && inputRef.current) {
+    if (
+      typingDocuments.documents[currentAttemptNumber].attemptStarted &&
+      !typingDocuments.documents[currentAttemptNumber].attemptFinished &&
+      inputRef.current
+    ) {
       inputRef.current.focus();
     }
-  }, [isTimerRunning]);
-
-  useEffect(() => {
-    if (userAuthenticatedOnPageLoad) {
-      toast.success("Welcome Back!", { duration: 1500 });
-    }
-  }, [userAuthenticatedOnPageLoad]);
+  }, [typingDocuments]);
 
   const fetchMoreDocument = (ifRestart?: string) => {
+    // all quote fetching is centralized here, to manage req queue
     if (ifRestart === "restart") {
-      // console.log("FETCH FROM RESTARTTTT");
+      dispatch(addQuoteFetchAttempt());
+      setLoading(true);
       fetchData(ifRestart);
     } else if (
-      fetchingHowManyTimesAlready === documents.quotes.length &&
-      documents.quotes.length - currentQuoteIndex <= 1
+      typingDocuments.nFetchingQuotes === typingDocuments.nRecievedQuotes &&
+      typingDocuments.documents[currentAttemptNumber].quotes.length -
+        currentQuoteIndex <=
+        1
     ) {
       // so if no fetched data coming queue, system ready to re-fetch
       // also, next quotes have to be existed max at 1
+      // console.log("Im fetching a quote");
+      dispatch(addQuoteFetchAttempt());
       fetchData();
     }
   };
 
   const resetStates = () => {
-    setFetchingHowManyTimesAlready(1);
-    setDocuments({
-      quotes: [
-        {
-          text: "",
-          words: [
-            {
-              text: "",
-              chars: [""],
-              currentCharIndex: 0,
-              wrongCharacters: [],
-              wrongCharactersIndex: [],
-            },
-          ],
-          currentWordIndex: 0,
-          originator: "",
-        },
-      ],
-      currentDocumentIndex: 0,
-    });
+    dispatch(userFinishTyping());
+    dispatch(addAttempt());
+    dispatch(shiftNextAttempt());
+
     setTypedWord("");
     setLoading(true);
     setError(null);
-    setIsTimerRunning(false);
     setTriggerStartTime(false);
-    setIsFinished(true);
     setIsInputFocused(false);
 
     fetchMoreDocument("restart");
@@ -261,9 +197,7 @@ const Home = () => {
 
   const rotateQuotes = () => {
     try {
-      const updatedDocuments = { ...documents };
-      updatedDocuments.currentDocumentIndex += 1;
-      setDocuments(updatedDocuments);
+      dispatch(shiftQuotesIndex());
       setTypedWord("");
     } catch (error) {
       console.log(error);
@@ -271,7 +205,10 @@ const Home = () => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isTimerRunning && isFinished) {
+    if (
+      !typingDocuments.documents[currentAttemptNumber].attemptStarted &&
+      !typingDocuments.documents[currentAttemptNumber].attemptFinished
+    ) {
       setTriggerStartTime(true);
     }
     if (
@@ -279,19 +216,26 @@ const Home = () => {
       event.target.value === typedWord ||
       (event.target.value.length === 1 &&
         event.target.value.slice(-1) === " ") ||
-      (documents.quotes[currentQuoteIndex].words.length -
+      (typingDocuments.documents[currentAttemptNumber].quotes[currentQuoteIndex]
+        .words.length -
         (currentWordIndex + 1) ===
         0 &&
         event.target.value.slice(-1) === " " &&
-        documents.quotes.length - (currentQuoteIndex + 1) === 0)
+        typingDocuments.documents[currentAttemptNumber].quotes.length -
+          (currentQuoteIndex + 1) ===
+          0)
     ) {
-      // ignore if api data is loading || there is no changes || space in first char || press space at the end of wordlist while there is no next quotes
+      // ignore if api data is loading || there is no changes || space in first char || at the end of wordlist, press space, while there is no next quotes
       return null;
     }
     if (
       event.target.value.slice(-1) === " " &&
-      documents.quotes[currentQuoteIndex].words.length -
-        (documents.quotes[currentQuoteIndex].currentWordIndex + 1) <=
+      typingDocuments.documents[currentAttemptNumber].quotes[currentQuoteIndex]
+        .words.length -
+        (typingDocuments.documents[currentAttemptNumber].quotes[
+          currentQuoteIndex
+        ].currentWordIndex +
+          1) <=
         9
     ) {
       // console.log("FETCHMORREEEEEEE");
@@ -300,128 +244,83 @@ const Home = () => {
     }
     if (
       event.target.value.slice(-1) === " " &&
-      documents.quotes[currentQuoteIndex].words[currentWordIndex].chars.length -
+      typingDocuments.documents[currentAttemptNumber].quotes[currentQuoteIndex]
+        .words[currentWordIndex].chars.length -
         currentCharIndex !==
         0
     ) {
       // if user hit space but there's still remaining char
-      const updatedDocuments = { ...documents };
-      let newWrongChars = [];
-      let newWrongCharsIndex = [];
-
       for (
         let i = currentCharIndex;
         i <
-        updatedDocuments.quotes[currentQuoteIndex].words[currentWordIndex].chars
-          .length;
+        typingDocuments.documents[currentAttemptNumber].quotes[
+          currentQuoteIndex
+        ].words[currentWordIndex].chars.length;
         i++
       ) {
-        newWrongChars.push(
-          updatedDocuments.quotes[currentQuoteIndex].words[currentWordIndex]
-            .chars[i]
+        dispatch(
+          typingInputEvaluation({
+            userInput: "space",
+          })
         );
-        newWrongCharsIndex.push(
-          `${currentQuoteIndex}_${currentWordIndex}_${i}`
-        );
+        dispatch(shiftNextCharIndex());
       }
-      // assign updated wrongCharacters Array
-      updatedDocuments.quotes[currentQuoteIndex].words[
-        currentWordIndex
-      ].wrongCharacters.push(...newWrongChars);
-      // assign updated wrongCharactersIndex Array
-      updatedDocuments.quotes[currentQuoteIndex].words[
-        currentWordIndex
-      ].wrongCharactersIndex.push(...newWrongCharsIndex);
-      // update currentCharIndex by matching the chars length (for accuracy calculation also)
-      documents.quotes[currentQuoteIndex].words[
-        currentWordIndex
-      ].currentCharIndex =
-        updatedDocuments.quotes[currentQuoteIndex].words[
-          currentWordIndex
-        ].chars.length;
+
       // update currentWordIndex happening in conditional below this
     }
     if (
       event.target.value.slice(-1) === " " &&
-      currentWordIndex === documents.quotes[currentQuoteIndex].words.length - 1
+      currentWordIndex ===
+        typingDocuments.documents[currentAttemptNumber].quotes[
+          currentQuoteIndex
+        ].words.length -
+          1
     ) {
       // if on last word & user press space
       rotateQuotes();
+      dispatch(increaseWpm());
     } else if (event.target.value.slice(-1) === " ") {
-      // reset typedWord if user enter a space / when user input space
-      const updatedDocuments = { ...documents };
-      updatedDocuments.quotes[currentQuoteIndex].currentWordIndex += 1;
-      setDocuments(updatedDocuments);
+      // reset typedWord and shift word index if user enter a space / when user input space
+      dispatch(shiftWordIndex());
       setTypedWord("");
+      dispatch(increaseWpm());
     } else if (event.target.value.length < typedWord.length) {
       // when user delete the char
-      let removedAWrongChar: string[] = [];
-      let removedAWrongCharIndex: string[] = [];
-      // updating documents state for later
-      const updatedDocuments = { ...documents };
-      const currentQuotesChar = currentWordObject.chars[currentCharIndex - 1];
+
       if (
-        currentQuotesChar === currentWordObject.wrongCharacters.slice(-1)[0]
+        typingDocuments.documents[currentAttemptNumber].quotes[
+          currentQuoteIndex
+        ].words[currentWordIndex].chars[currentCharIndex - 1].typeStatus ===
+        "incorrect"
       ) {
-        // update wrong chars list only if user delete a wrong char
-        removedAWrongChar = currentWordObject.wrongCharacters.slice(
-          0,
-          currentWordObject.wrongCharacters.length - 1
-        ); // get the new array without the last alement
-        removedAWrongCharIndex = currentWordObject.wrongCharactersIndex.filter(
-          (charIndex) => {
-            return (
-              charIndex !==
-              `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex - 1}`
-            );
-          }
-        );
-        // update wrong chars list
-        updatedDocuments.quotes[currentQuoteIndex].words[
-          currentWordIndex
-        ].wrongCharacters = removedAWrongChar;
-        updatedDocuments.quotes[currentQuoteIndex].words[
-          currentWordIndex
-        ].wrongCharactersIndex = removedAWrongCharIndex;
+        // update wrong chars list, but only if user delete a wrong char
+        dispatch(removeLastWrongCharacter());
       }
       // update current char index
-      updatedDocuments.quotes[currentQuoteIndex].words[
-        currentWordIndex
-      ].currentCharIndex -= 1;
-      setDocuments(updatedDocuments);
+      dispatch(shiftPreviousCharIndex());
       setTypedWord(event.target.value);
     } else {
-      // console.log(currentWordObject);
-
-      if (currentCharIndex < currentWordObject.chars.length) {
-        // pastikan sisa huruf belum habis di kata itu
-
+      if (
+        currentCharIndex <
+        typingDocuments.documents[currentAttemptNumber].quotes[
+          currentQuoteIndex
+        ].words[currentWordIndex].chars.length
+      ) {
+        // make sure there are no remaining char in the word
         setTypedWord(event.target.value);
-        if (
-          event.target.value.slice(-1) !==
-          currentWordObject.chars[currentCharIndex]
-        ) {
-          // check char similarity, if wrong, enter this, if correct, to the next char...
-          currentWordObject.wrongCharacters.push(
-            currentWordObject.chars[currentCharIndex]
-          );
-          // wrongCharactersIndex array -> docIndex_wordIndex_charIndex
-          currentWordObject.wrongCharactersIndex.push(
-            `${currentQuoteIndex}_${currentWordIndex}_${currentCharIndex}`
-          );
-        }
-        setAllTypedChar([
-          ...allTypedChar,
-          currentWordObject.chars[currentCharIndex],
-        ]);
+        // correctness evaluation happened in typingDocuments reducer
+        dispatch(
+          typingInputEvaluation({
+            userInput: event.target.value.slice(-1),
+          })
+        );
         // update for next chart index
-        const updatedDocuments = { ...documents };
-        updatedDocuments.quotes[currentQuoteIndex].words[
-          currentWordIndex
-        ].currentCharIndex += 1;
-        setDocuments(updatedDocuments);
+        dispatch(shiftNextCharIndex());
       }
     }
+
+    // re-calculate wpm & accuracy
+    dispatch(calculateAccuracy());
   };
 
   const handleKeyboardEvent = (
@@ -459,11 +358,9 @@ const Home = () => {
       <div className="w-full min-h-screen  flex flex-col flex-wrap  items-center gap-2 transition-all">
         <Header />
         <MyTimer
-          setIsTimerRunning={setIsTimerRunning}
           triggerStartTime={triggerStartTime}
           setTriggerStartTime={setTriggerStartTime}
           resetStates={resetStates}
-          setIsFinished={setIsFinished}
         />
         <input
           type="text"
@@ -480,25 +377,18 @@ const Home = () => {
           onMouseUp={handleMouseEvents}
           onContextMenu={handleContextMenu}
         />
-        <div className="flex sm:flex-row flex-col-reverse max-sm:items-center flex-wrap gap-4 justify-around w-full">
-          <ResultScore
-            documents={documents}
-            isTimerRunning={isTimerRunning}
-            previousScore={previousScore}
-            setPreviousScore={setPreviousScore}
-            isFinished={isFinished}
-            allTypedChar={allTypedChar}
-          />
+        <div className="flex sm:flex-row flex-col max-sm:items-center flex-wrap gap-4 sm:gap-y-10 gap-y-5 justify-around w-full mb-10">
+          <ResultScore />
           <div
             id="quotes"
             className="rounded-xl  bg-indigo-50 min-h-min sm:w-4/6 w-11/12 overflow-clip text-ellipsis  flex flex-col justify-between gap-2 sm:text-2xl text-base"
           >
             <div>
-              <DisplayCurrentQuote documents={documents} />
-              <DisplayNextQuote documents={documents} />
+              <DisplayCurrentQuote />
+              <DisplayNextQuote />
             </div>
             <div
-              className="text-xs text-center p-1 cursor-help w-fit self-center hover:bg-indigo-200 rounded-md"
+              className="text-xs text-center p-1 px-2 cursor-help w-fit self-center hover:bg-indigo-200 rounded-md"
               onMouseDown={() =>
                 toast.warning(
                   "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly",
@@ -528,6 +418,27 @@ const Home = () => {
                 Here
               </a>
             </div>
+          </div>
+          {/* only in small displays, big one on the <DisplayCurrentAttempt/> */}
+          <div className="sm:hidden flex flex-col bg-indigo-200 p-3 rounded-xl text-start  w-11/12">
+            <div className="h-30 text-md text-center">
+              <span>TagCloud innacurate character</span>
+              <TagCloud
+                minSize={15}
+                maxSize={50}
+                tags={
+                  typingDocuments.documents[
+                    typingDocuments.currentAttemptNumber
+                  ].wrongCharacters
+                }
+              />
+            </div>
+          </div>
+          <div className="sm:w-8/12 w-11/12 bg-indigo-500 text-white font-semibold text-center rounded-xl text-sm py-0.5 max-sm:mt-10">
+            Previous Attempts :
+          </div>
+          <div className=" flex flex-row flex-wrap gap-5 justify-evenly items-center w-full sm:px-10 px-3">
+            <DisplayPreviousAttempt />
           </div>
         </div>
       </div>

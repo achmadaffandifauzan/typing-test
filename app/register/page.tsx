@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthButtonGoogle } from "../components/AuthButton";
 import { AuthButtonGithub } from "../components/AuthButton";
@@ -8,10 +8,12 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
+import Loading from "../components/Loading";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: {
     preventDefault: () => void;
@@ -41,21 +43,40 @@ export default function RegisterPage() {
         // console.log(registerResponse);
 
         // Log in the user after successful registration
-        const loginResponse = await signIn("credentials", {
+        await signIn("credentials", {
           username: data.get("username"),
           password: data.get("password"),
           redirect: false,
           callbackUrl: `${window.location.origin}/`,
         });
+        toast.success(`Register success!, ${data.get("username")}!`, {
+          duration: 2000,
+        });
+        setLoading(false);
+        router.refresh();
+      } else {
+        throw new Error();
       }
     } catch (error) {
-      console.log("Error: ", error);
+      setLoading(false);
       return toast.error("Error. Please try again.", {
         duration: 2000,
       });
     }
   };
-  if (session) router.push("/");
+  useEffect(() => {
+    if (status === "loading") {
+      setLoading(true);
+    } else if (status === "authenticated") {
+      router.push("/");
+    } else {
+      setLoading(false);
+    }
+  }, [status, router]);
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
       <div className="py-3 text-sm text-indigo-500 font-bold">

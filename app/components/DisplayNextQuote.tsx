@@ -1,16 +1,23 @@
-import React from "react";
-import { DocumentsSchema } from "./page";
-interface DisplayCurrentQuoteProps {
-  documents: DocumentsSchema;
-}
+"use client";
 
-const DisplayNextQuote = ({ documents }: DisplayCurrentQuoteProps) => {
+import React from "react";
+import { useAppSelector } from "@/lib/hooks";
+
+const DisplayNextQuote = () => {
+  const typingDocuments = useAppSelector((state) => {
+    return state.typingDocuments;
+  });
   // make the variables to simplify the process
-  const currentQuoteIndex = documents.currentDocumentIndex;
+  const currentQuoteIndex =
+    typingDocuments.documents[typingDocuments.currentAttemptNumber]
+      .currentQuoteIndex;
   return (
     <div id="nextQotes" className="p-4 text-justify ">
-      {documents.quotes.map((quoteObj, index) => {
+      {typingDocuments.documents[
+        typingDocuments.currentAttemptNumber
+      ].quotes.map((quoteObj, index) => {
         if (index > currentQuoteIndex) {
+          // showing next quote
           return (
             <div key={`nextQuote_${index}`}>
               <div>
@@ -25,7 +32,7 @@ const DisplayNextQuote = ({ documents }: DisplayCurrentQuoteProps) => {
               <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
                 <span className="text-lg flex items-center">~ </span>
                 <span className="text-base flex items-center">
-                  {quoteObj.originator}
+                  {quoteObj.author}
                 </span>
               </div>
             </div>

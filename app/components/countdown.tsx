@@ -1,20 +1,23 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useAppDispatch } from "@/lib/hooks";
+import {
+  setTriggerSaveResult,
+  userFinishTyping,
+  userStartTyping,
+} from "@/lib/store";
+import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
 interface MyTimerProps {
-  setIsTimerRunning: React.Dispatch<React.SetStateAction<boolean>>;
   triggerStartTime: boolean;
   setTriggerStartTime: React.Dispatch<React.SetStateAction<boolean>>;
   resetStates: Function;
-  setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function MyTimer({
-  setIsTimerRunning,
   triggerStartTime,
   setTriggerStartTime,
   resetStates,
-  setIsFinished,
 }: MyTimerProps) {
+  const dispatch = useAppDispatch();
   const time = new Date();
   time.setSeconds(time.getSeconds() + 60); // 60 seconds timer
   const { totalSeconds, isRunning, restart } = useTimer({
@@ -22,15 +25,16 @@ export default function MyTimer({
     autoStart: false,
     onExpire: () => {
       console.warn("onExpire called");
+      dispatch(userFinishTyping());
+      // only save attempt to db only after timer is expired
+      dispatch(setTriggerSaveResult({ trigger: "on" }));
       resetStates();
-      setIsFinished(true);
     },
   });
   useEffect(() => {
     if (triggerStartTime) {
-      setIsFinished(false);
       restart(time);
-      setIsTimerRunning(true);
+      dispatch(userStartTyping());
       setTriggerStartTime(false);
     }
   }, [triggerStartTime]);
@@ -73,9 +77,8 @@ export default function MyTimer({
               onClick={() => {
                 const time = new Date();
                 time.setSeconds(time.getSeconds() + 60);
-                setIsFinished(false);
                 restart(time);
-                setIsTimerRunning(true);
+                dispatch(userStartTyping());
               }}
             >
               Start

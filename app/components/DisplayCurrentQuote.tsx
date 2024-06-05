@@ -1,43 +1,48 @@
-import React from "react";
-import { DocumentsSchema } from "./page";
+"use client";
 
-interface DisplayCurrentQuoteProps {
-  documents: DocumentsSchema;
-}
-const DisplayCurrentQuote = ({ documents }: DisplayCurrentQuoteProps) => {
+import React from "react";
+import { useAppSelector } from "@/lib/hooks";
+
+const DisplayCurrentQuote = () => {
+  const typingDocuments = useAppSelector((state) => {
+    return state.typingDocuments;
+  });
+
   // make the variables to simplify the process
-  const currentQuoteIndex = documents.currentDocumentIndex;
+  const currentQuoteIndex =
+    typingDocuments.documents[typingDocuments.currentAttemptNumber]
+      .currentQuoteIndex;
   const currentWordIndex =
-    documents.quotes[documents.currentDocumentIndex].currentWordIndex;
+    typingDocuments.documents[typingDocuments.currentAttemptNumber].quotes[
+      currentQuoteIndex
+    ].currentWordIndex;
   return (
     <div
       id="currentQuotes"
       className="bg-indigo-100 p-4 rounded-xl text-justify"
     >
       <div>
-        {documents.quotes[currentQuoteIndex].words.map((word, wordIndex) => {
+        {typingDocuments.documents[typingDocuments.currentAttemptNumber].quotes[
+          currentQuoteIndex
+        ].words.map((word, wordIndex) => {
           const children = (
             <>
-              {word.chars.map((char: String, charIndex: Number) => {
-                if (
-                  word.wrongCharactersIndex.includes(
-                    `${currentQuoteIndex}_${wordIndex}_${charIndex}`
-                  )
-                ) {
+              {word.chars.map((char, charIndex) => {
+                if (char.typeStatus === "incorrect") {
                   return (
                     <span
-                      key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                      key={`${currentQuoteIndex}_${wordIndex}_${charIndex}`}
                       className="text-red-600"
                     >
-                      {char}
+                      {char.text}
                     </span>
                   );
                 } else {
                   return (
                     <span
-                      key={`${currentQuoteIndex}_${word}_${char}_${charIndex}`}
+                      key={`${currentQuoteIndex}_${wordIndex}_${charIndex}`}
                     >
-                      {char}
+                      {char.text}
                     </span>
                   );
                 }
@@ -46,9 +51,9 @@ const DisplayCurrentQuote = ({ documents }: DisplayCurrentQuoteProps) => {
           );
           if (wordIndex === currentWordIndex) {
             return (
-              <span key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}>
+              <span key={`addSpace_${currentQuoteIndex}_${wordIndex}`}>
                 <span
-                  key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                  key={`${currentQuoteIndex}_${wordIndex}`}
                   className="p-1 bg-indigo-300 rounded-md tracking-wider"
                 >
                   {children}
@@ -57,9 +62,9 @@ const DisplayCurrentQuote = ({ documents }: DisplayCurrentQuoteProps) => {
             );
           } else {
             return (
-              <span key={`addSpace_${currentQuoteIndex}_${word}_${wordIndex}`}>
+              <span key={`addSpace_${currentQuoteIndex}}_${wordIndex}`}>
                 <span
-                  key={`${currentQuoteIndex}_${word}_${wordIndex}`}
+                  key={`${currentQuoteIndex}_${wordIndex}`}
                   className="p-1 tracking-wider"
                 >
                   {children}
@@ -72,7 +77,10 @@ const DisplayCurrentQuote = ({ documents }: DisplayCurrentQuoteProps) => {
       <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
         <span className="sm:text-lg text-base flex items-center">~ </span>
         <span className="sm:text-base text-sm flex items-center">
-          {documents.quotes[currentQuoteIndex].originator}
+          {
+            typingDocuments.documents[typingDocuments.currentAttemptNumber]
+              .quotes[currentQuoteIndex].author
+          }
         </span>
       </div>
     </div>

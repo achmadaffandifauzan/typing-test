@@ -1,17 +1,44 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-
+import Loading from "./Loading";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 const Header = () => {
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(false);
+  const handleLogout = () => {
+    try {
+      signOut();
+      return toast.success("Logout success!", {
+        duration: 2000,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (status === "loading") {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [status, router]);
+
+  if (loading) {
+    return <Loading />;
+  }
   const getAuthBtn = () => {
     if (session) {
       return (
         <div className="flex flex-row justify-between w-full gap-1 sm:bg-indigo-100 rounded-b-xl">
           <button
             className="font-semibold flex flex-row sm:w-full min-w-max justify-center items-center h-10 sm:py-2 py-0.5 px-4 gap-1 z-10 bg-indigo-100 hover:bg-indigo-500 hover:text-white text-sm text-indigo-500 sm:rounded-bl-xl max-sm:rounded-tr-xl  hover:ring-4 hover:shadow-xl transition-all"
-            onClick={() => signOut()}
+            onClick={handleLogout}
           >
             <img src="/icons/logout.svg" className="sm:w-6 w-5" alt="" />
             <div>Logout</div>

@@ -1,4 +1,4 @@
-"use server";
+"use server"; // somehow need to be explicitly stated, if not, could be error 429 (fetching too much)
 import axios from "axios";
 
 const instance = axios.create({

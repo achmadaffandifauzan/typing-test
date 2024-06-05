@@ -4,14 +4,16 @@ import { AuthButtonGoogle } from "../components/AuthButton";
 import { AuthButtonGithub } from "../components/AuthButton";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
+import Loading from "../components/Loading";
 
 export default function Login() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: {
     preventDefault: () => void;
@@ -21,20 +23,49 @@ export default function Login() {
     const data = new FormData(e.currentTarget);
 
     try {
-      const loginResponse = await signIn("credentials", {
+      setLoading(true);
+
+      const response = await signIn("credentials", {
         username: data.get("username"),
         password: data.get("password"),
         redirect: false,
       });
-      return loginResponse;
-    } catch (error) {
-      console.log("Error: ", error);
-      return toast.error("Error. Please try again.", {
+      if (response?.status === 401) {
+        throw new Error("Invalid credentials");
+      } else if (response?.status !== 200) {
+        throw new Error("Server error");
+      }
+      setLoading(false);
+      toast.success(`Login success!, ${data.get("username")}!`, {
         duration: 2000,
       });
+      router.push("/");
+    } catch (error: any) {
+      setLoading(false);
+      if (error.message === "Invalid credentials") {
+        toast.error("Username or Password is wrong", {
+          duration: 2000,
+        });
+      } else {
+        toast.error("Server error. Please try again later!.", {
+          duration: 2000,
+        });
+      }
     }
   };
-  if (session) router.push("/");
+  useEffect(() => {
+    if (status === "loading") {
+      setLoading(true);
+    } else if (status === "authenticated") {
+      router.push("/");
+    } else {
+      setLoading(false);
+    }
+  }, [status, router]);
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
       <div className="py-3 text-sm text-indigo-500 font-bold">Login with:</div>
