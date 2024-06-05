@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { AccuracyLineChart, WpmLineChart } from "./lineChart";
 import { getTypingHistories } from "@/prisma/functions/typing";
 import UpperContent from "./UpperContent/UpperContent";
-import { Prisma } from "@prisma/client";
+import { redirect } from "next/navigation";
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
   const user = await getOneUser(session?.user.username!);
@@ -35,7 +35,9 @@ const Dashboard = async () => {
     borderColor: "rgb(209,78,31,0.7",
     backgroundColor: "rgb(209,78,31,0.8)",
   };
-
+  if (!session) {
+    redirect("/");
+  }
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Header />

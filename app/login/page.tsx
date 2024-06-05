@@ -25,35 +25,47 @@ export default function Login() {
     try {
       setLoading(true);
 
-      await signIn("credentials", {
+      const response = await signIn("credentials", {
         username: data.get("username"),
         password: data.get("password"),
         redirect: false,
       });
-      return toast.success(`Login success!, ${data.get("username")}!`, {
-        duration: 2000,
-      });
-    } catch (error) {
-      console.log("Error: ", error);
-      return toast.error("Error. Please try again.", {
-        duration: 2000,
-      });
-    } finally {
+      if (response?.status === 401) {
+        throw new Error("Invalid credentials");
+      } else if (response?.status !== 200) {
+        throw new Error("Server error");
+      }
       setLoading(false);
-      router.refresh();
+      toast.success(`Login success!, ${data.get("username")}!`, {
+        duration: 2000,
+      });
+      router.push("/");
+    } catch (error: any) {
+      setLoading(false);
+      if (error.message === "Invalid credentials") {
+        toast.error("Username or Password is wrong", {
+          duration: 2000,
+        });
+      } else {
+        toast.error("Server error. Please try again later!.", {
+          duration: 2000,
+        });
+      }
     }
   };
   useEffect(() => {
     if (status === "loading") {
       setLoading(true);
+    } else if (status === "authenticated") {
+      router.push("/");
     } else {
       setLoading(false);
     }
-  }, [status]);
+  }, [status, router]);
+
   if (loading) {
     return <Loading />;
   }
-  if (session) router.push("/");
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
       <div className="py-3 text-sm text-indigo-500 font-bold">Login with:</div>

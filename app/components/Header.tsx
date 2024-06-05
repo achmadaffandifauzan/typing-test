@@ -27,7 +27,8 @@ const Header = () => {
     } else {
       setLoading(false);
     }
-  }, [status]);
+  }, [status, router]);
+
   if (loading) {
     return <Loading />;
   }
@@ -60,7 +61,7 @@ const Header = () => {
           className="bg-indigo-100 hover:bg-indigo-500 hover:text-white text-indigo-500 font-semibold flex flex-row items-center text-sm h-10 sm:py-2 py-0.5 px-3 sm:rounded-b-xl max-sm:rounded-r-none max-sm:rounded-l-xl hover:ring-4 hover:shadow-xl transition-all"
         >
           <img src="/icons/login.svg" className="sm:w-6 w-5" alt="" />
-          <div>Login to get stats!</div>
+          <div>Login to save result!</div>
         </Link>
       );
     }

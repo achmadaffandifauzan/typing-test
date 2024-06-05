@@ -49,34 +49,34 @@ export default function RegisterPage() {
           redirect: false,
           callbackUrl: `${window.location.origin}/`,
         });
-        return toast.success(`Register success!, ${data.get("username")}!`, {
+        toast.success(`Register success!, ${data.get("username")}!`, {
           duration: 2000,
         });
+        setLoading(false);
+        router.refresh();
+      } else {
+        throw new Error();
       }
-      return toast.error("Error. Please try again.", {
-        duration: 2000,
-      });
     } catch (error) {
-      console.log("Error: ", error);
+      setLoading(false);
       return toast.error("Error. Please try again.", {
         duration: 2000,
       });
-    } finally {
-      setLoading(false);
-      router.refresh();
     }
   };
   useEffect(() => {
     if (status === "loading") {
       setLoading(true);
+    } else if (status === "authenticated") {
+      router.push("/");
     } else {
       setLoading(false);
     }
-  }, [status]);
+  }, [status, router]);
+
   if (loading) {
     return <Loading />;
   }
-  if (session) router.push("/");
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
       <div className="py-3 text-sm text-indigo-500 font-bold">

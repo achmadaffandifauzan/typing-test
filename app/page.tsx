@@ -89,7 +89,7 @@ const Home = () => {
     ].currentCharIndex;
 
   const fetchData = async (ifRestart?: string) => {
-    console.log("fetching quote!!!");
+    // console.log("fetching quote!!!");
     try {
       const data = await fetchTypingTestData();
       const author = data.originator.name;
@@ -120,10 +120,11 @@ const Home = () => {
   };
 
   useEffect(() => {
+    setLoading(false); // cleaning redirect / router pushes loading state from login / register
     // initial fetch
     if (typingDocuments.nFetchingQuotes === 0) {
       setLoading(true);
-      console.log("INITIALLY Im fetching a quote");
+      // console.log("INITIALLY Im fetching a quote");
       dispatch(addQuoteFetchAttempt());
       fetchData();
     }
