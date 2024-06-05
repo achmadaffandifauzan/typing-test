@@ -89,6 +89,7 @@ const Home = () => {
     ].currentCharIndex;
 
   const fetchData = async (ifRestart?: string) => {
+    console.log("fetching quote!!!");
     try {
       const data = await fetchTypingTestData();
       const author = data.originator.name;

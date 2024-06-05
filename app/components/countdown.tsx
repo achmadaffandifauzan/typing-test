@@ -1,6 +1,10 @@
 "use client";
 import { useAppDispatch } from "@/lib/hooks";
-import { userFinishTyping, userStartTyping } from "@/lib/store";
+import {
+  setTriggerSaveResult,
+  userFinishTyping,
+  userStartTyping,
+} from "@/lib/store";
 import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
 interface MyTimerProps {
@@ -22,6 +26,8 @@ export default function MyTimer({
     onExpire: () => {
       console.warn("onExpire called");
       dispatch(userFinishTyping());
+      // only save attempt to db only after timer is expired
+      dispatch(setTriggerSaveResult({ trigger: "on" }));
       resetStates();
     },
   });

@@ -8,6 +8,7 @@ const typingDocumentsSlice = createSlice({
       {
         attemptStarted: false,
         attemptFinished: false,
+        attemptSavedtoDb: false,
         quotes: [
           {
             text: "",
@@ -43,6 +44,7 @@ const typingDocumentsSlice = createSlice({
     currentAttemptNumber: 0,
     nFetchingQuotes: 0,
     nRecievedQuotes: 0,
+    triggerSaveResult: false,
   },
   reducers: {
     addQuoteFetchAttempt(state) {
@@ -50,6 +52,16 @@ const typingDocumentsSlice = createSlice({
     },
     addQuoteReceived(state) {
       state.nRecievedQuotes += 1;
+    },
+    setAttemptSavedToDb(state) {
+      state.documents[state.currentAttemptNumber].attemptSavedtoDb = true;
+    },
+    setTriggerSaveResult(state, action) {
+      if (action.payload.trigger === "on") {
+        state.triggerSaveResult = true;
+      } else if (action.payload.trigger === "off") {
+        state.triggerSaveResult = false;
+      }
     },
     addAttempt(state) {
       if (!state.documents[state.documents.length - 1].quotes[0].text) {
@@ -59,6 +71,7 @@ const typingDocumentsSlice = createSlice({
       state.documents.push({
         attemptStarted: false,
         attemptFinished: false,
+        attemptSavedtoDb: false,
         quotes: [
           {
             text: "",
@@ -267,6 +280,8 @@ export const {
   addQuotes,
   addQuoteFetchAttempt,
   addQuoteReceived,
+  setAttemptSavedToDb,
+  setTriggerSaveResult,
   addAttempt,
   shiftNextAttempt,
   shiftQuotesIndex,
