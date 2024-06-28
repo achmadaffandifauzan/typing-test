@@ -1,8 +1,7 @@
 import dayjs from "dayjs";
 import React from "react";
-// import CharStat from "./CharStat";
 
-const UpperContent = ({ user, session, typingHistories }: any) => {
+const UserSummary = ({ user, session, typingHistories }: any) => {
   let userDateCreation = "Loading...";
   if (user) {
     userDateCreation = dayjs(user.createdAt!.toString()).format("MMM D, YYYY");
@@ -86,27 +85,20 @@ const UpperContent = ({ user, session, typingHistories }: any) => {
     );
   };
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex sm:flex-row flex-col flex-wrap justify-around items-center sm:pt-28">
-        <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl gap-1">
-          {averageWpmDisplay()}
-        </div>
-
-        <div className="sm:w-4/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl ">
-          {userInfoDisplay()}
-        </div>
-
-        <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl gap-1">
-          {averageAccuracyDisplay()}
-        </div>
+    <div className="flex sm:flex-row flex-col flex-wrap justify-around items-center sm:pt-28">
+      <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl gap-1">
+        {averageWpmDisplay()}
       </div>
-      {/* <CharStat /> */}
-      <div className="flex self-center items-center justify-center text-indigo-700 bg-indigo-100 w-11/12 h-[6rem] rounded-xl ">
-        Detailed Stats of your character typo!
-        <span className=" font-bold"> (Coming Soon!)</span>
+
+      <div className="sm:w-4/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl ">
+        {userInfoDisplay()}
+      </div>
+
+      <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl gap-1">
+        {averageAccuracyDisplay()}
       </div>
     </div>
   );
 };
 
-export default UpperContent;
+export default UserSummary;
