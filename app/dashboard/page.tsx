@@ -6,14 +6,13 @@ import { getOneUser } from "@/prisma/functions/user";
 import dayjs from "dayjs";
 import { AccuracyLineChart, WpmLineChart } from "./lineChart";
 import { getTypingHistories } from "@/prisma/functions/typing";
-import UpperContent from "./UpperContent/UpperContent";
+import UserSummary from "./UserSummary";
 import { redirect } from "next/navigation";
+import WrongCharStat from "./WrongCharStat";
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
   const user = await getOneUser(session?.user.username!);
   const typingHistories = await getTypingHistories(user?.username);
-
-  // console.log("typingHistories", typingHistories);
 
   // change typing format to be chart data
   const labels: any = typingHistories?.map((typing: any) => {
@@ -41,13 +40,15 @@ const Dashboard = async () => {
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Header />
-      <div className="flex flex-col px-5">
-        <UpperContent
+      <div className="flex flex-col px-5 gap-5">
+        <UserSummary
           user={user}
           session={session}
           typingHistories={typingHistories}
-        ></UpperContent>
-        <div className="flex flex-col flex-wrap justify-around items-center sm:pt-9 sm:gap-8">
+        ></UserSummary>
+        <WrongCharStat />
+
+        <div className="flex flex-col flex-wrap justify-around items-center  sm:gap-5 mb-5">
           <div className="sm:w-10/12 w-full bg-indigo-100 rounded-xl flex justify-start items-center">
             <AccuracyLineChart
               accuracyChartData={accuracyChartData}
