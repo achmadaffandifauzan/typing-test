@@ -14,6 +14,9 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
+  ChartEvent,
+  ActiveElement,
 } from "chart.js";
 import { TagCloud } from "react-tagcloud";
 ChartJS.register(
@@ -28,7 +31,6 @@ ChartJS.register(
 interface MergedWrongCharacters {
   [char: string]: {
     wrongInputs: string[];
-    count: number;
   };
 }
 const WrongCharStat = () => {
@@ -81,30 +83,21 @@ const WrongCharStat = () => {
             mergedWrongCharactersTemp[wrongCharObject.value].wrongInputs.push(
               ...wrongCharObject.userInputs
             );
-            mergedWrongCharactersTemp[wrongCharObject.value].count =
-              mergedWrongCharactersTemp[
-                wrongCharObject.value
-              ].wrongInputs.length;
           } else {
             mergedWrongCharactersTemp[wrongCharObject.value] = {
               wrongInputs: wrongCharObject.userInputs,
-              count: wrongCharObject.count,
             };
-            mergedWrongCharactersTemp[wrongCharObject.value].count =
-              mergedWrongCharactersTemp[
-                wrongCharObject.value
-              ].wrongInputs.length;
           }
         });
       });
       setMergedWrongCharacters(mergedWrongCharactersTemp);
     }
   }, [typingHistories]);
-  useEffect(() => {
-    if (mergedWrongCharacters) {
-      console.log(mergedWrongCharacters);
-    }
-  }, [mergedWrongCharacters]);
+  // useEffect(() => {
+  //   if (mergedWrongCharacters) {
+  //     console.log(mergedWrongCharacters);
+  //   }
+  // }, [mergedWrongCharacters]);
   if (loading) {
     return <Loading />;
   }
@@ -115,7 +108,7 @@ const WrongCharStat = () => {
   for (const char in mergedWrongCharacters) {
     // iterate object
     labels.push(char);
-    wrongCharCount.push(mergedWrongCharacters[char].count);
+    wrongCharCount.push(mergedWrongCharacters[char].wrongInputs.length);
   }
   // Sorting
   // Combine first
@@ -143,11 +136,11 @@ const WrongCharStat = () => {
       },
     ],
   };
-  const options = {
+  const options: ChartOptions<"bar"> = {
     responsive: true,
     plugins: {
       legend: {
-        position: "top" as const,
+        position: "top",
       },
       title: {
         display: true,
@@ -155,44 +148,67 @@ const WrongCharStat = () => {
       },
       tooltip: {
         callbacks: {
-          title: function (context: any) {
+          title: function (context) {
             const label = context[0].label;
             return `Character: ${label}`;
           },
-          label: function (context: any) {
+          label: function (context) {
             const count = context.raw;
-            return `Count: ${count}`;
+            return `Typo ${count} times`;
           },
         },
       },
-      onClick: (event: MouseEvent) => {
-        console.log(event);
-      },
     },
+    onClick: (event: ChartEvent, elements: ActiveElement[]) => {
+      if (elements.length) {
+        const elementIndex = elements[0].index;
+        const label = data.labels[elementIndex];
+        setHoveredChar(label);
+      }
+    },
+    events: ["mousemove", "mouseout", "click", "touchstart", "touchmove"],
+  };
+  const calculateTagCloudData = (hoveredChar: string) => {
+    const res: any = [];
+    mergedWrongCharacters[hoveredChar].wrongInputs.forEach((wrongInput) => {
+      let found = false;
+      for (let i of res) {
+        if (i.value === wrongInput) {
+          i.count += 1;
+          found = true;
+        }
+      }
+      if (!found) {
+        res.push({
+          value: wrongInput,
+          count: 1,
+        });
+      }
+    });
+    return res;
   };
   return (
     <>
       <Bar data={data} options={options} />
-      <div className="flex self-center items-center justify-center text-indigo-700 bg-indigo-100 w-11/12 h-[6rem] rounded-xl ">
-        Hover on each bar to see the insight&nbsp;
-        <span className=" font-bold"> (Coming Soon!)</span>
-        {hoveredChar && (
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2">
-              Tag Cloud for {hoveredChar}
-            </h2>
-            {/* <TagCloud
-              minSize={15}
-              maxSize={50}
-              tags={mergedWrongCharacters[hoveredChar].wrongInputs.map(
-                (input, index) => ({
-                  value: input,
-                  count: mergedWrongCharacters[hoveredChar].count,
-                })
-              )}
-            /> */}
-          </div>
-        )}
+      <div className="flex flex-col self-center items-center justify-center text-indigo-700 bg-indigo-100 w-11/12 h-fit min-h-[4rem] rounded-xl text-center">
+        <div>{!hoveredChar && "Click on each bar to see the insight"}</div>
+        <div className="transition-all">
+          {hoveredChar && (
+            <div className="mt-4 transition-all">
+              <h2 className="text-md font-semibold ">
+                Typos for "
+                <span className="text-xl font-bold">{hoveredChar}</span>"
+              </h2>
+              <div className="flex flex-row flex-wrap justify-center items-center bg-indigo-200 py-2 px-4 rounded-xl transition-all">
+                <TagCloud
+                  minSize={20}
+                  maxSize={80}
+                  tags={calculateTagCloudData(hoveredChar)}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
