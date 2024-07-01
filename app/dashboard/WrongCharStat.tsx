@@ -196,8 +196,8 @@ const WrongCharStat = () => {
           {hoveredChar && (
             <div className="mt-4 transition-all">
               <h2 className="text-md font-semibold ">
-                Typos for "
-                <span className="text-xl font-bold">{hoveredChar}</span>"
+                Typos for &quot;
+                <span className="text-xl font-bold">{hoveredChar}</span>&quot;
               </h2>
               <div className="flex flex-row flex-wrap justify-center items-center bg-indigo-200 py-2 px-4 rounded-xl transition-all">
                 <TagCloud
