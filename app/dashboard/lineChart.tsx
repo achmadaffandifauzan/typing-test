@@ -47,6 +47,7 @@ const AccuracyLineChart = ({ accuracyChartData, labels }: any) => {
   return <Line className="relative sm:h-56" options={options} data={data} />;
 };
 const WpmLineChart = ({ wpmChartData, labels }: any) => {
+  console.log("wpmChartData", wpmChartData);
   const data = {
     labels,
     datasets: [wpmChartData],
