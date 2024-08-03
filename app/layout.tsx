@@ -13,7 +13,13 @@ export const metadata: Metadata = {
   title: "Typing Speed Test",
   description: "Typing speed test with real time accuracy calculation.",
   keywords:
-    "typing test, affandif typing test, wpm calculation, typing speed test, achmad affandi fauzan",
+    "typing, test, typingtest, type, affandif, wpm, calculation, speed, achmad, affandi, fauzan",
+  openGraph: {
+    title: "Typing Speed Test",
+    description: "Typing speed test with real time accuracy calculation",
+    url: "https://type.affandif.com/",
+    images: "https://type.affandif.com/affandi.png",
+  },
 };
 
 export default async function RootLayout({
