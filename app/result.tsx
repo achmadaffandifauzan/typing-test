@@ -40,6 +40,7 @@ const ResultScore = () => {
             toast.error("Saving result failed!", { duration: 1500 });
           }
         };
+        toast.info("Saving result, please wait!", { duration: 2500 });
         saveAttempt();
       }
     }

@@ -364,6 +364,7 @@ const Home = () => {
         />
         <input
           type="text"
+          id="inputTyping"
           className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 ring ring-indigo-300 focus:w-80  w-64 no-underline "
           onChange={handleChange}
           value={typedWord}

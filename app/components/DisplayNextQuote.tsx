@@ -12,7 +12,7 @@ const DisplayNextQuote = () => {
     typingDocuments.documents[typingDocuments.currentAttemptNumber]
       .currentQuoteIndex;
   return (
-    <div id="nextQotes" className="p-4 text-justify ">
+    <div id="nextQuotes" className="p-4 text-justify ">
       {typingDocuments.documents[
         typingDocuments.currentAttemptNumber
       ].quotes.map((quoteObj, index) => {

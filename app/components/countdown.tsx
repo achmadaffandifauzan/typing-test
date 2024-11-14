@@ -45,13 +45,19 @@ export default function MyTimer({
         {(() => {
           if (isRunning) {
             return (
-              <div className="font-semibold text-2xl text-green-600">
+              <div
+                id="timer-countdown"
+                className="font-semibold text-2xl text-green-600"
+              >
                 {totalSeconds}
               </div>
             );
           } else {
             return (
-              <div className="font-semibold text-2xl text-red-600">
+              <div
+                id="timer-countdown"
+                className="font-semibold text-2xl text-red-600"
+              >
                 {totalSeconds}
               </div>
             );
@@ -62,6 +68,7 @@ export default function MyTimer({
         if (isRunning) {
           return (
             <button
+              id="reset-button"
               className="transition-all rounded-xl text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 sm:py-2 px-4 "
               onClick={() => {
                 resetStates();
@@ -73,6 +80,7 @@ export default function MyTimer({
         } else {
           return (
             <button
+              id="start-button"
               className="transition-all rounded-xl text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 py-2 px-4 "
               onClick={() => {
                 const time = new Date();
