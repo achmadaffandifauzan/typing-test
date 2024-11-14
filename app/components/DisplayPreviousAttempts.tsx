@@ -92,7 +92,7 @@ const DisplayPreviousAttempt = () => {
                   <div className=" flex flex-col justify-center items-center px-2  text-sm rounded-xl w-28 ">
                     WPM
                   </div>
-                  <div className="flex font-bold text-xl text-indigo-800 justify-center items-center">
+                  <div className="wpm-result flex font-bold text-xl text-indigo-800 justify-center items-center">
                     {typingDocuments.documents[i].wpm}
                   </div>
                 </div>
@@ -100,7 +100,7 @@ const DisplayPreviousAttempt = () => {
                   <div className=" flex flex-col justify-center items-center px-2  text-sm rounded-xl w-28 ">
                     Accuracy
                   </div>
-                  <div className="flex font-semibold text-lg text-green-700  justify-center items-center">
+                  <div className="accuracy-result flex font-semibold text-lg text-green-700  justify-center items-center">
                     {typingDocuments.documents[i].accuracy}%
                   </div>
                 </div>
