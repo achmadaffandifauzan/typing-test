@@ -371,6 +371,8 @@ const Home = () => {
           spellCheck="false"
           onKeyDown={handleKeyboardEvent}
           ref={inputRef}
+          autoCapitalize="off"
+          autoComplete="off"
           // below is to prevent the mouse events
           onFocus={handleFocus}
           onBlur={handleBlur}
