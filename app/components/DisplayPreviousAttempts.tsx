@@ -58,6 +58,7 @@ const DisplayPreviousAttempt = () => {
               <TagCloud
                 minSize={15}
                 maxSize={50}
+                shuffle={false}
                 tags={typingHistories[i].wrongCharacters}
               />
             </div>

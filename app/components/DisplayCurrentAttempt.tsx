@@ -48,6 +48,7 @@ const DisplayWPMAndAccuracy = () => {
           <TagCloud
             minSize={15}
             maxSize={50}
+            shuffle={false}
             tags={
               typingDocuments.documents[typingDocuments.currentAttemptNumber]
                 .wrongCharacters
