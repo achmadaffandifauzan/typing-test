@@ -85,6 +85,7 @@ const AttemptCard = React.memo(
     </div>
   )
 );
+AttemptCard.displayName = "AttemptCard";
 
 const DisplayPreviousAttempt = () => {
   const { data: session, status } = useSession();
