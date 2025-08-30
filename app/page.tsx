@@ -186,7 +186,7 @@ const Home = () => {
         </div>
         <button
           onClick={() => window.location.reload()}
-          className="text-xl py-3 px-5 bg-indigo-400 dark:bg-indigo-600 text-white my-3 rounded-xl"
+          className="text-xl py-3 px-5 bg-indigo-400 dark:bg-stone-600 text-white my-3 rounded-xl"
         >
           Try again
         </button>
@@ -364,7 +364,7 @@ const Home = () => {
         <input
           type="text"
           id="inputTyping"
-          className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900 active:bg-indigo-200 dark:active:bg-indigo-800 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700 ring ring-indigo-300 dark:ring-indigo-700 focus:w-80  w-64 no-underline "
+          className="transition-all rounded-xl py-2 px-3 my-3 text-center text-2xl tracking-wider bg-indigo-50 dark:bg-neutral-900 hover:bg-indigo-100 dark:hover:bg-neutral-700 active:bg-indigo-200 dark:active:bg-amber-300 active:w-80 focus:outline-none focus:ring focus:ring-indigo-300 dark:focus:ring-amber-400 ring ring-indigo-300 dark:ring-amber-400 focus:w-80  w-64 no-underline "
           onChange={handleChange}
           value={typedWord}
           spellCheck="false"
@@ -383,14 +383,14 @@ const Home = () => {
           <ResultScore />
           <div
             id="quotes"
-            className="rounded-xl  bg-indigo-50 dark:bg-indigo-950 min-h-min sm:w-4/6 w-11/12 overflow-clip text-ellipsis  flex flex-col justify-between gap-2 sm:text-2xl text-base"
+            className="rounded-xl  bg-indigo-50 dark:bg-neutral-900 min-h-min sm:w-4/6 w-11/12 overflow-clip text-ellipsis  flex flex-col justify-between gap-2 sm:text-2xl text-base"
           >
             <div>
               <DisplayCurrentQuote />
               <DisplayNextQuote />
             </div>
             <div
-              className="text-xs text-center p-1 px-2 cursor-help w-fit self-center hover:bg-indigo-200 dark:hover:bg-indigo-800 rounded-md"
+              className="text-xs text-center p-1 px-2 cursor-help w-fit self-center hover:bg-indigo-200 dark:hover:bg-amber-400 rounded-md"
               onMouseDown={() =>
                 toast.warning(
                   "Some quotes may contains inappropriate language. I do not have the ability to filter specific quotes, as they are generated randomly",
@@ -408,12 +408,10 @@ const Home = () => {
                 )
               }
             >
-              Be aware that those quotes are{" "}
-              <span className="text-blue-500 font-bold ">RANDOM</span>,
-              generated from
+              Be aware that those quotes are random, generated from
               <a
                 href="https://rapidapi.com/martin.svoboda/api/quotes15/"
-                className="text-blue-500"
+                className="text-blue-500 dark:text-neutral-400"
                 target="_blank"
               >
                 {" "}
@@ -422,7 +420,7 @@ const Home = () => {
             </div>
           </div>
           {/* only in small displays, big one on the <DisplayCurrentAttempt/> */}
-          <div className="sm:hidden flex flex-col bg-indigo-200 dark:bg-indigo-800 p-3 rounded-xl text-start  w-11/12">
+          <div className="sm:hidden flex flex-col bg-indigo-200 dark:bg-stone-800 p-3 rounded-xl text-start  w-11/12">
             <div className="h-30 text-md text-center">
               <span>TagCloud innacurate character</span>
               <TagCloud
@@ -437,7 +435,7 @@ const Home = () => {
               />
             </div>
           </div>
-          <div className="sm:w-8/12 w-11/12 bg-indigo-500 text-white font-semibold text-center rounded-xl text-sm py-0.5 max-sm:mt-10">
+          <div className="sm:w-8/12 w-11/12 bg-indigo-500 dark:bg-neutral-800 text-white font-semibold text-center rounded-xl text-sm py-0.5 max-sm:mt-10">
             Previous Attempts :
           </div>
           <div className=" flex flex-row flex-wrap gap-5 justify-evenly items-center w-full sm:px-10 px-3">

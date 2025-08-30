@@ -31,7 +31,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} bg-white dark:bg-[#0f0f0f] text-black dark:text-white`}
+        className={`${inter.className} bg-white dark:bg-[#1e1e1e] text-black dark:text-white`}
       >
         <StoreProvider>
           <SessionProvider>

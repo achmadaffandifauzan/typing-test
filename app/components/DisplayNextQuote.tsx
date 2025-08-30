@@ -29,7 +29,7 @@ const DisplayNextQuote = () => {
                   );
                 })}
               </div>
-              <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
+              <div className="text-end text-slate-600 dark:text-neutral-400 flex items-center justify-end gap-1.5">
                 <span className="text-lg flex items-center">~ </span>
                 <span className="text-base flex items-center">
                   {quoteObj.author}

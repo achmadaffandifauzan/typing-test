@@ -19,7 +19,7 @@ const DisplayCurrentQuote = () => {
   return (
     <div
       id="currentQuotes"
-      className="bg-indigo-100 dark:bg-indigo-900 p-4 rounded-xl text-justify"
+      className="bg-indigo-100 dark:bg-neutral-800 p-4 rounded-xl text-justify"
     >
       <div>
         {typingDocuments.documents[typingDocuments.currentAttemptNumber].quotes[
@@ -54,7 +54,7 @@ const DisplayCurrentQuote = () => {
               <span key={`addSpace_${currentQuoteIndex}_${wordIndex}`}>
                 <span
                   key={`${currentQuoteIndex}_${wordIndex}`}
-                  className="p-1 bg-indigo-300 dark:bg-indigo-700 rounded-md tracking-wider"
+                  className="p-1 bg-indigo-300 dark:bg-stone-700 rounded-md tracking-wider"
                 >
                   {children}
                 </span>{" "}
@@ -74,7 +74,7 @@ const DisplayCurrentQuote = () => {
           }
         })}
       </div>
-      <div className="text-end text-slate-600 flex items-center justify-end gap-1.5">
+      <div className="text-end text-slate-600 dark:text-neutral-400 flex items-center justify-end gap-1.5">
         <span className="sm:text-lg text-base flex items-center">~ </span>
         <span className="sm:text-base text-sm flex items-center">
           {

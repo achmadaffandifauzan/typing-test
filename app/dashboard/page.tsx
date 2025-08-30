@@ -49,13 +49,13 @@ const Dashboard = async () => {
         <WrongCharStat />
 
         <div className="flex flex-col flex-wrap justify-around items-center  sm:gap-5 mb-5">
-          <div className="sm:w-10/12 w-full bg-indigo-100 dark:bg-indigo-900 rounded-xl flex justify-start items-center">
+          <div className="sm:w-10/12 w-full bg-indigo-100 dark:bg-neutral-800 rounded-xl flex justify-start items-center">
             <AccuracyLineChart
               accuracyChartData={accuracyChartData}
               labels={labels}
             ></AccuracyLineChart>
           </div>
-          <div className="sm:w-10/12 w-full bg-indigo-100 dark:bg-indigo-900 rounded-xl flex justify-start items-center">
+          <div className="sm:w-10/12 w-full bg-indigo-100 dark:bg-neutral-800 rounded-xl flex justify-start items-center">
             <WpmLineChart
               wpmChartData={wpmChartData}
               labels={labels}
