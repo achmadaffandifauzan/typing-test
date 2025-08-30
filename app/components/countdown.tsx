@@ -66,6 +66,9 @@ export default function MyTimer({
           }
         })()}
       </div>
+      <div className="self-center">
+        <ToggleTheme />
+      </div>
       {(() => {
         if (isRunning) {
           return (

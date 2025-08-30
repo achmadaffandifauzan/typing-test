@@ -5,7 +5,6 @@ import { signOut, useSession } from "next-auth/react";
 import Loading from "./Loading";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import ToggleTheme from "./ToggleTheme";
 const Header = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -59,7 +58,7 @@ const Header = () => {
       return (
         <Link
           href="/login"
-          className="bg-indigo-100 dark:bg-indigo-900 hover:bg-indigo-500 hover:text-white text-indigo-500 dark:text-indigo-300 font-semibold flex flex-row items-center text-sm h-10 sm:py-2 py-0.5 px-3 sm:rounded-b-xl max-sm:rounded-r-none max-sm:rounded-l-xl hover:ring-4 hover:shadow-xl transition-all"
+          className="bg-indigo-100 dark:bg-indigo-900 hover:bg-indigo-500 hover:text-white text-indigo-500 dark:text-indigo-300 font-semibold flex flex-row items-center text-sm h-10 sm:py-2 py-0.5 px-3 sm:rounded-b-xl max-sm:rounded-xl hover:ring-4 hover:shadow-xl transition-all"
         >
           <img src="/icons/login.svg" className="sm:w-6 w-5" alt="" />
           <div>Login to save result!</div>
@@ -70,7 +69,7 @@ const Header = () => {
   const displayGreeting = () => {
     if (session) {
       return (
-        <div className="absolute sm:top-5 sm:right-12 top-2.5 right-6 flex flex-col gap-2 justify-center sm:items-end max-sm:items-center max-sm:text-center ">
+        <div className="absolute sm:top-5 sm:right-12 top-4 right-6 flex flex-col gap-2 justify-center sm:items-end max-sm:items-center max-sm:text-center ">
           <div className="flex flex-row">
             <div>
               Hi <span className="font-bold">{session?.user?.name}</span>!
@@ -82,18 +81,18 @@ const Header = () => {
     }
   };
   return (
-    <div className="w-full sm:px-5 sm:pt-4 flex flex-row flex-wrap sm:justify-start justify-between items-center text-indigo-500 dark:text-indigo-300 ">
+    <div className="w-full px-5 pt-4 pb-2 max-sm:pt-2 flex flex-row flex-wrap sm:justify-start justify-between items-center text-indigo-500 dark:text-indigo-300 ">
       <div className="max-sm:w-full rounded-xl sm:bg-indigo-200 dark:sm:bg-indigo-800 flex sm:flex-col flex-row flex-wrap justify-between items-center sm:absolute sm:top-5 ">
-        <Link className="flex flex-row flex-wrap px-6 py-2 max-sm" href="/">
+        <Link
+          className="flex flex-row flex-wrap max-sm:ps-2 px-6 py-2 max-sm"
+          href="/"
+        >
           <img src="/icons/keyboard.svg" className="w-5" alt="" />
           <div className="font-bold">TypingTest</div>
         </Link>
         {getAuthBtn()}
       </div>
       {displayGreeting()}
-      <div className="absolute top-11 sm:top-14 sm:right-12 max-sm:left-1/2 max-sm:-translate-x-1/2">
-        <ToggleTheme />
-      </div>
     </div>
   );
 };
