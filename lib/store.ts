@@ -25,10 +25,18 @@ import {
   userFinishTyping,
 } from "./reduxSlices/typingDocumentsSlice";
 import { themeReducer, toggleTheme } from "./reduxSlices/themeSlice";
+import {
+  loadingReducer,
+  toggleLoadingSaveResult,
+} from "./reduxSlices/loadingSlice";
 
 const makeStore = () => {
   return configureStore({
-    reducer: { typingDocuments: typingDocumentsReducer, theme: themeReducer },
+    reducer: {
+      typingDocuments: typingDocumentsReducer,
+      theme: themeReducer,
+      loading: loadingReducer,
+    },
   });
 };
 
@@ -54,6 +62,7 @@ export {
   userStartTyping,
   userFinishTyping,
   toggleTheme,
+  toggleLoadingSaveResult,
 };
 
 // Infer the type of makeStore

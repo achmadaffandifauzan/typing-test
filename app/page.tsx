@@ -438,9 +438,7 @@ const Home = () => {
           <div className="sm:w-8/12 w-11/12 bg-indigo-500 dark:bg-neutral-800 text-white font-semibold text-center rounded-xl text-sm py-0.5 max-sm:mt-10">
             Previous Attempts :
           </div>
-          <div className=" flex flex-row flex-wrap gap-5 justify-evenly items-center w-full sm:px-10 px-3">
-            <DisplayPreviousAttempt />
-          </div>
+          <DisplayPreviousAttempt />
         </div>
       </div>
       <Footer />

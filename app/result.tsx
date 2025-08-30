@@ -5,7 +5,11 @@ import { saveResultToDatabase } from "../lib/saveResult";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setAttemptSavedToDb, setTriggerSaveResult } from "@/lib/store";
+import {
+  setAttemptSavedToDb,
+  setTriggerSaveResult,
+  toggleLoadingSaveResult,
+} from "@/lib/store";
 
 const ResultScore = () => {
   const dispatch = useAppDispatch();
@@ -27,6 +31,7 @@ const ResultScore = () => {
         const attemptNumber = parseInt(i);
         dispatch(setTriggerSaveResult({ trigger: "off" })); // turn off the trigger first before run async saveAttempt, to avoid multiple request, since the web app wont wait async to be resolved to run next code
         const saveAttempt = async () => {
+          dispatch(toggleLoadingSaveResult(true));
           const result = await saveResultToDatabase(
             attemptResult,
             attemptNumber,
@@ -39,6 +44,7 @@ const ResultScore = () => {
             dispatch(setTriggerSaveResult({ trigger: "on" })); // turn the trigger back on if failed to save
             toast.error("Saving result failed!", { duration: 1500 });
           }
+          dispatch(toggleLoadingSaveResult(false));
         };
         toast.info("Saving result, please wait!", { duration: 2500 });
         saveAttempt();
