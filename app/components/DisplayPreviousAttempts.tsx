@@ -27,23 +27,23 @@ const DisplayPreviousAttempt = () => {
       temp.push(
         <div
           key={`prev_attempt_${i}`}
-          className="flex flex-col gap-4 bg-indigo-50 rounded-xl overflow-hidden text-center sm:w-3/12 w-11/12"
+          className="flex flex-col gap-4 bg-indigo-50 dark:bg-indigo-950 rounded-xl overflow-hidden text-center sm:w-3/12 w-11/12"
         >
-          <div className="text-sm py-1 text-indigo-700 font-semibold rounded-xl bg-indigo-100">
+          <div className="text-sm py-1 text-indigo-700 dark:text-indigo-300 font-semibold rounded-xl bg-indigo-100 dark:bg-indigo-900">
             {dayjs(typingHistories[i].createdAt.toString()).format(
               "MMM D, YYYY"
             )}
           </div>
           <div className="flex flex-row gap-10  items-center justify-evenly">
-            <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100  rounded-xl ">
+            <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100 dark:bg-indigo-900 rounded-xl ">
               <div className=" flex flex-col justify-center items-center px-2  text-sm rounded-xl w-28 ">
                 WPM
               </div>
-              <div className="flex font-bold text-xl text-indigo-800 justify-center items-center">
+              <div className="flex font-bold text-xl text-indigo-800 dark:text-indigo-200 justify-center items-center">
                 {typingHistories[i].wpm}
               </div>
             </div>
-            <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100  rounded-xl ">
+            <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100 dark:bg-indigo-900 rounded-xl ">
               <div className=" flex flex-col justify-center items-center px-2  text-sm rounded-xl w-28 ">
                 Accuracy
               </div>
@@ -52,7 +52,7 @@ const DisplayPreviousAttempt = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
+          <div className="flex flex-col bg-indigo-200 dark:bg-indigo-800 p-3 rounded-xl text-start">
             <div className="sm:h-30 h-24">
               <span className="text-sm"> TagCloud innacurate character</span>
               <TagCloud
@@ -83,21 +83,21 @@ const DisplayPreviousAttempt = () => {
           temp.push(
             <div
               key={`prev_attempt_${i}`}
-              className="flex flex-col gap-4 bg-indigo-50 rounded-xl overflow-hidden text-center sm:w-3/12 w-11/12"
+              className="flex flex-col gap-4 bg-indigo-50 dark:bg-indigo-950 rounded-xl overflow-hidden text-center sm:w-3/12 w-11/12"
             >
-              <div className="text-sm py-1 text-indigo-700 font-semibold rounded-xl bg-indigo-100">
+              <div className="text-sm py-1 text-indigo-700 dark:text-indigo-300 font-semibold rounded-xl bg- dark:bg-indigo-900">
                 {ordinal(parseInt(i) + 1)} attempt
               </div>
               <div className="flex flex-row gap-10  items-center justify-evenly">
-                <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100  rounded-xl ">
+                <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100 dark:bg-indigo-900 rounded-xl ">
                   <div className=" flex flex-col justify-center items-center px-2  text-sm rounded-xl w-28 ">
                     WPM
                   </div>
-                  <div className="wpm-result flex font-bold text-xl text-indigo-800 justify-center items-center">
+                  <div className="wpm-result flex font-bold text-xl text-indigo-800 dark:text-indigo-200 justify-center items-center">
                     {typingDocuments.documents[i].wpm}
                   </div>
                 </div>
-                <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100  rounded-xl ">
+                <div className="flex flex-col  items-center justify-center py-2 bg-indigo-100 dark:bg-indigo-900 rounded-xl ">
                   <div className=" flex flex-col justify-center items-center px-2  text-sm rounded-xl w-28 ">
                     Accuracy
                   </div>
@@ -106,7 +106,7 @@ const DisplayPreviousAttempt = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col bg-indigo-200 p-3 rounded-xl text-start">
+              <div className="flex flex-col bg-indigo-200 dark:bg-indigo-800 p-3 rounded-xl text-start">
                 <div className="sm:h-30 h-24">
                   <span className="text-sm">
                     {" "}

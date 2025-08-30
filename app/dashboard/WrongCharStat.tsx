@@ -190,7 +190,7 @@ const WrongCharStat = () => {
   return (
     <>
       <Bar data={data} options={options} />
-      <div className="flex flex-col self-center items-center justify-center text-indigo-700 bg-indigo-100 w-11/12 h-fit min-h-[4rem] rounded-xl text-center">
+      <div className="flex flex-col self-center items-center justify-center text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900 w-11/12 h-fit min-h-[4rem] rounded-xl text-center">
         <div>{!hoveredChar && "Click on each bar to see the insight"}</div>
         <div className="transition-all">
           {hoveredChar && (
@@ -199,7 +199,7 @@ const WrongCharStat = () => {
                 Typos for &quot;
                 <span className="text-xl font-bold">{hoveredChar}</span>&quot;
               </h2>
-              <div className="flex flex-row flex-wrap justify-center items-center bg-indigo-200 py-2 px-4 rounded-xl transition-all">
+              <div className="flex flex-row flex-wrap justify-center items-center bg-indigo-200 dark:bg-indigo-800 py-2 px-4 rounded-xl transition-all">
                 <TagCloud
                   minSize={20}
                   maxSize={80}

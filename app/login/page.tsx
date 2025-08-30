@@ -68,7 +68,9 @@ export default function Login() {
   }
   return (
     <div className="h-screen w-full flex flex-col flex-wrap justify-center items-center">
-      <div className="py-3 text-sm text-indigo-500 font-bold">Login with:</div>
+      <div className="py-3 text-sm text-indigo-500 dark:text-indigo-300 font-bold">
+        Login with:
+      </div>
       <div className="flex flex-col gap-2 mb-5 w-9/12 sm:w-3/12">
         <AuthButtonGoogle />
         <AuthButtonGithub />
@@ -79,7 +81,9 @@ export default function Login() {
       >
         <div className="flex flex-row w-full gap-2 items-center mb-5">
           <div className="h-px rounded-lg w-full bg-indigo-500"></div>
-          <div className=" text-indigo-500 text-xs">or</div>
+          <div className=" text-indigo-500 dark:text-indigo-300 text-xs">
+            or
+          </div>
           <div className="h-px rounded-lg w-full bg-indigo-500"></div>
         </div>
         <div className="mb-4 flex flex-col w-full">
@@ -87,7 +91,7 @@ export default function Login() {
             Username
           </label>
           <input
-            className="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring focus:ring-indigo-200 transition"
+            className="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-800 transition"
             type="text"
             name="username"
             required
@@ -98,19 +102,19 @@ export default function Login() {
             Password
           </label>
           <input
-            className="border border-gray-300 rounded-lg py-2 px-4  focus:outline-none focus:ring focus:ring-indigo-200 transition"
+            className="border border-gray-300 rounded-lg py-2 px-4  focus:outline-none focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-800 transition"
             type="password"
             name="password"
             required
           />
         </div>
 
-        <button className="mt-3 py-2 w-full bg-indigo-500 text-white hover:ring hover:ring-indigo-300 rounded-lg self-start focus:outline-none focus:ring focus:ring-indigo-300 focus:bg-indigo-400 transition">
+        <button className="mt-3 py-2 w-full bg-indigo-500 text-white hover:ring hover:ring-indigo-300  dark:hover:ring-indigo-700 rounded-lg self-start focus:outline-none focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700 focus:bg-indigo-400 dark:focus:bg-indigo-600 transition">
           Login
         </button>
         <Link
           href="/register"
-          className="my-1 text-xs hover:text-indigo-600 transition"
+          className="my-1 text-xs hover:text-indigo-600 dark:hover:text-indigo-400 transition"
         >
           Don&apos;t have account ? Register
         </Link>

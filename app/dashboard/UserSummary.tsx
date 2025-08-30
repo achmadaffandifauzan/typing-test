@@ -86,15 +86,15 @@ const UserSummary = ({ user, session, typingHistories }: any) => {
   };
   return (
     <div className="flex sm:flex-row flex-col flex-wrap justify-around items-center sm:pt-28">
-      <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl gap-1">
+      <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 dark:bg-indigo-900 font-semibold text-indigo-500 dark:text-indigo-300 px-4 py-3 rounded-xl gap-1">
         {averageWpmDisplay()}
       </div>
 
-      <div className="sm:w-4/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl ">
+      <div className="sm:w-4/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 dark:bg-indigo-900 font-semibold text-indigo-500 dark:text-indigo-300 px-4 py-3 rounded-xl ">
         {userInfoDisplay()}
       </div>
 
-      <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 font-semibold text-indigo-500 px-4 py-3 rounded-xl gap-1">
+      <div className="sm:w-2/12 h-24 flex flex-col flex-wrap justify-center items-center bg-indigo-100 dark:bg-indigo-900 font-semibold text-indigo-500 dark:text-indigo-300 px-4 py-3 rounded-xl gap-1">
         {averageAccuracyDisplay()}
       </div>
     </div>

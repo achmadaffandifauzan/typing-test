@@ -19,7 +19,7 @@ const DisplayCurrentQuote = () => {
   return (
     <div
       id="currentQuotes"
-      className="bg-indigo-100 p-4 rounded-xl text-justify"
+      className="bg-indigo-100 dark:bg-indigo-900 p-4 rounded-xl text-justify"
     >
       <div>
         {typingDocuments.documents[typingDocuments.currentAttemptNumber].quotes[
@@ -54,7 +54,7 @@ const DisplayCurrentQuote = () => {
               <span key={`addSpace_${currentQuoteIndex}_${wordIndex}`}>
                 <span
                   key={`${currentQuoteIndex}_${wordIndex}`}
-                  className="p-1 bg-indigo-300 rounded-md tracking-wider"
+                  className="p-1 bg-indigo-300 dark:bg-indigo-700 rounded-md tracking-wider"
                 >
                   {children}
                 </span>{" "}

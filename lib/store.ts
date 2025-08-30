@@ -24,10 +24,11 @@ import {
   userStartTyping,
   userFinishTyping,
 } from "./reduxSlices/typingDocumentsSlice";
+import { themeReducer, toggleTheme } from "./reduxSlices/themeSlice";
 
 const makeStore = () => {
   return configureStore({
-    reducer: { typingDocuments: typingDocumentsReducer },
+    reducer: { typingDocuments: typingDocumentsReducer, theme: themeReducer },
   });
 };
 
@@ -52,6 +53,7 @@ export {
   increaseWpm,
   userStartTyping,
   userFinishTyping,
+  toggleTheme,
 };
 
 // Infer the type of makeStore

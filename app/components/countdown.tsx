@@ -7,6 +7,8 @@ import {
 } from "@/lib/store";
 import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
+import ToggleTheme from "./ToggleTheme";
+
 interface MyTimerProps {
   triggerStartTime: boolean;
   setTriggerStartTime: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,7 +42,7 @@ export default function MyTimer({
   }, [triggerStartTime]);
   return (
     <div className="text-center flex flex-row flex-wrap gap-2 sm:h-20 h-10">
-      <div className="flex flex-col justify-center items-center transition-all rounded-xl  text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 sm:py-2 px-4  max-sm:flex-row max-sm:justify-around">
+      <div className="flex flex-col justify-center items-center transition-all rounded-xl  text-center  bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900 active:bg-indigo-200 dark:active:bg-indigo-800  focus:outline-none focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700 w-32 sm:py-2 px-4  max-sm:flex-row max-sm:justify-around">
         <div>Timer</div>
         {(() => {
           if (isRunning) {
@@ -69,7 +71,7 @@ export default function MyTimer({
           return (
             <button
               id="reset-button"
-              className="transition-all rounded-xl text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 sm:py-2 px-4 "
+              className="transition-all rounded-xl text-center  bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900 active:bg-indigo-200 dark:active:bg-indigo-800 focus:outline-none focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700 w-32 sm:py-2 px-4 "
               onClick={() => {
                 resetStates();
               }}
@@ -81,7 +83,7 @@ export default function MyTimer({
           return (
             <button
               id="start-button"
-              className="transition-all rounded-xl text-center  bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200  focus:outline-none focus:ring focus:ring-indigo-300 w-32 py-2 px-4 "
+              className="transition-all rounded-xl text-center  bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900 active:bg-indigo-200 dark:active:bg-indigo-800 focus:outline-none focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700 w-32 py-2 px-4 "
               onClick={() => {
                 const time = new Date();
                 time.setSeconds(time.getSeconds() + 60);
